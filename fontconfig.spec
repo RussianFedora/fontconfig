@@ -1,4 +1,4 @@
-%define freetype_version 2.1.2
+%define freetype_version 2.1.7
 
 # Workaround for broken jade on s390, remove all disable_docs
 # handling once https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=97079
@@ -12,7 +12,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.2.1
-Release: 8.1
+Release: 10
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -31,6 +31,9 @@ Patch14: fontconfig-nodocs.patch
 Patch15: fontconfig-2.2.1-cache.patch
 # Fix freetype includes to work with recent FreeType versions
 Patch16: fontconfig-2.2.1-ftinclude.patch
+# Remove timestamp from fonts.conf
+# http://freedesktop.org/cgi-bin/bugzilla/show_bug.cgi?id=505
+Patch17: fontconfig-2.2.1-notimestamp.patch
 
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
@@ -60,6 +63,9 @@ will use fontconfig.
 
 %prep
 %setup -q
+
+# Patch first so we don't affect .defaultconfig regeneration
+%patch17 -p1 -b .notimestamp
 
 %patch1 -p1 -b .defaultconfig
 %patch4 -p1 -b .slighthint
@@ -158,6 +164,11 @@ HOME=/root fc-cache -f 2>/dev/null
 %endif
 
 %changelog
+* Mon Apr 19 2004 Owen Taylor <otaylor@redhat.com> 2.2.1-10
+- Require recent freetype (#109592, Peter Oliver)
+- Remove fonts.conf timestamp to fix multiarch conflict (#118182)
+- Disable hinting for Mukti Narrow (#120915, Sayamindu Dasgupta)
+
 * Wed Mar 10 2004 Owen Taylor <otaylor@redhat.com> 2.2.1-8.1
 - Rebuild
 
