@@ -6,19 +6,21 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 0.0.1.%{relno}
-Release: 1
+Release: 2
 License: MIT
 Group: System Environment/Libraries
 Source: http://keithp.com/fonts/pub/fcpackage.%{fcpackage_version}.tar.gz
 URL: http://keithp.com/fonts
 BuildRoot: %{_tmppath}/fontconfig-%{PACKAGE_VERSION}-root
-Patch1: fontconfig-0.0.1.020811.1151-defaultconfig.patch
+Patch1: fontconfig-0.0.1.020826.1330-defaultconfig.patch
 Patch4: fontconfig-0.0.1.020811.1151-slighthint.patch
 # Only look in /usr/X11R6/lib/fonts/Type1, not in
 # all of /usr/X11R6/lib/fonts.
 Patch5: fontconfig-0.0.1.020626.1517-fontdir.patch
 # Fix groff errors with fontconfig.man
 Patch9: fontconfig-0.0.1.020811.1151-manfix.patch
+# Fix bug in comparisons for xx_XX language tags
+Patch10: fontconfig-0.0.1.020826.1330-compare.patch
 
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
@@ -50,6 +52,7 @@ will use fontconfig.
 %patch4 -p1 -b .slighthint
 %patch5 -p1 -b .fontdir
 %patch9 -p1 -b .manfix
+%patch10 -p1 -b .compare
 
 %build
 
@@ -99,6 +102,8 @@ HOME=/root fc-cache -f 2>/dev/null
 %changelog
 * Mon Aug 26 2002 Owen Taylor <otaylor@redhat.com>
 - Upgrade to fcpackage rc3
+- Fix bug in comparisons for xx_XX language tags
+- Compensate for a minor config file change in rc3
 
 * Wed Aug 21 2002 Owen Taylor <otaylor@redhat.com>
 - Add an explicit PreReq for freetype
