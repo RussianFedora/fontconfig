@@ -6,7 +6,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 0.0.1.%{relno}
-Release: 7
+Release: 8
 License: MIT
 Group: System Environment/Libraries
 Source: http://keithp.com/fonts/pub/fcpackage.%{fcpackage_version}.tar.gz
@@ -23,7 +23,8 @@ Patch6: fontconfig-0.0.1.020811.1151-flockfile.patch
 Patch7: fontconfig-0.0.1.020811.1151-cachehash.patch
 # Memory leak fix when parsing config files
 Patch8: fontconfig-0.0.1.020811.1151-memleak.patch
-
+# Fix groff errors with fontconfig.man
+Patch9: fontconfig-0.0.1.020811.1151-manfix.patch
 
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
@@ -55,6 +56,7 @@ will use fontconfig.
 %patch6 -p1 -b .flockfile
 %patch7 -p1 -b .cachehash
 %patch8 -p1 -b .memleak
+%patch9 -p1 -b .manfix
 
 %build
 
@@ -102,6 +104,10 @@ HOME=/root fc-cache -f 2>/dev/null
 %{_mandir}/man3/fontconfig.3*
 
 %changelog
+* Wed Aug 21 2002 Owen Taylor <otaylor@redhat.com>
+- Set rh_prefer_bitmaps for .ja fonts to key off of in Xft
+- Fix some groff warnings for fontconfig.man (#72138)
+
 * Thu Aug 15 2002 Owen Taylor <otaylor@redhat.com>
 - Try once more to get the right default Sans-serif font :-(
 - Switch the Sans/Monospace aliases for Korean to Gulim, not Dotum
