@@ -6,7 +6,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 0.0.1.%{relno}
-Release: 2
+Release: 3
 License: MIT
 Group: System Environment/Libraries
 Source: http://keithp.com/fonts/pub/fcpackage.%{fcpackage_version}.tar.gz
@@ -21,6 +21,8 @@ Patch5: fontconfig-0.0.1.020626.1517-fontdir.patch
 Patch9: fontconfig-0.0.1.020811.1151-manfix.patch
 # Fix bug in comparisons for xx_XX language tags
 Patch10: fontconfig-0.0.1.020826.1330-compare.patch
+# Blacklist certain fonts that freetype can't handle
+Patch11: fontconfig-0.0.1.020826.1330-blacklist.patch
 
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
@@ -53,6 +55,7 @@ will use fontconfig.
 %patch5 -p1 -b .fontdir
 %patch9 -p1 -b .manfix
 %patch10 -p1 -b .compare
+%patch11 -p1 -b .blacklist
 
 %build
 
@@ -100,6 +103,9 @@ HOME=/root fc-cache -f 2>/dev/null
 %{_mandir}/man3/fontconfig.3*
 
 %changelog
+* Fri Aug 30 2002 Owen Taylor <otaylor@redhat.com>
+- Blacklist fonts from ghostscript-fonts that don't render correctly
+
 * Mon Aug 26 2002 Owen Taylor <otaylor@redhat.com>
 - Upgrade to fcpackage rc3
 - Fix bug in comparisons for xx_XX language tags
