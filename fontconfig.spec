@@ -12,7 +12,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.2.3
-Release: 10
+Release: 11
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -42,7 +42,7 @@ BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
 BuildRequires: perl
 # For nodocs patch
-BuildRequires: /usr/bin/automake-1.8
+BuildRequires: /usr/bin/automake-1.9
 
 PreReq: freetype >= %{freetype_version}
 # Hebrew fonts referenced in fonts.conf changed names in fonts-hebrew-0.100
@@ -88,7 +88,7 @@ will use fontconfig.
 %build
 
 %if %{disable_docs}
-automake-1.8
+automake-1.9
 %endif
 
 %configure --with-add-fonts=/usr/X11R6/lib/X11/fonts/Type1,/usr/X11R6/lib/X11/fonts/OTF
@@ -182,6 +182,9 @@ fi
 %endif
 
 %changelog
+* Fri Mar  4 2005 David Zeuthen <davidz@redhat.com> - 2.2.3-11
+- Rebuild
+
 * Fri Mar  4 2005 David Zeuthen <davidz@redhat.com> - 2.2.3-10
 - Rebuild
 
