@@ -12,7 +12,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.2.1
-Release: 10
+Release: 11
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -164,6 +164,9 @@ HOME=/root fc-cache -f 2>/dev/null
 %endif
 
 %changelog
+* Tue Jun 15 2004 Elliot Lee <sopwith@redhat.com>
+- rebuilt
+
 * Mon Apr 19 2004 Owen Taylor <otaylor@redhat.com> 2.2.1-10
 - Require recent freetype (#109592, Peter Oliver)
 - Remove fonts.conf timestamp to fix multiarch conflict (#118182)
