@@ -6,13 +6,13 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: %relno
-Release: 1
+Release: 2
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fcpackage.%{fcpackage_version}.tar.gz
 URL: http://fontconfig.org
 BuildRoot: %{_tmppath}/fontconfig-%{PACKAGE_VERSION}-root
-Patch1: fontconfig-0.0.1.020826.1330-defaultconfig.patch
+Patch1: fontconfig-2.0-defaultconfig.patch
 Patch4: fontconfig-0.0.1.020811.1151-slighthint.patch
 # Only look in /usr/X11R6/lib/fonts/Type1, not in
 # all of /usr/X11R6/lib/fonts.
@@ -97,6 +97,7 @@ HOME=/root fc-cache -f 2>/dev/null
 %changelog
 * Mon Sep  2 2002 Owen Taylor <otaylor@redhat.com>
 - Version 2.0
+- Correct capitalization/spacing for ZYSong18030 name (#73272)
 
 * Fri Aug 30 2002 Owen Taylor <otaylor@redhat.com>
 - Blacklist fonts from ghostscript-fonts that don't render correctly
