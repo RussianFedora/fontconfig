@@ -1,12 +1,12 @@
-%define fcpackage_version rc2
-%define relno 020811.1151
+%define fcpackage_version rc3
+%define relno 020826.1330
 
 %define freetype_version 2.1.2-2
 
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 0.0.1.%{relno}
-Release: 9
+Release: 1
 License: MIT
 Group: System Environment/Libraries
 Source: http://keithp.com/fonts/pub/fcpackage.%{fcpackage_version}.tar.gz
@@ -17,12 +17,6 @@ Patch4: fontconfig-0.0.1.020811.1151-slighthint.patch
 # Only look in /usr/X11R6/lib/fonts/Type1, not in
 # all of /usr/X11R6/lib/fonts.
 Patch5: fontconfig-0.0.1.020626.1517-fontdir.patch
-# Use getc_unlocked for big performance boost on startup
-Patch6: fontconfig-0.0.1.020811.1151-flockfile.patch
-# Cache FcPatternHash results.
-Patch7: fontconfig-0.0.1.020811.1151-cachehash.patch
-# Memory leak fix when parsing config files
-Patch8: fontconfig-0.0.1.020811.1151-memleak.patch
 # Fix groff errors with fontconfig.man
 Patch9: fontconfig-0.0.1.020811.1151-manfix.patch
 
@@ -55,9 +49,6 @@ will use fontconfig.
 %patch1 -p1 -b .defaultconfig
 %patch4 -p1 -b .slighthint
 %patch5 -p1 -b .fontdir
-%patch6 -p1 -b .flockfile
-%patch7 -p1 -b .cachehash
-%patch8 -p1 -b .memleak
 %patch9 -p1 -b .manfix
 
 %build
@@ -106,6 +97,9 @@ HOME=/root fc-cache -f 2>/dev/null
 %{_mandir}/man3/fontconfig.3*
 
 %changelog
+* Mon Aug 26 2002 Owen Taylor <otaylor@redhat.com>
+- Upgrade to fcpackage rc3
+
 * Wed Aug 21 2002 Owen Taylor <otaylor@redhat.com>
 - Add an explicit PreReq for freetype
 - Move fonts we don't ship to the end of the fonts.conf aliases so
