@@ -1,17 +1,22 @@
-%define fcpackage_version 02-06-03.01-31
-%define relno 020603.0131
+%define fcpackage_version rc2
+%define relno 020811.1151
 
-%define freetype_version 2.0.9
+%define freetype_version 2.1.2-2
 
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 0.0.1.%{relno}
-Release: 3
+Release: 6
 License: MIT
 Group: System Environment/Libraries
 Source: http://keithp.com/fonts/pub/fcpackage.%{fcpackage_version}.tar.gz
 URL: http://keithp.com/fonts
 BuildRoot: %{_tmppath}/fontconfig-%{PACKAGE_VERSION}-root
+Patch1: fontconfig-0.0.1.020811.1151-defaultconfig.patch
+Patch4: fontconfig-0.0.1.020811.1151-slighthint.patch
+# Only look in /usr/X11R6/lib/fonts/Type1, not in
+# all of /usr/X11R6/lib/fonts.
+Patch5: fontconfig-0.0.1.020626.1517-fontdir.patch
 
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
@@ -34,21 +39,12 @@ and developer docs for the fontconfig package.
 Install fontconfig-devel if you want to develop programs which 
 will use fontconfig.
 
-%changelog
-* Fri Jun 07 2002 Havoc Pennington <hp@redhat.com>
-- rebuild in different environment
-
-* Mon Jun  3 2002 Owen Taylor <otaylor@redhat.com>
-- New version, new upstream mega-tarball
-
-* Tue May 28 2002 Owen Taylor <otaylor@redhat.com>
-- Fix problem with FcConfigSort
-
-* Fri May 24 2002 Owen Taylor <otaylor@redhat.com>
-- Initial specfile
-
 %prep
-%setup -n fcpackage.%{fcpackage_version}/fontconfig
+%setup -q -n fcpackage.%{fcpackage_version}/fontconfig
+
+%patch1 -p1 -b .defaultconfig
+%patch4 -p1 -b .slighthint
+%patch5 -p1 -b .fontdir
 
 %build
 
@@ -65,7 +61,13 @@ install -m 0644 src/fontconfig.man $RPM_BUILD_ROOT%{_mandir}/man3/fontconfig.3
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%post -p /sbin/ldconfig
+%post
+/sbin/ldconfig
+
+# Force regeneration of all fontconfig cache files.
+# The redirect is because fc-cache is giving warnings about ~/fc.cache
+# the HOME setting is to avoid problems if HOME hasn't been reset
+HOME=/root fc-cache -f 2>/dev/null
 
 %postun -p /sbin/ldconfig
 
@@ -77,7 +79,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/fc-list
 %dir %{_sysconfdir}/fonts
 %{_sysconfdir}/fonts/fonts.dtd
-%config(noreplace) %{_sysconfdir}/fonts/fonts.conf
+%config %{_sysconfdir}/fonts/fonts.conf
 
 %files devel
 %defattr(-, root, root)
@@ -86,3 +88,73 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/fontconfig
 %{_bindir}/fontconfig-config
 %{_mandir}/man3/fontconfig.3*
+
+%changelog
+* Thu Aug 15 2002 Owen Taylor <otaylor@redhat.com>
+- Try once more to get the right default Sans-serif font :-(
+- Switch the Sans/Monospace aliases for Korean to Gulim, not Dotum
+
+* Wed Aug 14 2002 Owen Taylor <otaylor@redhat.com>
+- Fix %%post
+
+* Tue Aug 13 2002 Owen Taylor <otaylor@redhat.com>
+- Fix lost Luxi Sans default
+
+* Mon Aug 12 2002 Owen Taylor <otaylor@redhat.com>
+- Upgrade to rc2
+- Turn off hinting for all CJK fonts
+- Fix typo in %%post
+- Remove the custom language tag stuff in favor of Keith's standard 
+  solution.
+
+* Mon Jul 15 2002 Owen Taylor <otaylor@redhat.com>
+- Prefer Luxi Sans to Nimbus Sans again
+
+* Fri Jul 12 2002 Owen Taylor <otaylor@redhat.com>
+- Add FC_HINT_STYLE to FcBaseObjectTypes
+- Switch Chinese fonts to always using Sung-ti / Ming-ti, and never Kai-ti
+- Add ZYSong18030 to aliases (#68428)
+
+* Wed Jul 10 2002 Owen Taylor <otaylor@redhat.com>
+- Fix a typo in the langtag patch (caught by Erik van der Poel)
+
+* Wed Jul  3 2002 Owen Taylor <otaylor@redhat.com>
+- Add FC_HINT_STYLE tag
+
+* Thu Jun 27 2002 Owen Taylor <otaylor@redhat.com>
+- New upstream version, with fix for problems with
+  ghostscript-fonts (Fonts don't work for Qt+CJK,
+  etc.)
+
+* Wed Jun 26 2002 Owen Taylor <otaylor@redhat.com>
+- New upstream version, fixing locale problem
+
+* Mon Jun 24 2002 Owen Taylor <otaylor@redhat.com>
+- Add a hack where we set the "language" fontconfig property based on the locale, then 
+  we conditionalize base on that in the fonts.conf file.
+
+* Sun Jun 23 2002 Owen Taylor <otaylor@redhat.com>
+- New upstream version
+
+* Tue Jun 18 2002 Owen Taylor <otaylor@redhat.com>
+- Fix crash from FcObjectSetAdd
+
+* Tue Jun 11 2002 Owen Taylor <otaylor@redhat.com>
+- make fonts.conf %%config, not %%config(noreplace)
+- Another try at the CJK aliases
+- Add some CJK fonts to the config
+- Prefer Luxi Mono to Nimbus Mono
+
+* Mon Jun 10 2002 Owen Taylor <otaylor@redhat.com>
+- New upstream version
+- Fix matching for bitmap fonts
+
+* Mon Jun  3 2002 Owen Taylor <otaylor@redhat.com>
+- New version, new upstream mega-tarball
+
+* Tue May 28 2002 Owen Taylor <otaylor@redhat.com>
+- Fix problem with FcConfigSort
+
+* Fri May 24 2002 Owen Taylor <otaylor@redhat.com>
+- Initial specfile
+
