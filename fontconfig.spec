@@ -3,16 +3,16 @@
 # Workaround for broken jade on s390, remove all disable_docs
 # handling once https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=97079
 # is fixed.
-#%ifarch s390
-#%define disable_docs 1
-#%else
+%ifarch s390
+%define disable_docs 1
+%else
 %define disable_docs 0
-#%endif
+%endif
 
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.2.3
-Release: 8
+Release: 9
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -42,7 +42,7 @@ BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
 BuildRequires: perl
 # For nodocs patch
-# BuildRequires: /usr/bin/automake-1.4
+BuildRequires: /usr/bin/automake-1.4
 
 PreReq: freetype >= %{freetype_version}
 # Hebrew fonts referenced in fonts.conf changed names in fonts-hebrew-0.100
@@ -182,6 +182,9 @@ fi
 %endif
 
 %changelog
+* Fri Mar  4 2005 David Zeuthen <davidz@redhat.com> - 2.2.3-9
+- Disable docs for s390 for now
+
 * Fri Mar  4 2005 David Zeuthen <davidz@redhat.com> - 2.2.3-8
 - Rebuild
 
