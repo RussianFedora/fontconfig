@@ -12,7 +12,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.2.3
-Release: 7
+Release: 8
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -182,7 +182,7 @@ fi
 %endif
 
 %changelog
-* Fri Mar  4 2005 David Zeuthen <davidz@redhat.com> - 2.2.3-7
+* Fri Mar  4 2005 David Zeuthen <davidz@redhat.com> - 2.2.3-8
 - Rebuild
 
 * Wed Dec  1 2004 Owen Taylor <otaylor@redhat.com> - 2.2.3-6
