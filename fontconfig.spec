@@ -1,26 +1,22 @@
-%define fcpackage_version rc3
-%define relno 020826.1330
+%define fcpackage_version 2_0
+%define relno 2.0
 
 %define freetype_version 2.1.2-2
 
 Summary: Font configuration and customization library
 Name: fontconfig
-Version: 0.0.1.%{relno}
-Release: 3
+Version: %relno
+Release: 1
 License: MIT
 Group: System Environment/Libraries
-Source: http://keithp.com/fonts/pub/fcpackage.%{fcpackage_version}.tar.gz
-URL: http://keithp.com/fonts
+Source: http://fontconfig.org/release/fcpackage.%{fcpackage_version}.tar.gz
+URL: http://fontconfig.org
 BuildRoot: %{_tmppath}/fontconfig-%{PACKAGE_VERSION}-root
 Patch1: fontconfig-0.0.1.020826.1330-defaultconfig.patch
 Patch4: fontconfig-0.0.1.020811.1151-slighthint.patch
 # Only look in /usr/X11R6/lib/fonts/Type1, not in
 # all of /usr/X11R6/lib/fonts.
 Patch5: fontconfig-0.0.1.020626.1517-fontdir.patch
-# Fix groff errors with fontconfig.man
-Patch9: fontconfig-0.0.1.020811.1151-manfix.patch
-# Fix bug in comparisons for xx_XX language tags
-Patch10: fontconfig-0.0.1.020826.1330-compare.patch
 # Blacklist certain fonts that freetype can't handle
 Patch11: fontconfig-0.0.1.020826.1330-blacklist.patch
 
@@ -53,14 +49,10 @@ will use fontconfig.
 %patch1 -p1 -b .defaultconfig
 %patch4 -p1 -b .slighthint
 %patch5 -p1 -b .fontdir
-%patch9 -p1 -b .manfix
-%patch10 -p1 -b .compare
 %patch11 -p1 -b .blacklist
 
 %build
 
-# flockfile patch changes configure.in
-autoconf
 %configure
 make
 
@@ -103,6 +95,9 @@ HOME=/root fc-cache -f 2>/dev/null
 %{_mandir}/man3/fontconfig.3*
 
 %changelog
+* Mon Sep  2 2002 Owen Taylor <otaylor@redhat.com>
+- Version 2.0
+
 * Fri Aug 30 2002 Owen Taylor <otaylor@redhat.com>
 - Blacklist fonts from ghostscript-fonts that don't render correctly
 
