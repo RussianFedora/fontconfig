@@ -6,7 +6,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: %relno
-Release: 7
+Release: 9
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fcpackage.%{fcpackage_version}.tar.gz
@@ -115,6 +115,12 @@ HOME=/root fc-cache -f 2>/dev/null
 %{_bindir}/fontconfig-config
 
 %changelog
+* Mon Feb 24 2003 Elliot Lee <sopwith@redhat.com>
+- debuginfo rebuild
+
+* Mon Feb 24 2003 Owen Taylor <otaylor@redhat.com> 2.1-8
+- Fix segfault in fc-cache from .dircache patch
+
 * Mon Feb 24 2003 Owen Taylor <otaylor@redhat.com>
 - Back out patch that wrote fonts.conf entries that crash RH-8.0 
   gnome-terminal, go with patch from fontconfig CVS instead.
