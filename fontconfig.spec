@@ -1,4 +1,4 @@
-%define freetype_version 2.1.2-7
+%define freetype_version 2.1.2
 
 # Workaround for broken jade on s390, remove all disable_docs
 # handling once https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=97079
@@ -12,7 +12,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.2.1
-Release: 6.1
+Release: 8.1
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -29,6 +29,8 @@ Patch13: fontconfig-2.1-fulldir.patch
 Patch14: fontconfig-nodocs.patch
 # Don't read from/write to NULL cache files
 Patch15: fontconfig-2.2.1-cache.patch
+# Fix freetype includes to work with recent FreeType versions
+Patch16: fontconfig-2.2.1-ftinclude.patch
 
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
@@ -69,6 +71,7 @@ will use fontconfig.
 %endif
 
 %patch15 -p1 -b .cache
+%patch16 -p1 -b .ftinclude
 
 %build
 
@@ -155,6 +158,20 @@ HOME=/root fc-cache -f 2>/dev/null
 %endif
 
 %changelog
+* Wed Mar 10 2004 Owen Taylor <otaylor@redhat.com> 2.2.1-8.1
+- Rebuild
+
+* Wed Mar 10 2004 Owen Taylor <otaylor@redhat.com> 2.2.1-8.0
+- Add Albany/Cumberland/Thorndale as fallbacks for Microsoft core fonts and 
+  as non-preferred alternatives for Sans/Serif/Monospace
+- Fix FreeType includes for recent FreeType
+
+* Tue Mar 02 2004 Elliot Lee <sopwith@redhat.com>
+- rebuilt
+
+* Fri Feb 13 2004 Elliot Lee <sopwith@redhat.com>
+- rebuilt
+
 * Mon Sep 22 2003 Owen Taylor <otaylor@redhat.com> 2.2.1-6.0
 - Should have been passing --with-add-fonts, not --with-add-dirs to 
   configure ... caused wrong version of Luxi to be used. (#100862)
