@@ -12,7 +12,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.2.3
-Release: 2
+Release: 3
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -30,6 +30,8 @@ Patch14: fontconfig-nodocs.patch
 # Remove timestamp from fonts.conf
 # http://freedesktop.org/cgi-bin/bugzilla/show_bug.cgi?id=505
 Patch17: fontconfig-2.2.1-notimestamp.patch
+# Backport of name parsing code from the 2.2.9x devel branch
+Patch18: fontconfig-2.2.3-names.patch
 
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
@@ -67,6 +69,8 @@ will use fontconfig.
 %patch4 -p1 -b .slighthint
 %patch11 -p1 -b .blacklist
 %patch13 -p1 -b .fulldir
+
+%patch18 -p1 -b .names
 
 %if %{disable_docs}
 %patch14 -p1 -b .nodocs
@@ -112,6 +116,10 @@ mv $RPM_BUILD_ROOT%{_docdir}/fontconfig/* .
 rmdir $RPM_BUILD_ROOT%{_docdir}/fontconfig/
 %endif
 
+# All font packages depend on this package, so we create
+# and own /usr/share/fonts
+mkdir -p $RPM_BUILD_ROOT%{_datadir}/fonts
+
 # Remove unpackaged files
 rm $RPM_BUILD_ROOT%{_libdir}/*.la
 
@@ -142,6 +150,7 @@ fi
 %{_bindir}/fc-cache
 %{_bindir}/fc-list
 %dir %{_sysconfdir}/fonts
+%dir %{_datadir}/fonts
 %{_sysconfdir}/fonts/fonts.dtd
 %config %{_sysconfdir}/fonts/fonts.conf
 %config(noreplace) %{_sysconfdir}/fonts/local.conf
@@ -164,6 +173,12 @@ fi
 %endif
 
 %changelog
+* Thu Sep  2 2004 Owen Taylor <otaylor@redhat.com> - 2.2.3-3
+- Backport code from head branch of fontconfig CVS to parse names 
+  for postscript fonts (fixes #127500, J. J. Ramsey)
+- Own /usr/share/fonts (#110956, David K. Levine)
+- Add KacstQura to serif/sans-serif/monospace aliases (#101182)
+
 * Mon Aug 16 2004 Owen Taylor <otaylor@redhat.com> - 2.2.3-2
 - Don't run fc-cache if the binary isn't there (#128072, tracked
   down by Jay Turner)
