@@ -6,7 +6,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: %relno
-Release: 2
+Release: 3
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fcpackage.%{fcpackage_version}.tar.gz
@@ -19,6 +19,9 @@ Patch4: fontconfig-0.0.1.020811.1151-slighthint.patch
 Patch5: fontconfig-0.0.1.020626.1517-fontdir.patch
 # Blacklist certain fonts that freetype can't handle
 Patch11: fontconfig-0.0.1.020826.1330-blacklist.patch
+# Patch from Keith Packard to fix problem where 
+# subdirectories could get lost from ~/.fonts.cache
+Patch12: fontconfig-2.0-subdir.patch
 
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
@@ -50,6 +53,7 @@ will use fontconfig.
 %patch4 -p1 -b .slighthint
 %patch5 -p1 -b .fontdir
 %patch11 -p1 -b .blacklist
+%patch12 -p1 -b .subdir
 
 %build
 
@@ -95,6 +99,11 @@ HOME=/root fc-cache -f 2>/dev/null
 %{_mandir}/man3/fontconfig.3*
 
 %changelog
+* Mon Sep  9 2002 Owen Taylor <otaylor@redhat.com>
+- Add patch from Keith Packard to fix problem where 
+  subdirectories could get lost from ~/.fonts.cache
+  (#73621)
+
 * Mon Sep  2 2002 Owen Taylor <otaylor@redhat.com>
 - Version 2.0
 - Correct capitalization/spacing for ZYSong18030 name (#73272)
