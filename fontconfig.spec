@@ -1,33 +1,40 @@
-%define fcpackage_version 2_1
-%define relno %(echo %fcpackage_version | sed -e 's#_#.#')
-
 %define freetype_version 2.1.2-7
+
+# Workaround for broken jade on s390, remove all disable_docs
+# handling once https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=97079
+# is fixed.
+%ifarch s390
+%define disable_docs 1
+%else
+%define disable_docs 0
+%endif
 
 Summary: Font configuration and customization library
 Name: fontconfig
-Version: %relno
-Release: 9
+Version: 2.2.1
+Release: 6.1
 License: MIT
 Group: System Environment/Libraries
-Source: http://fontconfig.org/release/fcpackage.%{fcpackage_version}.tar.gz
+Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
 URL: http://fontconfig.org
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 
-Patch1: fontconfig-2.0-defaultconfig.patch
+Patch1: fontconfig-defaultconfig.patch
 Patch4: fontconfig-2.1-slighthint.patch
-# Remove /usr/X11R6 dirs from fonts.conf, we'll add them back
-Patch5: fontconfig-fontdir.patch
 # Blacklist certain fonts that freetype can't handle
 Patch11: fontconfig-0.0.1.020826.1330-blacklist.patch
-# Fix caching of directories 
-# (http://www.fontconfig.org/cgi-bin/bugzilla/show_bug.cgi?id=8)
-Patch12: fontconfig-2.1-dircache.patch
 # Ignore .fulldir entries from earlier versions 'dircache' fix.
 Patch13: fontconfig-2.1-fulldir.patch
+# Turn off doc generation since it doesn't work on s390 at the moment
+Patch14: fontconfig-nodocs.patch
+# Don't read from/write to NULL cache files
+Patch15: fontconfig-2.2.1-cache.patch
 
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
 BuildRequires: perl
+# For nodocs patch
+BuildRequires: /usr/bin/automake-1.4
 
 PreReq: freetype >= %{freetype_version}
 
@@ -50,38 +57,58 @@ Install fontconfig-devel if you want to develop programs which
 will use fontconfig.
 
 %prep
-%setup -q -n fcpackage.%{fcpackage_version}/fontconfig
+%setup -q
 
 %patch1 -p1 -b .defaultconfig
 %patch4 -p1 -b .slighthint
-%patch5 -p1 -b .slighthint
 %patch11 -p1 -b .blacklist
-%patch12 -p1 -b .dircache
 %patch13 -p1 -b .fulldir
+
+%if %{disable_docs}
+%patch14 -p1 -b .nodocs
+%endif
+
+%patch15 -p1 -b .cache
 
 %build
 
-%configure
-make
+%if %{disable_docs}
+automake-1.4
+%endif
 
-# Only look for fonts in the Type1/OTF subdirectories
-# of /usr/X11R6/lib/fonts; the fonts in the TTF directory 
-# duplicate those in the Type1 directory
-perl -ni -e '
-if (m@^\s+<dir>/usr/share/fonts</dir>\s+$@) {
-  for $i (qw(/usr/share/fonts /usr/X11R6/lib/X11/fonts/Type1 /usr/X11R6/lib/X11/fonts/OTF)) {
-    print "\t<dir>$i</dir>\n";
-  }
-} else {
-  print;
-}' fonts.conf
+%configure --with-add-fonts=/usr/X11R6/lib/X11/fonts/Type1,/usr/X11R6/lib/X11/fonts/OTF
+make
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
+# Install man pages
+mkdir -p $RPM_BUILD_ROOT%{_mandir}/man{1,3,5}
+install -m 0644 fc-cache/fc-cache.man $RPM_BUILD_ROOT%{_mandir}/man1/fc-cache.1
+install -m 0644 fc-list/fc-list.man $RPM_BUILD_ROOT%{_mandir}/man1/fc-list.1
+%if ! %{disable_docs}
+(
+  cd doc;
+  for i in *.3 ; do 
+    install -m 0644 $i $RPM_BUILD_ROOT%{_mandir}/man3/$i
+  done
+  for i in *.5 ; do 
+    install -m 0644 $i $RPM_BUILD_ROOT%{_mandir}/man5/$i
+  done
+)
+%endif
+
 make install DESTDIR=$RPM_BUILD_ROOT 
-mkdir -p $RPM_BUILD_ROOT%{_mandir}/man3
-install -m 0644 src/fontconfig.man $RPM_BUILD_ROOT%{_mandir}/man3/fontconfig.3
+
+%if ! %{disable_docs}
+# move installed doc files back to build directory to package themm
+# in the right place
+mv $RPM_BUILD_ROOT%{_docdir}/fontconfig/* .
+rmdir $RPM_BUILD_ROOT%{_docdir}/fontconfig/
+%endif
+
+# Remove unpackaged files
+rm $RPM_BUILD_ROOT%{_libdir}/*.la
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -98,23 +125,58 @@ HOME=/root fc-cache -f 2>/dev/null
 
 %files
 %defattr(-, root, root)
-%doc README AUTHORS COPYING
+%doc README AUTHORS COPYING 
+%if ! %{disable_docs}
+%doc fontconfig-user.txt fontconfig-user.html
+%endif
 %{_libdir}/libfontconfig.so.*
 %{_bindir}/fc-cache
 %{_bindir}/fc-list
 %dir %{_sysconfdir}/fonts
 %{_sysconfdir}/fonts/fonts.dtd
 %config %{_sysconfdir}/fonts/fonts.conf
-%{_mandir}/man3/fontconfig.3*
+%config(noreplace) %{_sysconfdir}/fonts/local.conf
+%{_mandir}/man1/*
+%if ! %{disable_docs}
+%{_mandir}/man5/*
+%endif
 
 %files devel
 %defattr(-, root, root)
+%if ! %{disable_docs}
+%doc fontconfig-devel.txt fontconfig-devel
+%endif
 %{_libdir}/libfontconfig.so
+%{_libdir}/libfontconfig.a
 %{_libdir}/pkgconfig
 %{_includedir}/fontconfig
-%{_bindir}/fontconfig-config
+%if ! %{disable_docs}
+%{_mandir}/man3/*
+%endif
 
 %changelog
+* Mon Sep 22 2003 Owen Taylor <otaylor@redhat.com> 2.2.1-6.0
+- Should have been passing --with-add-fonts, not --with-add-dirs to 
+  configure ... caused wrong version of Luxi to be used. (#100862)
+
+* Fri Sep 19 2003 Owen Taylor <otaylor@redhat.com> 2.2.1-5.0
+- Tweak fonts.conf to get right hinting for CJK fonts (#97337)
+
+* Tue Jun 17 2003 Bill Nottingham <notting@redhat.com> 2.2.1-3
+- handle null config->cache correctly
+
+* Thu Jun 12 2003 Owen Taylor <otaylor@redhat.com> 2.2.1-2
+- Update default config to include Hebrew fonts (#90501, Dov Grobgeld)
+
+* Tue Jun 10 2003 Owen Taylor <otaylor@redhat.com> 2.2.1-2
+- As a workaround disable doc builds on s390
+
+* Mon Jun  9 2003 Owen Taylor <otaylor@redhat.com> 2.2.1-1
+- Version 2.2.1
+
+* Wed Jun 04 2003 Elliot Lee <sopwith@redhat.com>
+- rebuilt
+
 * Mon Feb 24 2003 Elliot Lee <sopwith@redhat.com>
 - debuginfo rebuild
 
