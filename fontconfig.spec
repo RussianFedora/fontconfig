@@ -40,6 +40,8 @@ BuildRequires: perl
 # BuildRequires: /usr/bin/automake-1.4
 
 PreReq: freetype >= %{freetype_version}
+# Hebrew fonts referenced in fonts.conf changed names in fonts-hebrew-0.100
+Conflicts: fonts-hebrew < 0.100
 
 %description
 Fontconfig is designed to locate fonts within the
