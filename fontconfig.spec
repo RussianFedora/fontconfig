@@ -12,7 +12,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.2.3
-Release: 4
+Release: 5
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -32,6 +32,9 @@ Patch14: fontconfig-nodocs.patch
 Patch17: fontconfig-2.2.1-notimestamp.patch
 # Backport of name parsing code from the 2.2.9x devel branch
 Patch18: fontconfig-2.2.3-names.patch
+# Add pa, fix ta orthographies
+# http://freedesktop.org/bugzilla/show_bug.cgi?id=1671
+Patch19: fontconfig-2.2.3-ta-pa-orth.patch
 
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
@@ -73,6 +76,7 @@ will use fontconfig.
 %patch13 -p1 -b .fulldir
 
 %patch18 -p1 -b .names
+%patch19 -p1 -b .ta-pa-orth
 
 %if %{disable_docs}
 %patch14 -p1 -b .nodocs
@@ -175,6 +179,10 @@ fi
 %endif
 
 %changelog
+* Tue Oct 19 2004 Owen Taylor <otaylor@redhat.com> - 2.2.3-5
+- Add Lohit fonts for Indic languages (#134492)
+- Add Punjabi converage, fix Tamil coverage
+
 * Wed Sep 22 2004 Owen Taylor <otaylor@redhat.com> - 2.2.3-4
 - Update fonts-hebrew names to include CLM suffix
 
