@@ -1,18 +1,18 @@
-%define freetype_version 2.1.7
+%define freetype_version 2.1.4
 
 # Workaround for broken jade on s390, remove all disable_docs
 # handling once https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=97079
 # is fixed.
-%ifarch s390
-%define disable_docs 1
-%else
+#%ifarch s390
+#%define disable_docs 1
+#%else
 %define disable_docs 0
-%endif
+#%endif
 
 Summary: Font configuration and customization library
 Name: fontconfig
-Version: 2.2.1
-Release: 11
+Version: 2.2.3
+Release: 1
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -27,10 +27,6 @@ Patch11: fontconfig-0.0.1.020826.1330-blacklist.patch
 Patch13: fontconfig-2.1-fulldir.patch
 # Turn off doc generation since it doesn't work on s390 at the moment
 Patch14: fontconfig-nodocs.patch
-# Don't read from/write to NULL cache files
-Patch15: fontconfig-2.2.1-cache.patch
-# Fix freetype includes to work with recent FreeType versions
-Patch16: fontconfig-2.2.1-ftinclude.patch
 # Remove timestamp from fonts.conf
 # http://freedesktop.org/cgi-bin/bugzilla/show_bug.cgi?id=505
 Patch17: fontconfig-2.2.1-notimestamp.patch
@@ -39,7 +35,7 @@ BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
 BuildRequires: perl
 # For nodocs patch
-BuildRequires: /usr/bin/automake-1.4
+# BuildRequires: /usr/bin/automake-1.4
 
 PreReq: freetype >= %{freetype_version}
 
@@ -76,9 +72,6 @@ will use fontconfig.
 %patch14 -p1 -b .nodocs
 %endif
 
-%patch15 -p1 -b .cache
-%patch16 -p1 -b .ftinclude
-
 %build
 
 %if %{disable_docs}
@@ -91,10 +84,6 @@ make
 %install
 rm -rf $RPM_BUILD_ROOT
 
-# Install man pages
-mkdir -p $RPM_BUILD_ROOT%{_mandir}/man{1,3,5}
-install -m 0644 fc-cache/fc-cache.man $RPM_BUILD_ROOT%{_mandir}/man1/fc-cache.1
-install -m 0644 fc-list/fc-list.man $RPM_BUILD_ROOT%{_mandir}/man1/fc-list.1
 %if ! %{disable_docs}
 (
   cd doc;
@@ -108,6 +97,13 @@ install -m 0644 fc-list/fc-list.man $RPM_BUILD_ROOT%{_mandir}/man1/fc-list.1
 %endif
 
 make install DESTDIR=$RPM_BUILD_ROOT 
+
+# Install man pages with correct encoding
+mkdir -p $RPM_BUILD_ROOT%{_mandir}/man{1,3,5}
+for i in fc-cache fc-list ; do
+  iconv -f iso-8859-1 -t utf-8 < $i/$i.man > $i/$i.man.utf8
+  install -m 0644 $i/$i.man.utf8 $RPM_BUILD_ROOT%{_mandir}/man1/$i.1
+done
 
 %if ! %{disable_docs}
 # move installed doc files back to build directory to package themm
@@ -164,6 +160,15 @@ HOME=/root fc-cache -f 2>/dev/null
 %endif
 
 %changelog
+* Tue Aug  3 2004 Owen Taylor <otaylor@redhat.com> - 2.2.3-1
+- Upgrade to 2.2.3
+- Convert man pages to UTF-8 (#108730, Peter van Egdom)
+- Renable docs on s390
+
+* Mon Jul 26 2004 Owen Taylor <otaylor@redhat.com> - 2.2.1-12
+- Rebuild for RHEL
+- Back freetype required version down to 2.1.4
+
 * Tue Jun 15 2004 Elliot Lee <sopwith@redhat.com>
 - rebuilt
 
