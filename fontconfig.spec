@@ -1,30 +1,33 @@
-%define fcpackage_version 2_0
-%define relno 2.0
+%define fcpackage_version 2_1
+%define relno %(echo %fcpackage_version | sed -e 's#_#.#')
 
-%define freetype_version 2.1.2-2
+%define freetype_version 2.1.2-7
 
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: %relno
-Release: 3
+Release: 7
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fcpackage.%{fcpackage_version}.tar.gz
 URL: http://fontconfig.org
-BuildRoot: %{_tmppath}/fontconfig-%{PACKAGE_VERSION}-root
+BuildRoot: %{_tmppath}/%{name}-%{version}-root
+
 Patch1: fontconfig-2.0-defaultconfig.patch
-Patch4: fontconfig-0.0.1.020811.1151-slighthint.patch
-# Only look in /usr/X11R6/lib/fonts/Type1, not in
-# all of /usr/X11R6/lib/fonts.
-Patch5: fontconfig-0.0.1.020626.1517-fontdir.patch
+Patch4: fontconfig-2.1-slighthint.patch
+# Remove /usr/X11R6 dirs from fonts.conf, we'll add them back
+Patch5: fontconfig-fontdir.patch
 # Blacklist certain fonts that freetype can't handle
 Patch11: fontconfig-0.0.1.020826.1330-blacklist.patch
-# Patch from Keith Packard to fix problem where 
-# subdirectories could get lost from ~/.fonts.cache
-Patch12: fontconfig-2.0-subdir.patch
+# Fix caching of directories 
+# (http://www.fontconfig.org/cgi-bin/bugzilla/show_bug.cgi?id=8)
+Patch12: fontconfig-2.1-dircache.patch
+# Ignore .fulldir entries from earlier versions 'dircache' fix.
+Patch13: fontconfig-2.1-fulldir.patch
 
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
+BuildRequires: perl
 
 PreReq: freetype >= %{freetype_version}
 
@@ -51,14 +54,27 @@ will use fontconfig.
 
 %patch1 -p1 -b .defaultconfig
 %patch4 -p1 -b .slighthint
-%patch5 -p1 -b .fontdir
+%patch5 -p1 -b .slighthint
 %patch11 -p1 -b .blacklist
-%patch12 -p1 -b .subdir
+%patch12 -p1 -b .dircache
+%patch13 -p1 -b .fulldir
 
 %build
 
 %configure
 make
+
+# Only look for fonts in the Type1/OTF subdirectories
+# of /usr/X11R6/lib/fonts; the fonts in the TTF directory 
+# duplicate those in the Type1 directory
+perl -ni -e '
+if (m@^\s+<dir>/usr/share/fonts</dir>\s+$@) {
+  for $i (qw(/usr/share/fonts /usr/X11R6/lib/X11/fonts/Type1 /usr/X11R6/lib/X11/fonts/OTF)) {
+    print "\t<dir>$i</dir>\n";
+  }
+} else {
+  print;
+}' fonts.conf
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -89,6 +105,7 @@ HOME=/root fc-cache -f 2>/dev/null
 %dir %{_sysconfdir}/fonts
 %{_sysconfdir}/fonts/fonts.dtd
 %config %{_sysconfdir}/fonts/fonts.conf
+%{_mandir}/man3/fontconfig.3*
 
 %files devel
 %defattr(-, root, root)
@@ -96,13 +113,38 @@ HOME=/root fc-cache -f 2>/dev/null
 %{_libdir}/pkgconfig
 %{_includedir}/fontconfig
 %{_bindir}/fontconfig-config
-%{_mandir}/man3/fontconfig.3*
 
 %changelog
-* Mon Sep  9 2002 Owen Taylor <otaylor@redhat.com>
-- Add patch from Keith Packard to fix problem where 
-  subdirectories could get lost from ~/.fonts.cache
-  (#73621)
+* Mon Feb 24 2003 Owen Taylor <otaylor@redhat.com>
+- Back out patch that wrote fonts.conf entries that crash RH-8.0 
+  gnome-terminal, go with patch from fontconfig CVS instead.
+  (#84863)
+
+* Tue Feb 11 2003 Owen Taylor <otaylor@redhat.com>
+- Move fontconfig man page to main package, since it contains non-devel 
+  information (#76189)
+- Look in the OTF subdirectory of /usr/X11R6/lib/fonts as well
+  so we find Syriac fonts (#82627)
+
+* Thu Feb  6 2003 Matt Wilson <msw@redhat.com> 2.1-5
+- modified fontconfig-0.0.1.020626.1517-fontdir.patch to hard code
+  /usr/X11R6/lib/X11/fonts instead of using $(X_FONT_DIR).  This is
+  because on lib64 machines, fonts are not in /usr/X11R6/lib64/....
+
+* Wed Jan 22 2003 Tim Powers <timp@redhat.com>
+- rebuilt
+
+* Wed Jan 15 2003 Owen Taylor <otaylor@redhat.com>
+- Try a different tack when fixing cache problem
+
+* Tue Jan 14 2003 Owen Taylor <otaylor@redhat.com>
+- Try to fix bug where empty cache entries would be found in 
+  ~/.fonts.cache-1 during scanning (#81335)
+
+* Thu Nov 21 2002 Mike A. Harris <mharris@redhat.com> 2.1-1
+- Updated to version 2.1
+- Updated slighthint patch to fontconfig-2.1-slighthint.patch
+- Updated freetype version required to 2.1.2-7
 
 * Mon Sep  2 2002 Owen Taylor <otaylor@redhat.com>
 - Version 2.0
