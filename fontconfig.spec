@@ -12,7 +12,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.2.3
-Release: 6
+Release: 7
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -182,6 +182,9 @@ fi
 %endif
 
 %changelog
+* Fri Mar  4 2005 David Zeuthen <davidz@redhat.com> - 2.2.3-7
+- Rebuild
+
 * Wed Dec  1 2004 Owen Taylor <otaylor@redhat.com> - 2.2.3-6
 - Sleep a second before the exit of fc-cache to fix problems with fast 
   serial installs of fonts (#140335)
