@@ -12,7 +12,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.2.3
-Release: 1
+Release: 2
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -121,10 +121,14 @@ rm -rf $RPM_BUILD_ROOT
 %post
 /sbin/ldconfig
 
-# Force regeneration of all fontconfig cache files.
-# The redirect is because fc-cache is giving warnings about ~/fc.cache
-# the HOME setting is to avoid problems if HOME hasn't been reset
-HOME=/root fc-cache -f 2>/dev/null
+# Force regeneration of all fontconfig cache files
+# The check for existance is needed on dual-arch installs (the second
+#  copy of fontconfig might install the binary instead of the first)
+# The redirect is because fc-cache is giving warnings about ~/fonts.cache-1
+# The HOME setting is to avoid problems if HOME hasn't been reset
+if [ -x /usr/bin/fc-cache ] ; then
+  HOME=/root /usr/bin/fc-cache -f 2>/dev/null
+fi
 
 %postun -p /sbin/ldconfig
 
@@ -160,6 +164,10 @@ HOME=/root fc-cache -f 2>/dev/null
 %endif
 
 %changelog
+* Mon Aug 16 2004 Owen Taylor <otaylor@redhat.com> - 2.2.3-2
+- Don't run fc-cache if the binary isn't there (#128072, tracked
+  down by Jay Turner)
+
 * Tue Aug  3 2004 Owen Taylor <otaylor@redhat.com> - 2.2.3-1
 - Upgrade to 2.2.3
 - Convert man pages to UTF-8 (#108730, Peter van Egdom)
