@@ -6,7 +6,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 0.0.1.%{relno}
-Release: 8
+Release: 9
 License: MIT
 Group: System Environment/Libraries
 Source: http://keithp.com/fonts/pub/fcpackage.%{fcpackage_version}.tar.gz
@@ -28,6 +28,8 @@ Patch9: fontconfig-0.0.1.020811.1151-manfix.patch
 
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
+
+PreReq: freetype >= %{freetype_version}
 
 %description
 Fontconfig is designed to locate fonts within the
@@ -105,6 +107,12 @@ HOME=/root fc-cache -f 2>/dev/null
 
 %changelog
 * Wed Aug 21 2002 Owen Taylor <otaylor@redhat.com>
+- Add an explicit PreReq for freetype
+- Move fonts we don't ship to the end of the fonts.conf aliases so
+  installing them doesn't change the look.
+
+* Wed Aug 21 2002 Owen Taylor <otaylor@redhat.com>
+- Memory leak fix when parsing config files
 - Set rh_prefer_bitmaps for .ja fonts to key off of in Xft
 - Fix some groff warnings for fontconfig.man (#72138)
 
