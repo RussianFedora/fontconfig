@@ -6,7 +6,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 0.0.1.%{relno}
-Release: 6
+Release: 7
 License: MIT
 Group: System Environment/Libraries
 Source: http://keithp.com/fonts/pub/fcpackage.%{fcpackage_version}.tar.gz
@@ -17,6 +17,13 @@ Patch4: fontconfig-0.0.1.020811.1151-slighthint.patch
 # Only look in /usr/X11R6/lib/fonts/Type1, not in
 # all of /usr/X11R6/lib/fonts.
 Patch5: fontconfig-0.0.1.020626.1517-fontdir.patch
+# Use getc_unlocked for big performance boost on startup
+Patch6: fontconfig-0.0.1.020811.1151-flockfile.patch
+# Cache FcPatternHash results.
+Patch7: fontconfig-0.0.1.020811.1151-cachehash.patch
+# Memory leak fix when parsing config files
+Patch8: fontconfig-0.0.1.020811.1151-memleak.patch
+
 
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
@@ -45,9 +52,14 @@ will use fontconfig.
 %patch1 -p1 -b .defaultconfig
 %patch4 -p1 -b .slighthint
 %patch5 -p1 -b .fontdir
+%patch6 -p1 -b .flockfile
+%patch7 -p1 -b .cachehash
+%patch8 -p1 -b .memleak
 
 %build
 
+# flockfile patch changes configure.in
+autoconf
 %configure
 make
 
