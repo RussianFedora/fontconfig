@@ -12,7 +12,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.2.3
-Release: 3
+Release: 4
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -173,6 +173,9 @@ fi
 %endif
 
 %changelog
+* Wed Sep 22 2004 Owen Taylor <otaylor@redhat.com> - 2.2.3-4
+- Update fonts-hebrew names to include CLM suffix
+
 * Thu Sep  2 2004 Owen Taylor <otaylor@redhat.com> - 2.2.3-3
 - Backport code from head branch of fontconfig CVS to parse names 
   for postscript fonts (fixes #127500, J. J. Ramsey)
