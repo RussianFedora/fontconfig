@@ -12,7 +12,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.2.3
-Release: 12
+Release: 13
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -37,6 +37,9 @@ Patch18: fontconfig-2.2.3-names.patch
 Patch19: fontconfig-2.2.3-ta-pa-orth.patch
 # https://bugs.freedesktop.org/show_bug.cgi?id=1982
 Patch20: fontconfig-2.2.3-timestamp.patch
+
+# https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=148748
+Patch30: fontconfig-2.2.3-add-sazanami.patch
 
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
@@ -80,6 +83,8 @@ will use fontconfig.
 %patch18 -p1 -b .names
 %patch19 -p1 -b .ta-pa-orth
 %patch20 -p1 -b .timestamp
+
+%patch30 -p1 -b .sazanami
 
 %if %{disable_docs}
 %patch14 -p1 -b .nodocs
@@ -182,6 +187,9 @@ fi
 %endif
 
 %changelog
+* Tue Apr 19 2005 David Zeuthen <davidz@redhat.com> - 2.2.3-13
+- Add another font family name Sazanami Gothic/Mincho (#148748)
+
 * Fri Mar  4 2005 David Zeuthen <davidz@redhat.com> - 2.2.3-12
 - Rebuild
 
