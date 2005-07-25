@@ -11,35 +11,25 @@
 
 Summary: Font configuration and customization library
 Name: fontconfig
-Version: 2.2.3
-Release: 13
+Version: 2.3.2
+Release: 1
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
 URL: http://fontconfig.org
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
+Source1: 40-blacklist-fonts.conf
+Source2: 50-no-hint-fonts.conf
 
-Patch1: fontconfig-defaultconfig.patch
-Patch4: fontconfig-2.1-slighthint.patch
-# Blacklist certain fonts that freetype can't handle
-Patch11: fontconfig-0.0.1.020826.1330-blacklist.patch
+Patch1: fontconfig-2.3.2-defaultconfig.patch
 # Ignore .fulldir entries from earlier versions 'dircache' fix.
 Patch13: fontconfig-2.1-fulldir.patch
 # Turn off doc generation since it doesn't work on s390 at the moment
 Patch14: fontconfig-nodocs.patch
-# Remove timestamp from fonts.conf
-# http://freedesktop.org/cgi-bin/bugzilla/show_bug.cgi?id=505
-Patch17: fontconfig-2.2.1-notimestamp.patch
-# Backport of name parsing code from the 2.2.9x devel branch
-Patch18: fontconfig-2.2.3-names.patch
-# Add pa, fix ta orthographies
-# http://freedesktop.org/bugzilla/show_bug.cgi?id=1671
-Patch19: fontconfig-2.2.3-ta-pa-orth.patch
-# https://bugs.freedesktop.org/show_bug.cgi?id=1982
-Patch20: fontconfig-2.2.3-timestamp.patch
 
-# https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=148748
-Patch30: fontconfig-2.2.3-add-sazanami.patch
+# Make sure we only parse files ending in .conf in conf.d directories.
+# We don't want to parse .rpmsave files.
+Patch15: fontconfig-2.3.2-only-parse-conf-files.patch
 
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
@@ -72,23 +62,14 @@ will use fontconfig.
 %prep
 %setup -q
 
-# Patch first so we don't affect .defaultconfig regeneration
-%patch17 -p1 -b .notimestamp
-
 %patch1 -p1 -b .defaultconfig
-%patch4 -p1 -b .slighthint
-%patch11 -p1 -b .blacklist
 %patch13 -p1 -b .fulldir
-
-%patch18 -p1 -b .names
-%patch19 -p1 -b .ta-pa-orth
-%patch20 -p1 -b .timestamp
-
-%patch30 -p1 -b .sazanami
 
 %if %{disable_docs}
 %patch14 -p1 -b .nodocs
 %endif
+
+%patch15 -p1 -b .only-parse-conf-files
 
 %build
 
@@ -97,7 +78,7 @@ automake-1.7
 %endif
 
 %configure --with-add-fonts=/usr/X11R6/lib/X11/fonts/Type1,/usr/X11R6/lib/X11/fonts/OTF
-make
+make PDF=
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -114,13 +95,16 @@ rm -rf $RPM_BUILD_ROOT
 )
 %endif
 
-make install DESTDIR=$RPM_BUILD_ROOT 
+make install DESTDIR=$RPM_BUILD_ROOT PDF=
+
+install -m 0644 %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/fonts/conf.d
+install -m 0644 %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/fonts/conf.d
 
 # Install man pages with correct encoding
 mkdir -p $RPM_BUILD_ROOT%{_mandir}/man{1,3,5}
-for i in fc-cache fc-list ; do
-  iconv -f iso-8859-1 -t utf-8 < $i/$i.man > $i/$i.man.utf8
-  install -m 0644 $i/$i.man.utf8 $RPM_BUILD_ROOT%{_mandir}/man1/$i.1
+for i in fc-cache fc-list fc-match ; do
+  iconv -f iso-8859-1 -t utf-8 < $i/$i.1 > $i/$i.1.utf8
+  install -m 0644 $i/$i.1.utf8 $RPM_BUILD_ROOT%{_mandir}/man1/$i.1
 done
 
 %if ! %{disable_docs}
@@ -163,11 +147,14 @@ fi
 %{_libdir}/libfontconfig.so.*
 %{_bindir}/fc-cache
 %{_bindir}/fc-list
+%{_bindir}/fc-match
 %dir %{_sysconfdir}/fonts
+%dir %{_sysconfdir}/fonts/conf.d
 %dir %{_datadir}/fonts
 %{_sysconfdir}/fonts/fonts.dtd
 %config %{_sysconfdir}/fonts/fonts.conf
-%config(noreplace) %{_sysconfdir}/fonts/local.conf
+%config %{_sysconfdir}/fonts/conf.d/*.conf
+
 %{_mandir}/man1/*
 %if ! %{disable_docs}
 %{_mandir}/man5/*
@@ -187,6 +174,27 @@ fi
 %endif
 
 %changelog
+* Fri Jul 22 2005 Kristian Høgsberg <krh@redhat.com> - 2.3.2-1
+- Update to fontconfig-2.3.2.  Drop
+
+	fontconfig-2.1-slighthint.patch,
+	fontconfig-2.2.3-timestamp.patch,
+	fontconfig-2.2.3-names.patch,
+	fontconfig-2.2.3-ta-pa-orth.patch, and
+	fontconfig-2.2.3-timestamp.patch,
+
+  as they are now merged upstream.
+
+- Fold fontconfig-2.2.3-add-sazanami.patch into
+  fontconfig-2.3.2-defaultconfig.patch and split rules to disable CJK
+  hinting out into /etc/fonts/conf.d/50-no-hint-fonts.conf.
+
+- Drop fontconfig-0.0.1.020826.1330-blacklist.patch and use the new
+  rejectfont directive to reject those fonts in 40-blacklist-fonts.conf.
+
+- Add fontconfig-2.3.2-only-parse-conf-files.patch to avoid parsing
+  .rpmsave files.
+
 * Tue Apr 19 2005 David Zeuthen <davidz@redhat.com> - 2.2.3-13
 - Add another font family name Sazanami Gothic/Mincho (#148748)
 
