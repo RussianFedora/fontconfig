@@ -1,18 +1,9 @@
 %define freetype_version 2.1.4
 
-# Workaround for broken jade on s390, remove all disable_docs
-# handling once https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=97079
-# is fixed.
-%ifarch s390
-%define disable_docs 1
-%else
-%define disable_docs 0
-%endif
-
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.3.2
-Release: 1
+Release: 0.krh
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -24,8 +15,6 @@ Source2: 50-no-hint-fonts.conf
 Patch1: fontconfig-2.3.2-defaultconfig.patch
 # Ignore .fulldir entries from earlier versions 'dircache' fix.
 Patch13: fontconfig-2.1-fulldir.patch
-# Turn off doc generation since it doesn't work on s390 at the moment
-Patch14: fontconfig-nodocs.patch
 
 # Make sure we only parse files ending in .conf in conf.d directories.
 # We don't want to parse .rpmsave files.
@@ -34,8 +23,8 @@ Patch15: fontconfig-2.3.2-only-parse-conf-files.patch
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
 BuildRequires: perl
-# For nodocs patch
-BuildRequires: /usr/bin/automake-1.7
+BuildRequires: docbook-utils-pdf >= 0.6.14
+BuildRequires: elinks >= 0.10.3
 
 PreReq: freetype >= %{freetype_version}
 # Hebrew fonts referenced in fonts.conf changed names in fonts-hebrew-0.100
@@ -64,55 +53,25 @@ will use fontconfig.
 
 %patch1 -p1 -b .defaultconfig
 %patch13 -p1 -b .fulldir
-
-%if %{disable_docs}
-%patch14 -p1 -b .nodocs
-%endif
-
 %patch15 -p1 -b .only-parse-conf-files
 
 %build
 
-%if %{disable_docs}
-automake-1.7
-%endif
-
 %configure --with-add-fonts=/usr/X11R6/lib/X11/fonts/Type1,/usr/X11R6/lib/X11/fonts/OTF
-make PDF=
+make
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
-%if ! %{disable_docs}
-(
-  cd doc;
-  for i in *.3 ; do 
-    install -m 0644 $i $RPM_BUILD_ROOT%{_mandir}/man3/$i
-  done
-  for i in *.5 ; do 
-    install -m 0644 $i $RPM_BUILD_ROOT%{_mandir}/man5/$i
-  done
-)
-%endif
-
-make install DESTDIR=$RPM_BUILD_ROOT PDF=
+make install DESTDIR=$RPM_BUILD_ROOT
 
 install -m 0644 %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/fonts/conf.d
 install -m 0644 %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/fonts/conf.d
 
-# Install man pages with correct encoding
-mkdir -p $RPM_BUILD_ROOT%{_mandir}/man{1,3,5}
-for i in fc-cache fc-list fc-match ; do
-  iconv -f iso-8859-1 -t utf-8 < $i/$i.1 > $i/$i.1.utf8
-  install -m 0644 $i/$i.1.utf8 $RPM_BUILD_ROOT%{_mandir}/man1/$i.1
-done
-
-%if ! %{disable_docs}
 # move installed doc files back to build directory to package themm
 # in the right place
 mv $RPM_BUILD_ROOT%{_docdir}/fontconfig/* .
 rmdir $RPM_BUILD_ROOT%{_docdir}/fontconfig/
-%endif
 
 # All font packages depend on this package, so we create
 # and own /usr/share/fonts
@@ -141,9 +100,7 @@ fi
 %files
 %defattr(-, root, root)
 %doc README AUTHORS COPYING 
-%if ! %{disable_docs}
 %doc fontconfig-user.txt fontconfig-user.html
-%endif
 %{_libdir}/libfontconfig.so.*
 %{_bindir}/fc-cache
 %{_bindir}/fc-list
@@ -156,22 +113,16 @@ fi
 %config %{_sysconfdir}/fonts/conf.d/*.conf
 
 %{_mandir}/man1/*
-%if ! %{disable_docs}
 %{_mandir}/man5/*
-%endif
 
 %files devel
 %defattr(-, root, root)
-%if ! %{disable_docs}
 %doc fontconfig-devel.txt fontconfig-devel
-%endif
 %{_libdir}/libfontconfig.so
 %{_libdir}/libfontconfig.a
 %{_libdir}/pkgconfig
 %{_includedir}/fontconfig
-%if ! %{disable_docs}
 %{_mandir}/man3/*
-%endif
 
 %changelog
 * Fri Jul 22 2005 Kristian Høgsberg <krh@redhat.com> - 2.3.2-1
@@ -194,6 +145,12 @@ fi
 
 - Add fontconfig-2.3.2-only-parse-conf-files.patch to avoid parsing
   .rpmsave files.
+
+- Renable s390 documentation now that #97079 has been fixed and add
+  BuildRequires: for docbook-utils and docbook-utils-pdf.
+
+- Drop code to iconv and custom install man pages, upstream does the
+  right thing now.
 
 * Tue Apr 19 2005 David Zeuthen <davidz@redhat.com> - 2.2.3-13
 - Add another font family name Sazanami Gothic/Mincho (#148748)
