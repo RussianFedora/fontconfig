@@ -2,7 +2,7 @@
 
 Summary: Font configuration and customization library
 Name: fontconfig
-Version: 2.3.2
+Version: 2.3.91.cvs20051017
 Release: 1
 License: MIT
 Group: System Environment/Libraries
@@ -12,13 +12,13 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-root
 Source1: 40-blacklist-fonts.conf
 Source2: 50-no-hint-fonts.conf
 
-Patch1: fontconfig-2.3.2-defaultconfig.patch
+Patch1: fontconfig-2.3.91-defaultconfig.patch
 # Ignore .fulldir entries from earlier versions 'dircache' fix.
-Patch13: fontconfig-2.1-fulldir.patch
+# Patch13: fontconfig-2.1-fulldir.patch
 
 # Make sure we only parse files ending in .conf in conf.d directories.
 # We don't want to parse .rpmsave files.
-Patch15: fontconfig-2.3.2-only-parse-conf-files.patch
+# Patch15: fontconfig-2.3.2-only-parse-conf-files.patch
 
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
@@ -52,8 +52,8 @@ will use fontconfig.
 %setup -q
 
 %patch1 -p1 -b .defaultconfig
-%patch13 -p1 -b .fulldir
-%patch15 -p1 -b .only-parse-conf-files
+#%patch13 -p1 -b .fulldir
+#%patch15 -p1 -b .only-parse-conf-files
 
 %build
 
@@ -113,6 +113,7 @@ fi
 %{_bindir}/fc-cache
 %{_bindir}/fc-list
 %{_bindir}/fc-match
+%{_bindir}/fc-cat
 %dir %{_sysconfdir}/fonts
 %dir %{_sysconfdir}/fonts/conf.d
 %dir %{_datadir}/fonts
@@ -133,6 +134,9 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Fri Oct 14 2005 Matthias Clasen <mclasen@redhat.com> - 2.3.91.cvs20051017-1
+- Update to the mmap branch of fontconfig
+
 * Fri Jul 22 2005 Kristian Høgsberg <krh@redhat.com> - 2.3.2-1
 - Update to fontconfig-2.3.2.  Drop
 
