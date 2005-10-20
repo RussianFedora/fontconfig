@@ -134,6 +134,11 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Thu Oct 20 2005 Matthias Clasen <mclasen@redhat.com> - 2.3.91.cvs20051017-2
+- Fix the 40-blacklist-fonts.conf file to use the documented
+  fonts.conf syntax, and exclude the Hershey fonts by family
+  name.
+
 * Fri Oct 14 2005 Matthias Clasen <mclasen@redhat.com> - 2.3.91.cvs20051017-1
 - Update to the mmap branch of fontconfig
 
