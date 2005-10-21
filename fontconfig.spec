@@ -13,12 +13,6 @@ Source1: 40-blacklist-fonts.conf
 Source2: 50-no-hint-fonts.conf
 
 Patch1: fontconfig-2.3.91-defaultconfig.patch
-# Ignore .fulldir entries from earlier versions 'dircache' fix.
-# Patch13: fontconfig-2.1-fulldir.patch
-
-# Make sure we only parse files ending in .conf in conf.d directories.
-# We don't want to parse .rpmsave files.
-# Patch15: fontconfig-2.3.2-only-parse-conf-files.patch
 
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
@@ -52,8 +46,6 @@ will use fontconfig.
 %setup -q
 
 %patch1 -p1 -b .defaultconfig
-#%patch13 -p1 -b .fulldir
-#%patch15 -p1 -b .only-parse-conf-files
 
 %build
 
