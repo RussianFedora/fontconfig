@@ -3,7 +3,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.3.91.cvs20051017
-Release: 1
+Release: 2
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -134,7 +134,8 @@ fi
 %{_mandir}/man3/*
 
 %changelog
-* Thu Oct 20 2005 Matthias Clasen <mclasen@redhat.com> - 2.3.91.cvs20051017-2
+* Fri Oct 21 2005 Matthias Clasen <mclasen@redhat.com> - 2.3.91.cvs20051017-2
+- Add new Chinese fonts
 - Fix the 40-blacklist-fonts.conf file to use the documented
   fonts.conf syntax, and exclude the Hershey fonts by family
   name.
