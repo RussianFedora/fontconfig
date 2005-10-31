@@ -2,8 +2,8 @@
 
 Summary: Font configuration and customization library
 Name: fontconfig
-Version: 2.3.91.cvs20051017
-Release: 2
+Version: 2.3.91.cvs20051031
+Release: 1
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -13,6 +13,7 @@ Source1: 40-blacklist-fonts.conf
 Source2: 50-no-hint-fonts.conf
 
 Patch1: fontconfig-2.3.91-defaultconfig.patch
+Patch2: fontconfig-2.3.91-crosscheck.patch
 
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
@@ -46,6 +47,7 @@ will use fontconfig.
 %setup -q
 
 %patch1 -p1 -b .defaultconfig
+%patch2 -p1 -b .crosscheck
 
 %build
 
@@ -126,6 +128,10 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Fri Oct 31 2005 Matthias Clasen <mclasen@redhat.com> - 2.3.91.cvs20051031-1
+- Update to a newer cvs snapshot
+- Add a patch which should help to understand broken cache problems
+
 * Fri Oct 21 2005 Matthias Clasen <mclasen@redhat.com> - 2.3.91.cvs20051017-2
 - Add new Chinese fonts
 - Fix the 40-blacklist-fonts.conf file to use the documented
