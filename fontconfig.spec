@@ -3,7 +3,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.3.92
-Release: 1
+Release: 2
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -128,6 +128,10 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Wed Nov  9 2005 Carl Worth <cworth@redhat.com> - 2.3.92-2
+- Remove inadvertent rejection of Luxi Mono from 40-blacklist-fonts.conf.
+  Fixes #172437
+
 * Fri Nov  4 2005 Matthias Clasen <mclasen@redhat.com> - 2.3.92-1
 - Update to 2.3.92
 
