@@ -24,6 +24,9 @@ BuildRequires: elinks >= 0.10.3
 PreReq: freetype >= %{freetype_version}
 # Hebrew fonts referenced in fonts.conf changed names in fonts-hebrew-0.100
 Conflicts: fonts-hebrew < 0.100
+# Conflict with pre-modular X fonts, because they moved and we 
+# reference the new path in %%configure
+Conflicts: fonts-xorg-base, fonts-xorg-syriac
 
 %description
 Fontconfig is designed to locate fonts within the
@@ -130,7 +133,8 @@ fi
 %changelog
 * Wed Nov 16 2005 Bill Nottingham <notting@redhat.com> - 2.3.93-3
 - modular X moved fonts from /usr/X11R6/lib/X11/fonts to
-  /usr/share/X11/fonts, adjust %%configure accordingly
+  /usr/share/X11/fonts, adjust %%configure accordingly and 
+  conflict with older font packages
 
 * Wed Nov  9 2005 Carl Worth <cworth@redhat.com> - 2.3.92-2
 - Remove inadvertent rejection of Luxi Mono from 40-blacklist-fonts.conf.
