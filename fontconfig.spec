@@ -14,6 +14,7 @@ Source2: 50-no-hint-fonts.conf
 
 Patch1: fontconfig-2.3.91-defaultconfig.patch
 Patch2: fontconfig-2.3.91-crosscheck.patch
+Patch3: fontconfig-nodocs.patch
 
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
@@ -51,6 +52,9 @@ will use fontconfig.
 
 %patch1 -p1 -b .defaultconfig
 %patch2 -p1 -b .crosscheck
+%ifarch ppc
+%patch3 -p1
+%endif
 
 %build
 
@@ -135,6 +139,7 @@ fi
 - modular X moved fonts from /usr/X11R6/lib/X11/fonts to
   /usr/share/X11/fonts, adjust %%configure accordingly and 
   conflict with older font packages
+- Disable ppc docs for now (#173391)
 
 * Wed Nov  9 2005 Carl Worth <cworth@redhat.com> - 2.3.92-2
 - Remove inadvertent rejection of Luxi Mono from 40-blacklist-fonts.conf.
