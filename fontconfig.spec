@@ -2,8 +2,8 @@
 
 Summary: Font configuration and customization library
 Name: fontconfig
-Version: 2.3.92
-Release: 3
+Version: 2.3.92.cvs20051119
+Release: 1
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -14,6 +14,7 @@ Source2: 50-no-hint-fonts.conf
 
 Patch1: fontconfig-2.3.91-defaultconfig.patch
 Patch2: fontconfig-2.3.91-crosscheck.patch
+Patch3: fontconfig-2.3.92-ft-internals.patch
 
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
@@ -51,9 +52,11 @@ will use fontconfig.
 
 %patch1 -p1 -b .defaultconfig
 %patch2 -p1 -b .crosscheck
+%patch3 -p1 -b .ft-internals
 
 %build
-
+# Patch3 patches src/Makefile.am
+automake
 %configure --with-add-fonts=/usr/share/X11/fonts/Type1,/usr/share/X11/fonts/OTF
 
 # Work around weird elinks bug where elinks refuses to open the
@@ -131,6 +134,10 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Sat Nov 19 2005 Matthias Clasen <mclasen@redhat.com> - 2.3.92.cvs20051119-1
+- Update to a newer cvs snapshot
+- Don't use freetype internals
+
 * Wed Nov 16 2005 Bill Nottingham <notting@redhat.com> - 2.3.93-3
 - modular X moved fonts from /usr/X11R6/lib/X11/fonts to
   /usr/share/X11/fonts, adjust %%configure accordingly and 
