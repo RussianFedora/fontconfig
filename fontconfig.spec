@@ -14,7 +14,6 @@ Source2: 50-no-hint-fonts.conf
 
 Patch1: fontconfig-2.3.91-defaultconfig.patch
 Patch2: fontconfig-2.3.91-crosscheck.patch
-Patch3: fontconfig-2.3.92-ft-internals.patch
 
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
@@ -52,7 +51,6 @@ will use fontconfig.
 
 %patch1 -p1 -b .defaultconfig
 %patch2 -p1 -b .crosscheck
-%patch3 -p1 -b .ft-internals
 
 %build
 # Patch3 patches src/Makefile.am
@@ -136,7 +134,6 @@ fi
 %changelog
 * Sat Nov 19 2005 Matthias Clasen <mclasen@redhat.com> - 2.3.92.cvs20051119-1
 - Update to a newer cvs snapshot
-- Don't use freetype internals
 
 * Wed Nov 16 2005 Bill Nottingham <notting@redhat.com> - 2.3.93-3
 - modular X moved fonts from /usr/X11R6/lib/X11/fonts to
