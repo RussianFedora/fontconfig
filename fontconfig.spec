@@ -53,8 +53,6 @@ will use fontconfig.
 %patch2 -p1 -b .crosscheck
 
 %build
-# Patch3 patches src/Makefile.am
-automake
 %configure --with-add-fonts=/usr/share/X11/fonts/Type1,/usr/share/X11/fonts/OTF
 
 # Work around weird elinks bug where elinks refuses to open the
