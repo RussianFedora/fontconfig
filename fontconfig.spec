@@ -2,7 +2,7 @@
 
 Summary: Font configuration and customization library
 Name: fontconfig
-Version: 2.3.92.cvs20051119
+Version: 2.3.92.cvs20051129
 Release: 1
 License: MIT
 Group: System Environment/Libraries
@@ -132,6 +132,9 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Sat Nov 28 2005 Matthias Clasen <mclasen@redhat.com> - 2.3.92.cvs20051129-1
+- Update to a newer cvs snapshot
+
 * Sat Nov 19 2005 Matthias Clasen <mclasen@redhat.com> - 2.3.92.cvs20051119-1
 - Update to a newer cvs snapshot
 
