@@ -3,7 +3,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.3.92.cvs20051129
-Release: 1.1
+Release: 2
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -130,6 +130,11 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Fri Dec  9 2005 Carl Worth <cworth@redhat.com> - 2.3.92.cvs20051129-2
+- Add two new Chinese font names to the default fonts.conf file:
+  	AR PL ShanHeiSun Uni
+  	AR PL Zenkai Uni
+
 * Fri Dec 09 2005 Jesse Keating <jkeating@redhat.com>
 - rebuilt
 
