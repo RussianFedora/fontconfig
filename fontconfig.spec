@@ -83,9 +83,13 @@ mkdir -p $RPM_BUILD_ROOT%{_datadir}/fonts
 
 # Remove unpackaged files
 rm $RPM_BUILD_ROOT%{_libdir}/*.la
+rm $RPM_BUILD_ROOT%{_localstatedir}/cache/fontconfig/stamp
 
 %clean
 rm -rf $RPM_BUILD_ROOT
+
+%pre
+touch %{_localstatedir}/cache/fontconfig/stamp
 
 %post
 /sbin/ldconfig
