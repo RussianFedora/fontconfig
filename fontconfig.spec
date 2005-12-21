@@ -2,8 +2,8 @@
 
 Summary: Font configuration and customization library
 Name: fontconfig
-Version: 2.3.92.cvs20051129
-Release: 3
+Version: 2.3.93
+Release: 1
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -130,6 +130,9 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Wed Dec 21 2005 Carl Worth <cworth@redhat.com> - 2.3.93-1
+- New upstream version.
+
 * Tue Dec 13 2005 Carl Worth <cworth@redhat.com> - 2.3.92.cvs20051129-3
 - Disable hinting for Lohit Gujarati
 
