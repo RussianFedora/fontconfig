@@ -3,7 +3,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.3.93
-Release: 1
+Release: 2
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -88,11 +88,11 @@ rm $RPM_BUILD_ROOT%{_localstatedir}/cache/fontconfig/stamp
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%pre
-touch %{_localstatedir}/cache/fontconfig/stamp
-
 %post
 /sbin/ldconfig
+
+mkdir -p %{_localstatedir}/cache/fontconfig
+touch %{_localstatedir}/cache/fontconfig/stamp
 
 # Force regeneration of all fontconfig cache files
 # The check for existance is needed on dual-arch installs (the second
@@ -134,6 +134,9 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Wed Dec 21 2005 Carl Worth <cworth@redhat.com> - 2.3.93-2
+- Fix to create /var/cache/fontconfig/stamp in the post install stage.
+
 * Wed Dec 21 2005 Carl Worth <cworth@redhat.com> - 2.3.93-1
 - New upstream version.
 
