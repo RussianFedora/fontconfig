@@ -3,7 +3,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.3.93
-Release: 2
+Release: 3
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -21,7 +21,7 @@ BuildRequires: perl
 BuildRequires: docbook-utils-pdf >= 0.6.14
 BuildRequires: elinks >= 0.10.3
 
-PreReq: freetype >= %{freetype_version}
+PreReq: freetype >= %{freetype_version}, coreutils
 # Hebrew fonts referenced in fonts.conf changed names in fonts-hebrew-0.100
 Conflicts: fonts-hebrew < 0.100
 # Conflict with pre-modular X fonts, because they moved and we 
@@ -134,6 +134,9 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Tue Jan 10 2006 Bill Nottingham <notting@redhat.com> - 2.3.93-3
+- prereq coreutils for mkdir/touch in %%post
+
 * Wed Dec 21 2005 Carl Worth <cworth@redhat.com> - 2.3.93-2
 - Fix to create /var/cache/fontconfig/stamp in the post install stage.
 
