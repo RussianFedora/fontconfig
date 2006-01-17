@@ -3,7 +3,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.3.93
-Release: 3
+Release: 4
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -12,7 +12,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-root
 Source1: 40-blacklist-fonts.conf
 Source2: 50-no-hint-fonts.conf
 
-Patch1: fontconfig-2.3.91-defaultconfig.patch
+Patch1: fontconfig-2.3.93-defaultconfig.patch
 Patch2: fontconfig-2.3.91-crosscheck.patch
 
 BuildRequires: freetype-devel >= %{freetype_version}
@@ -134,6 +134,11 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Tue Jan 17 2006 Ray Strode <rstrode@redhat.com> - 2.3.93-4
+- apply patch from Tim Mayberry to correct aliasing and disable
+  hinting for the two Chinese font names AR PL ShanHeiSun Uni 
+  and AR PL Zenkai Uni
+
 * Tue Jan 10 2006 Bill Nottingham <notting@redhat.com> - 2.3.93-3
 - prereq coreutils for mkdir/touch in %%post
 
