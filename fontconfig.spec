@@ -2,8 +2,8 @@
 
 Summary: Font configuration and customization library
 Name: fontconfig
-Version: 2.3.93
-Release: 4
+Version: 2.3.93.cvs20060124
+Release: 1
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -13,7 +13,10 @@ Source1: 40-blacklist-fonts.conf
 Source2: 50-no-hint-fonts.conf
 
 Patch1: fontconfig-2.3.93-defaultconfig.patch
-Patch2: fontconfig-2.3.91-crosscheck.patch
+# fix globar dir handling (Mike Fabian)
+Patch2: fontconfig-2.3.93-globaldir.patch
+# normalize path in fc-cache (Mike Fabian)
+Patch4: fontconfig-2.3.93-normalize.patch
 
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
@@ -50,7 +53,8 @@ will use fontconfig.
 %setup -q
 
 %patch1 -p1 -b .defaultconfig
-%patch2 -p1 -b .crosscheck
+%patch2 -p1 -b .globaldir
+%patch4 -p1 -b .normalize
 
 %build
 %configure --with-add-fonts=/usr/share/X11/fonts/Type1,/usr/share/X11/fonts/OTF
@@ -120,6 +124,7 @@ fi
 %{_sysconfdir}/fonts/fonts.dtd
 %config %{_sysconfdir}/fonts/fonts.conf
 %config %{_sysconfdir}/fonts/conf.d/*.conf
+%dir %{_localstatedir}/cache/fontconfig
 
 %{_mandir}/man1/*
 %{_mandir}/man5/*
@@ -134,6 +139,9 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Tue Jan 24 2006 Matthias Clasen <mclasen@redhat.com> - 2.3.93.cvs20060124-1
+- Newer cvs snapshot
+
 * Tue Jan 17 2006 Ray Strode <rstrode@redhat.com> - 2.3.93-4
 - apply patch from Tim Mayberry to correct aliasing and disable
   hinting for the two Chinese font names AR PL ShanHeiSun Uni 
