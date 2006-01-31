@@ -2,7 +2,7 @@
 
 Summary: Font configuration and customization library
 Name: fontconfig
-Version: 2.3.93.cvs20060124
+Version: 2.3.93.cvs20060131
 Release: 1
 License: MIT
 Group: System Environment/Libraries
@@ -13,10 +13,6 @@ Source1: 40-blacklist-fonts.conf
 Source2: 50-no-hint-fonts.conf
 
 Patch1: fontconfig-2.3.93-defaultconfig.patch
-# fix globar dir handling (Mike Fabian)
-Patch2: fontconfig-2.3.93-globaldir.patch
-# normalize path in fc-cache (Mike Fabian)
-Patch4: fontconfig-2.3.93-normalize.patch
 
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
@@ -53,8 +49,6 @@ will use fontconfig.
 %setup -q
 
 %patch1 -p1 -b .defaultconfig
-%patch2 -p1 -b .globaldir
-%patch4 -p1 -b .normalize
 
 %build
 %configure --with-add-fonts=/usr/share/X11/fonts/Type1,/usr/share/X11/fonts/OTF
@@ -67,6 +61,7 @@ mkdir -p $ELINKS_CONFDIR
 echo "set protocol.file.allow_special_files = 1" > $ELINKS_CONFDIR/elinks.conf
 
 make
+make check
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -87,7 +82,7 @@ mkdir -p $RPM_BUILD_ROOT%{_datadir}/fonts
 
 # Remove unpackaged files
 rm $RPM_BUILD_ROOT%{_libdir}/*.la
-rm $RPM_BUILD_ROOT%{_localstatedir}/cache/fontconfig/stamp
+rm $RPM_BUILD_ROOT%{_libdir}/*.a
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -133,12 +128,14 @@ fi
 %defattr(-, root, root)
 %doc fontconfig-devel.txt fontconfig-devel
 %{_libdir}/libfontconfig.so
-%{_libdir}/libfontconfig.a
 %{_libdir}/pkgconfig
 %{_includedir}/fontconfig
 %{_mandir}/man3/*
 
 %changelog
+* Tue Jan 31 2006 Matthias Clasen <mclasen@redhat.com> - 2.3.93.cvs20060131-1
+- Newer cvs snapshot
+
 * Tue Jan 24 2006 Matthias Clasen <mclasen@redhat.com> - 2.3.93.cvs20060124-1
 - Newer cvs snapshot
 
