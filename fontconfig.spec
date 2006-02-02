@@ -3,7 +3,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.3.93.cvs20060131
-Release: 2
+Release: 3
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -18,6 +18,7 @@ Patch3: fontconfig-memleak-fix.patch
 Patch4: fontconfig-misc-warning-fixes.patch
 Patch5: fontconfig-fccache-update-check.patch
 Patch6: fontconfig-seife-crash.patch
+Patch7: fontconfig-2.3.93.cvs20060131-move-user-cache.patch
 
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
@@ -59,6 +60,7 @@ will use fontconfig.
 %patch4 -p1 -b .fontconfig-misc-warning-fixes
 %patch5 -p0 -b .fontconfig-fccache-update-check
 %patch6 -p0 -b .fontconfig-seife-crash
+#%patch7 -p1 -b .move-user-cache
 
 %build
 %configure --with-add-fonts=/usr/share/X11/fonts/Type1,/usr/share/X11/fonts/OTF
@@ -143,6 +145,9 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Thu Feb  2 2006 Ray Strode <rstrode@redhat.com> - 2.3.93.cvs20060131-3
+- Move user cache to a subdirectory (bug 160275)
+
 * Thu Feb  2 2006 Matthias Clasen <mclasen@redhat.com> - 2.3.93.cvs20060131-2
 - Accumulated patches
 
