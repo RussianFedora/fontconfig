@@ -3,7 +3,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.3.93.cvs20060131
-Release: 1
+Release: 2
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -13,6 +13,11 @@ Source1: 40-blacklist-fonts.conf
 Source2: 50-no-hint-fonts.conf
 
 Patch1: fontconfig-2.3.93-defaultconfig.patch
+Patch2: fontconfig-fontsubdir-parse-fix.patch
+Patch3: fontconfig-memleak-fix.patch
+Patch4: fontconfig-misc-warning-fixes.patch
+Patch5: fontconfig-fccache-update-check.patch
+Patch6: fontconfig-seife-crash.patch
 
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
@@ -49,6 +54,11 @@ will use fontconfig.
 %setup -q
 
 %patch1 -p1 -b .defaultconfig
+%patch2 -p0 -b .fontsubdir-parse-fix
+%patch3 -p0 -b .fontconfig-memleak-fix
+%patch4 -p1 -b .fontconfig-misc-warning-fixes
+%patch5 -p0 -b .fontconfig-fccache-update-check
+%patch6 -p0 -b .fontconfig-seife-crash
 
 %build
 %configure --with-add-fonts=/usr/share/X11/fonts/Type1,/usr/share/X11/fonts/OTF
@@ -133,6 +143,9 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Thu Feb  2 2006 Matthias Clasen <mclasen@redhat.com> - 2.3.93.cvs20060131-2
+- Accumulated patches
+
 * Tue Jan 31 2006 Matthias Clasen <mclasen@redhat.com> - 2.3.93.cvs20060131-1
 - Newer cvs snapshot
 
