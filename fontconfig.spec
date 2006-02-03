@@ -60,7 +60,7 @@ will use fontconfig.
 %patch4 -p1 -b .fontconfig-misc-warning-fixes
 %patch5 -p0 -b .fontconfig-fccache-update-check
 %patch6 -p0 -b .fontconfig-seife-crash
-#%patch7 -p1 -b .move-user-cache
+%patch7 -p1 -b .move-user-cache
 
 %build
 %configure --with-add-fonts=/usr/share/X11/fonts/Type1,/usr/share/X11/fonts/OTF
