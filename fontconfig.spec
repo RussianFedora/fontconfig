@@ -13,7 +13,8 @@ Source1: 40-blacklist-fonts.conf
 Source2: 50-no-hint-fonts.conf
 
 Patch1: fontconfig-2.3.93-defaultconfig.patch
-Patch2: fc-app-dir-fix-new.diff
+Patch2: fontconfig-2.3.93.cvs20060131-move-user-cache.patch
+Patch3: fc-app-dir-fix-new.diff
 
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
@@ -50,7 +51,8 @@ will use fontconfig.
 %setup -q
 
 %patch1 -p1 -b .defaultconfig
-%patch2 -p1 -b .app-dir-fix
+%patch2 -p1 -b .move-user-cache
+%patch3 -p1 -b .app-dir-fix
 
 %build
 %configure --with-add-fonts=/usr/share/X11/fonts/Type1,/usr/share/X11/fonts/OTF
