@@ -3,7 +3,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.3.93.cvs20060131
-Release: 3
+Release: 3.1
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -145,6 +145,9 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Tue Feb 07 2006 Jesse Keating <jkeating@redhat.com> - 2.3.93.cvs20060131-3.1
+- rebuilt for new gcc4.1 snapshot and glibc changes
+
 * Thu Feb  2 2006 Ray Strode <rstrode@redhat.com> - 2.3.93.cvs20060131-3
 - Move user cache to a subdirectory (bug 160275)
 
