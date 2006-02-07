@@ -2,8 +2,8 @@
 
 Summary: Font configuration and customization library
 Name: fontconfig
-Version: 2.3.93.cvs20060131
-Release: 3.1
+Version: 2.3.93.cvs20060207
+Release: 1
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -13,12 +13,7 @@ Source1: 40-blacklist-fonts.conf
 Source2: 50-no-hint-fonts.conf
 
 Patch1: fontconfig-2.3.93-defaultconfig.patch
-Patch2: fontconfig-fontsubdir-parse-fix.patch
-Patch3: fontconfig-memleak-fix.patch
-Patch4: fontconfig-misc-warning-fixes.patch
-Patch5: fontconfig-fccache-update-check.patch
-Patch6: fontconfig-seife-crash.patch
-Patch7: fontconfig-2.3.93.cvs20060131-move-user-cache.patch
+Patch2: fc-app-dir-fix-new.diff
 
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
@@ -55,12 +50,7 @@ will use fontconfig.
 %setup -q
 
 %patch1 -p1 -b .defaultconfig
-%patch2 -p0 -b .fontsubdir-parse-fix
-%patch3 -p0 -b .fontconfig-memleak-fix
-%patch4 -p1 -b .fontconfig-misc-warning-fixes
-%patch5 -p0 -b .fontconfig-fccache-update-check
-%patch6 -p0 -b .fontconfig-seife-crash
-%patch7 -p1 -b .move-user-cache
+%patch2 -p1 -b .app-dir-fix
 
 %build
 %configure --with-add-fonts=/usr/share/X11/fonts/Type1,/usr/share/X11/fonts/OTF
@@ -145,6 +135,10 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Tue Feb  7 2006 Matthias Clasen <mclasen@redhat.com> - 2.3.93.cvs20060207-1
+- Newer cvs snapshot
+- Drop upstreamed patches, pick up some new ones
+
 * Tue Feb 07 2006 Jesse Keating <jkeating@redhat.com> - 2.3.93.cvs20060131-3.1
 - rebuilt for new gcc4.1 snapshot and glibc changes
 
