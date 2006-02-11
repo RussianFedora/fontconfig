@@ -13,7 +13,7 @@ Source1: 40-blacklist-fonts.conf
 Source2: 50-no-hint-fonts.conf
 
 Patch1: fontconfig-2.3.93-defaultconfig.patch
-Patch2: fontconfig-2.3.93.cvs20060131-move-user-cache.patch
+Patch2: fontconfig-2.3.93.cvs20060211-move-user-cache.patch
 
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
