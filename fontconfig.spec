@@ -53,7 +53,7 @@ will use fontconfig.
 
 %patch1 -p1 -b .defaultconfig
 %patch2 -p1 -b .move-user-cache
-%patch3 -p0 -b .cmap-parsing
+%patch3 -p1 -b .cmap-parsing
 
 %build
 %configure --with-add-fonts=/usr/share/X11/fonts/Type1,/usr/share/X11/fonts/OTF
