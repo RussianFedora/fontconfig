@@ -3,7 +3,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.3.95
-Release: 4.1.1
+Release: 5
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -16,6 +16,7 @@ Patch1: fontconfig-2.3.95-defaultconfig.patch
 Patch2: fontconfig-2.3.93.cvs20060211-move-user-cache.patch
 Patch3: fontconfig-2.4-cmap-parsing.patch
 Patch4: fontconfig-2.3.95-ttf-collections.patch
+Patch5: fontconfig-2.3.95-fd-leak.patch
 
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
@@ -55,6 +56,7 @@ will use fontconfig.
 %patch2 -p1 -b .move-user-cache
 %patch3 -p1 -b .cmap-parsing
 %patch4 -p1 -b .ttf-collections
+%patch5 -p1 -b .fd-leak
 
 %build
 %configure --with-add-fonts=/usr/share/X11/fonts/Type1,/usr/share/X11/fonts/OTF
@@ -139,6 +141,9 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Tue Jul 18 2006 Matthias Clasen <mclasen@redhat.com> - 2.3.95-5
+- Plug a small memory leak
+
 * Wed Jul 12 2006 Jesse Keating <jkeating@redhat.com> - 2.3.95-4.1.1
 - rebuild
 
