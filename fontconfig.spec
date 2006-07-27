@@ -3,7 +3,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.3.95
-Release: 5
+Release: 6
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -98,6 +98,8 @@ rm -rf $RPM_BUILD_ROOT
 %post
 /sbin/ldconfig
 
+umask 0022
+
 mkdir -p %{_localstatedir}/cache/fontconfig
 touch %{_localstatedir}/cache/fontconfig/stamp
 
@@ -141,6 +143,10 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Thu Jul 27 2006 Behdad Esfahbod <besfahbo@redhat.com> - 2.3.95-6
+- Do umask 0022 in post
+- Update configs to reflect addition of new Indic fonts (#200381, #200397)
+
 * Tue Jul 18 2006 Matthias Clasen <mclasen@redhat.com> - 2.3.95-5
 - Plug a small memory leak
 
