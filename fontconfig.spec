@@ -3,7 +3,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.3.95
-Release: 7%{?dist}
+Release: 8%{?dist}
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -17,6 +17,7 @@ Patch2: fontconfig-2.3.93.cvs20060211-move-user-cache.patch
 Patch3: fontconfig-2.4-cmap-parsing.patch
 Patch4: fontconfig-2.3.95-ttf-collections.patch
 Patch5: fontconfig-2.3.95-fd-leak.patch
+Patch6: fontconfig-2.3.95-maybe-fix-overflow.patch
 
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
@@ -57,6 +58,7 @@ will use fontconfig.
 %patch3 -p1 -b .cmap-parsing
 %patch4 -p1 -b .ttf-collections
 %patch5 -p1 -b .fd-leak
+%patch6 -p1 -b .maybe-fix-overflow
 
 %build
 %configure --with-add-fonts=/usr/share/X11/fonts/Type1,/usr/share/X11/fonts/OTF
@@ -143,6 +145,9 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Fri Aug 11 2006 Ray Strode <rstrode@redhat.com> - 2.3.95-8
+- maybe fix buffer overflow (bug 202152).
+
 * Fri Aug 11 2006 Ray Strode <rstrode@redhat.com> - 2.3.95-7
 - Update configs to provide better openoffice/staroffice
   compatibility (bug 200723)
