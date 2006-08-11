@@ -3,7 +3,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.3.95
-Release: 8%{?dist}
+Release: 9%{?dist}
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -145,6 +145,10 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Fri Aug 11 2006 Ray Strode <rstrode@redhat.com> - 2.3.95-9
+- tweak last patch to give a more reasonable page size
+  value if 64k page size is in effect.
+
 * Fri Aug 11 2006 Ray Strode <rstrode@redhat.com> - 2.3.95-8
 - maybe fix buffer overflow (bug 202152).
 
