@@ -3,7 +3,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.3.95
-Release: 6
+Release: 7%{?dist}
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -143,6 +143,10 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Fri Aug 11 2006 Ray Strode <rstrode@redhat.com> - 2.3.95-7
+- Update configs to provide better openoffice/staroffice
+  compatibility (bug 200723)
+
 * Thu Jul 27 2006 Behdad Esfahbod <besfahbo@redhat.com> - 2.3.95-6
 - Do umask 0022 in post
 - Update configs to reflect addition of new Indic fonts (#200381, #200397)
