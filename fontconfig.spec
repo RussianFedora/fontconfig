@@ -3,7 +3,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.3.95
-Release: 9%{?dist}
+Release: 10%{?dist}
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -17,7 +17,7 @@ Patch2: fontconfig-2.3.93.cvs20060211-move-user-cache.patch
 Patch3: fontconfig-2.4-cmap-parsing.patch
 Patch4: fontconfig-2.3.95-ttf-collections.patch
 Patch5: fontconfig-2.3.95-fd-leak.patch
-Patch6: fontconfig-2.3.95-maybe-fix-overflow.patch
+Patch6: fontconfig-2.3.95-fix-page-size-overflow.patch
 
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
@@ -58,7 +58,7 @@ will use fontconfig.
 %patch3 -p1 -b .cmap-parsing
 %patch4 -p1 -b .ttf-collections
 %patch5 -p1 -b .fd-leak
-%patch6 -p1 -b .maybe-fix-overflow
+%patch6 -p1 -b .fix-page-size-overflow
 
 %build
 %configure --with-add-fonts=/usr/share/X11/fonts/Type1,/usr/share/X11/fonts/OTF
@@ -145,6 +145,10 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Fri Aug 11 2006 Ray Strode <rstrode@redhat.com> - 2.3.95-10
+- use "%5x" instead of " %4x" to support 64k instead of
+  clamping.  Idea from Behdad.
+
 * Fri Aug 11 2006 Ray Strode <rstrode@redhat.com> - 2.3.95-9
 - tweak last patch to give a more reasonable page size
   value if 64k page size is in effect.
