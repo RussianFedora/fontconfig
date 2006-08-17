@@ -3,7 +3,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.3.95
-Release: 10%{?dist}
+Release: 11%{?dist}
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -18,6 +18,7 @@ Patch3: fontconfig-2.4-cmap-parsing.patch
 Patch4: fontconfig-2.3.95-ttf-collections.patch
 Patch5: fontconfig-2.3.95-fd-leak.patch
 Patch6: fontconfig-2.3.95-fix-page-size-overflow.patch
+Patch7: fontconfig-2.3.95-zysong01.patch
 
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
@@ -59,6 +60,7 @@ will use fontconfig.
 %patch4 -p1 -b .ttf-collections
 %patch5 -p1 -b .fd-leak
 %patch6 -p1 -b .fix-page-size-overflow
+%patch7 -p1 -b .zysong01
 
 %build
 %configure --with-add-fonts=/usr/share/X11/fonts/Type1,/usr/share/X11/fonts/OTF
@@ -145,6 +147,9 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Thu Aug 17 2006 Behdad Esfahbod <besfahbo@redhat.com> - 2.3.95-11
+- inclusion of zhong yi font and rearranged font prefer list. (bug# 201300)
+
 * Fri Aug 11 2006 Ray Strode <rstrode@redhat.com> - 2.3.95-10
 - use "%5x" instead of " %4x" to support 64k instead of
   clamping.  Idea from Behdad.
