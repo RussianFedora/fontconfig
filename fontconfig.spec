@@ -3,7 +3,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.3.97
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -13,6 +13,7 @@ Source1: 40-blacklist-fonts.conf
 Source2: 50-no-hint-fonts.conf
 
 Patch1: fontconfig-2.3.97-defaultconfig.patch
+Patch2: fontconfig-2.3.97-ppc64.patch
 Patch3: fontconfig-2.4-cmap-parsing.patch
 
 BuildRequires: freetype-devel >= %{freetype_version}
@@ -50,6 +51,7 @@ will use fontconfig.
 %setup -q
 
 %patch1 -p1 -b .defaultconfig
+%patch2 -p1 -b .ppc64
 %patch3 -p1 -b .cmap-parsing
 
 %build
@@ -136,6 +138,9 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Thu Sep 07 2006 Behdad Esfahbod <besfahbo@redhat.com> - 2.3.97-2
+- Add fontconfig-2.3.97-ppc64.patch, for ppc64 arch signature
+
 * Thu Sep 07 2006 Behdad Esfahbod <besfahbo@redhat.com> - 2.3.97-1
 - update to 2.3.97
 - Drop upstreamed patches
