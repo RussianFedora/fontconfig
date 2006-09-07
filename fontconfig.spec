@@ -3,7 +3,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.3.97
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -138,6 +138,9 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Thu Sep 07 2006 Behdad Esfahbod <besfahbo@redhat.com> - 2.3.97-3
+- Add missing file.  Previous update didn't go through
+
 * Thu Sep 07 2006 Behdad Esfahbod <besfahbo@redhat.com> - 2.3.97-2
 - Add fontconfig-2.3.97-ppc64.patch, for ppc64 arch signature
 
