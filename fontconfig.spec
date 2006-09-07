@@ -2,8 +2,8 @@
 
 Summary: Font configuration and customization library
 Name: fontconfig
-Version: 2.3.95
-Release: 11%{?dist}
+Version: 2.3.97
+Release: 1%{?dist}
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -12,13 +12,8 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-root
 Source1: 40-blacklist-fonts.conf
 Source2: 50-no-hint-fonts.conf
 
-Patch1: fontconfig-2.3.95-defaultconfig.patch
-Patch2: fontconfig-2.3.93.cvs20060211-move-user-cache.patch
+Patch1: fontconfig-2.3.97-defaultconfig.patch
 Patch3: fontconfig-2.4-cmap-parsing.patch
-Patch4: fontconfig-2.3.95-ttf-collections.patch
-Patch5: fontconfig-2.3.95-fd-leak.patch
-Patch6: fontconfig-2.3.95-fix-page-size-overflow.patch
-Patch7: fontconfig-2.3.95-zysong01.patch
 
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
@@ -55,12 +50,7 @@ will use fontconfig.
 %setup -q
 
 %patch1 -p1 -b .defaultconfig
-%patch2 -p1 -b .move-user-cache
 %patch3 -p1 -b .cmap-parsing
-%patch4 -p1 -b .ttf-collections
-%patch5 -p1 -b .fd-leak
-%patch6 -p1 -b .fix-page-size-overflow
-%patch7 -p1 -b .zysong01
 
 %build
 %configure --with-add-fonts=/usr/share/X11/fonts/Type1,/usr/share/X11/fonts/OTF
@@ -105,7 +95,6 @@ rm -rf $RPM_BUILD_ROOT
 umask 0022
 
 mkdir -p %{_localstatedir}/cache/fontconfig
-touch %{_localstatedir}/cache/fontconfig/stamp
 
 # Force regeneration of all fontconfig cache files
 # The check for existance is needed on dual-arch installs (the second
@@ -147,6 +136,12 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Thu Sep 07 2006 Behdad Esfahbod <besfahbo@redhat.com> - 2.3.97-1
+- update to 2.3.97
+- Drop upstreamed patches
+- Regenerate defaultconfig patch
+- Don't touch stamp as it was not ever needed
+
 * Thu Aug 17 2006 Behdad Esfahbod <besfahbo@redhat.com> - 2.3.95-11
 - inclusion of zhong yi font and rearranged font prefer list. (bug# 201300)
 
