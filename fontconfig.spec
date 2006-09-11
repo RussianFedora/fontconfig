@@ -2,19 +2,21 @@
 
 Summary: Font configuration and customization library
 Name: fontconfig
-Version: 2.3.97
-Release: 3%{?dist}
+Version: 2.4.0
+Release: 1%{?dist}
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
 URL: http://fontconfig.org
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
-Source1: 40-blacklist-fonts.conf
-Source2: 50-no-hint-fonts.conf
+Source1: 25-no-hint-fedora.conf
+Source2: 30-aliases-fedora.conf
+Source3: 40-generic-fedora.conf
+Source4: 64-nonlatin-fedora.conf
+Source5: 75-blacklist-fedora.conf
 
-Patch1: fontconfig-2.3.97-defaultconfig.patch
+# ppc64 architecture signature
 Patch2: fontconfig-2.3.97-ppc64.patch
-Patch3: fontconfig-2.4-cmap-parsing.patch
 
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
@@ -50,9 +52,7 @@ will use fontconfig.
 %prep
 %setup -q
 
-%patch1 -p1 -b .defaultconfig
 %patch2 -p1 -b .ppc64
-%patch3 -p1 -b .cmap-parsing
 
 %build
 %configure --with-add-fonts=/usr/share/X11/fonts/Type1,/usr/share/X11/fonts/OTF
@@ -74,6 +74,9 @@ make install DESTDIR=$RPM_BUILD_ROOT
 
 install -m 0644 %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/fonts/conf.d
 install -m 0644 %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/fonts/conf.d
+install -m 0644 %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/fonts/conf.d
+install -m 0644 %{SOURCE4} $RPM_BUILD_ROOT%{_sysconfdir}/fonts/conf.d
+install -m 0644 %{SOURCE5} $RPM_BUILD_ROOT%{_sysconfdir}/fonts/conf.d
 
 # move installed doc files back to build directory to package themm
 # in the right place
@@ -97,14 +100,16 @@ rm -rf $RPM_BUILD_ROOT
 umask 0022
 
 mkdir -p %{_localstatedir}/cache/fontconfig
+# Remove stale caches
+rm -f %{_localstatedir}/cache/fontconfig/????????????????????????????????.cache-2
+rm -f %{_localstatedir}/cache/fontconfig/stamp
 
 # Force regeneration of all fontconfig cache files
 # The check for existance is needed on dual-arch installs (the second
 #  copy of fontconfig might install the binary instead of the first)
-# The redirect is because fc-cache is giving warnings about ~/fonts.cache-1
 # The HOME setting is to avoid problems if HOME hasn't been reset
 if [ -x /usr/bin/fc-cache ] ; then
-  HOME=/root /usr/bin/fc-cache -f 2>/dev/null
+  HOME=/root /usr/bin/fc-cache -f
 fi
 
 %postun -p /sbin/ldconfig
@@ -119,10 +124,13 @@ fi
 %{_bindir}/fc-match
 %{_bindir}/fc-cat
 %dir %{_sysconfdir}/fonts
+%dir %{_sysconfdir}/fonts/conf.avail
 %dir %{_sysconfdir}/fonts/conf.d
 %dir %{_datadir}/fonts
 %{_sysconfdir}/fonts/fonts.dtd
 %config %{_sysconfdir}/fonts/fonts.conf
+%doc %{_sysconfdir}/fonts/conf.avail/README
+%config %{_sysconfdir}/fonts/conf.avail/*.conf
 %config %{_sysconfdir}/fonts/conf.d/*.conf
 %dir %{_localstatedir}/cache/fontconfig
 
@@ -138,6 +146,11 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Mon Sep 11 2006 Behdad Esfahbod <besfahbo@redhat.com> - 2.4.0-1
+- Update to 2.4.0
+- Rename/order our configuration stuff to match the new scheme.
+  Breaks expected :-(
+
 * Thu Sep 07 2006 Behdad Esfahbod <besfahbo@redhat.com> - 2.3.97-3
 - Add missing file.  Previous update didn't go through
 
