@@ -2,7 +2,7 @@
 
 Summary: Font configuration and customization library
 Name: fontconfig
-Version: 2.4.0
+Version: 2.4.1
 Release: 1%{?dist}
 License: MIT
 Group: System Environment/Libraries
@@ -14,9 +14,6 @@ Source2: 30-aliases-fedora.conf
 Source3: 40-generic-fedora.conf
 Source4: 64-nonlatin-fedora.conf
 Source5: 75-blacklist-fedora.conf
-
-# ppc64 architecture signature
-Patch2: fontconfig-2.3.97-ppc64.patch
 
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: expat-devel
@@ -51,8 +48,6 @@ will use fontconfig.
 
 %prep
 %setup -q
-
-%patch2 -p1 -b .ppc64
 
 %build
 %configure --with-add-fonts=/usr/share/X11/fonts/Type1,/usr/share/X11/fonts/OTF
@@ -146,6 +141,10 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Fri Sep 15 2006 Behdad Esfahbod <besfahbo@redhat.com> - 2.4.1-1
+- Update to 2.4.1, a public API was dropped from 2.4.0
+- Remove upstreamed patch
+
 * Mon Sep 11 2006 Behdad Esfahbod <besfahbo@redhat.com> - 2.4.0-1
 - Update to 2.4.0
 - Rename/order our configuration stuff to match the new scheme.
