@@ -3,7 +3,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.4.1
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -141,6 +141,10 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Fri Sep 22 2006 Behdad Esfahbod <besfahbo@redhat.com> - 2.4.1-2
+- Update 30-aliases-fedora.conf to correctly alias MS and StarOffice
+  fonts. (#207460)
+
 * Fri Sep 15 2006 Behdad Esfahbod <besfahbo@redhat.com> - 2.4.1-1
 - Update to 2.4.1, a public API was dropped from 2.4.0
 - Remove upstreamed patch
