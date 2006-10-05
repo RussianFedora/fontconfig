@@ -3,7 +3,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.4.1
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -103,7 +103,7 @@ rm -f %{_localstatedir}/cache/fontconfig/stamp
 # The check for existance is needed on dual-arch installs (the second
 #  copy of fontconfig might install the binary instead of the first)
 # The HOME setting is to avoid problems if HOME hasn't been reset
-if [ -x /usr/bin/fc-cache ] ; then
+if [ -x /usr/bin/fc-cache ] && /usr/bin/fc-cache --version 2>&1 | grep -q %{version} ; then
   HOME=/root /usr/bin/fc-cache -f
 fi
 
@@ -141,6 +141,9 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Wed Oct  4 2006 Matthias Clasen <mclasen@redhat.com> - 2.4.1-4
+- Fix a multilib upgrade problem (#208151)
+
 * Sun Oct 01 2006 Jesse Keating <jkeating@redhat.com> - 2.4.1-3
 - rebuilt for unwind info generation, broken in gcc-4.1.1-21
 
