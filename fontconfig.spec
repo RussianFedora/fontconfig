@@ -2,8 +2,8 @@
 
 Summary: Font configuration and customization library
 Name: fontconfig
-Version: 2.4.1
-Release: 4%{?dist}
+Version: 2.4.2
+Release: 1%{?dist}
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -36,8 +36,9 @@ applications.
 %package devel
 Summary: Font configuration and customization library
 Group: Development/Libraries
-Requires: fontconfig = %{PACKAGE_VERSION}
+Requires: fontconfig = %{version}-%{release}
 Requires: freetype-devel >= %{freetype_version}
+Requires: pkgconfig
 
 %description devel
 The fontconfig-devel package includes the header files,
@@ -136,11 +137,14 @@ fi
 %defattr(-, root, root)
 %doc fontconfig-devel.txt fontconfig-devel
 %{_libdir}/libfontconfig.so
-%{_libdir}/pkgconfig
+%{_libdir}/pkgconfig/*
 %{_includedir}/fontconfig
 %{_mandir}/man3/*
 
 %changelog
+* Tue Dec  5 2006 Matthias Clasen <mclasen@redhat.com> - 2.4.2-1
+- Update to 2.4.2
+
 * Wed Oct  4 2006 Matthias Clasen <mclasen@redhat.com> - 2.4.1-4
 - Fix a multilib upgrade problem (#208151)
 
