@@ -3,7 +3,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.4.2
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -142,6 +142,9 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Fri May 11 2007 Matthias Clasen <mclasen@redhat.com> - 2.4.2-3
+- Add Liberation fonts to 30-aliases-fedora.conf
+
 * Fri Jan 12 2007 Behdad Esfahbod <besfahbo@redhat.com> - 2.4.2-2
 - Change /usr/share/X11/fonts/OTF to /usr/share/X11/fonts/TTF
 - Resolves: #220809
