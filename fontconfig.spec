@@ -3,7 +3,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.4.2
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -119,9 +119,7 @@ fi
 %{_bindir}/fc-list
 %{_bindir}/fc-match
 %{_bindir}/fc-cat
-%dir %{_sysconfdir}/fonts
 %dir %{_sysconfdir}/fonts/conf.avail
-%dir %{_sysconfdir}/fonts/conf.d
 %dir %{_datadir}/fonts
 %{_sysconfdir}/fonts/fonts.dtd
 %config %{_sysconfdir}/fonts/fonts.conf
@@ -142,6 +140,9 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Sun Jun 17 2007 Matthias Clasen <mclasen@redhat.com> - 2.4.2-4
+- /etc/fonts/conf.d is now owned by filesystem
+
 * Fri May 11 2007 Matthias Clasen <mclasen@redhat.com> - 2.4.2-3
 - Add Liberation fonts to 30-aliases-fedora.conf
 
