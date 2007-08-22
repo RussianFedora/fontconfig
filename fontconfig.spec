@@ -3,7 +3,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.4.2
-Release: 4%{?dist}
+Release: 5%{?dist}
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -140,6 +140,9 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Wed Aug 22 2007 Adam Jackson <ajax@redhat.com> - 2.4.2-5
+- Rebuild for PPC toolchain bug
+
 * Sun Jun 17 2007 Matthias Clasen <mclasen@redhat.com> - 2.4.2-4
 - /etc/fonts/conf.d is now owned by filesystem
 
