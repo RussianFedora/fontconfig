@@ -15,11 +15,12 @@ Source3: 40-generic-fedora.conf
 Source4: 64-nonlatin-fedora.conf
 Source5: 75-blacklist-fedora.conf
 
-BuildRequires: freetype-devel >= %{freetype_version}
-BuildRequires: expat-devel
-BuildRequires: perl
+BuildRequires: gawk
 BuildRequires: docbook-utils-pdf >= 0.6.14
 BuildRequires: elinks >= 0.10.3
+BuildRequires: expat-devel
+BuildRequires: freetype-devel >= %{freetype_version}
+BuildRequires: perl
 
 PreReq: freetype >= %{freetype_version}, coreutils
 # Hebrew fonts referenced in fonts.conf changed names in fonts-hebrew-0.100
@@ -142,6 +143,7 @@ fi
 %changelog
 * Wed Aug 22 2007 Adam Jackson <ajax@redhat.com> - 2.4.2-5
 - Rebuild for PPC toolchain bug
+- Add BuildRequires: gawk
 
 * Sun Jun 17 2007 Matthias Clasen <mclasen@redhat.com> - 2.4.2-4
 - /etc/fonts/conf.d is now owned by filesystem
