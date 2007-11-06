@@ -2,18 +2,14 @@
 
 Summary: Font configuration and customization library
 Name: fontconfig
-Version: 2.4.91
+Version: 2.4.92
 Release: 1%{?dist}
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
 URL: http://fontconfig.org
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
-Source1: 25-no-hint-fedora.conf
-Source2: 30-aliases-fedora.conf
-Source3: 40-generic-fedora.conf
-Source4: 64-nonlatin-fedora.conf
-Source5: 75-blacklist-fedora.conf
+Source1: 25-no-bitmap-fedora.conf
 
 BuildRequires: gawk
 BuildRequires: expat-devel
@@ -54,7 +50,7 @@ will use fontconfig.
 # We don't want to rebuild the docs, but we want to install the included ones.
 export HASDOCBOOK=no
 
-%configure %--with-add-fonts=/usr/share/X11/fonts/Type1,/usr/share/X11/fonts/TTF,/usr/local/share/fonts
+%configure --with-add-fonts=/usr/share/X11/fonts/Type1,/usr/share/X11/fonts/TTF,/usr/local/share/fonts
 
 make
 make check
@@ -65,10 +61,7 @@ rm -rf $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT
 
 install -m 0644 %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/fonts/conf.d
-install -m 0644 %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/fonts/conf.d
-install -m 0644 %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/fonts/conf.d
-install -m 0644 %{SOURCE4} $RPM_BUILD_ROOT%{_sysconfdir}/fonts/conf.d
-install -m 0644 %{SOURCE5} $RPM_BUILD_ROOT%{_sysconfdir}/fonts/conf.d
+ln -s ../conf.avail/25-unhint-nonlatin.conf $RPM_BUILD_ROOT%{_sysconfdir}/fonts/conf.d
 
 # move installed doc files back to build directory to package themm
 # in the right place
@@ -121,7 +114,7 @@ fi
 %config %{_sysconfdir}/fonts/fonts.conf
 %doc %{_sysconfdir}/fonts/conf.avail/README
 %config %{_sysconfdir}/fonts/conf.avail/*.conf
-%config %{_sysconfdir}/fonts/conf.d/*.conf
+%config(noreplace) %{_sysconfdir}/fonts/conf.d/*.conf
 %dir %{_localstatedir}/cache/fontconfig
 
 %{_mandir}/man1/*
@@ -136,6 +129,17 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Thu Oct 25 2007 Behdad Esfahbod <besfahbo@redhat.com> - 2.4.92-1
+- Update to 2.4.92.
+- Mark /etc/fonts/conf.d/* as config(noreplace).
+- Remove most of our conf file, all upstreamed except for
+  75-blacklist-fedora.conf that I'm happily dropping.  Who has
+  Hershey fonts these days...
+- ln upstream'ed 25-unhint-nonlatin.conf from conf.avail in conf.d
+- Add 25-no-bitmap-fedora.conf which is the tiny remaining bit
+  of conf that didn't end up upstream.  Can get rid of it in the
+  future, but not just yet.
+
 * Thu Oct 25 2007 Behdad Esfahbod <besfahbo@redhat.com> - 2.4.91-1
 - Update to 2.4.91.
 - Add /usr/local/share/fonts to default config. (#147004)
