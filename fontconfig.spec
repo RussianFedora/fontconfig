@@ -2,7 +2,7 @@
 
 Summary: Font configuration and customization library
 Name: fontconfig
-Version: 2.4.92
+Version: 2.5.0
 Release: 1%{?dist}
 License: MIT
 Group: System Environment/Libraries
@@ -129,7 +129,10 @@ fi
 %{_mandir}/man3/*
 
 %changelog
-* Thu Oct 25 2007 Behdad Esfahbod <besfahbo@redhat.com> - 2.4.92-1
+* Thu Nov 13 2007 Behdad Esfahbod <besfahbo@redhat.com> - 2.5.0-1
+- Update to 2.5.0.
+
+* Thu Nov 06 2007 Behdad Esfahbod <besfahbo@redhat.com> - 2.4.92-1
 - Update to 2.4.92.
 - Mark /etc/fonts/conf.d/* as config(noreplace).
 - Remove most of our conf file, all upstreamed except for
