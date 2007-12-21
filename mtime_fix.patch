@@ -1,0 +1,278 @@
+diff -Naur /usr/src/redhat/SOURCES/fontconfig-2.4.2/fc-arch/fcarch.tmpl.h fontconfig-2.4.2/fc-arch/fcarch.tmpl.h
+--- /usr/src/redhat/SOURCES/fontconfig-2.4.2/fc-arch/fcarch.tmpl.h	2006-09-21 07:13:12.000000000 +0530
++++ fontconfig-2.4.2/fc-arch/fcarch.tmpl.h	2007-11-10 01:41:01.000000000 +0530
+@@ -29,7 +29,7 @@
+ @@@ use something reasonable and don't include any spaces
+ @@@
+ @@@ name    endian   char     char*    int      intptr_t Pattern  EltPtr   Elt *    Elt      ObjPtr   VLPtr    Value    Binding  VL *     CharSet  Leaf**   Char16 * Char16   Leaf     Char32   Cache
+-x86	    78563412_00000001_00000004_00000004_00000004_00000010_00000004_00000004_00000008_00000004_00000004_0000000c_00000004_00000004_00000010_00000004_00000004_00000002_00000020_00000004_0000001c
++x86         78563412_00000001_00000004_00000004_00000004_00000010_00000004_00000004_00000008_00000004_00000004_0000000c_00000004_00000004_00000010_00000004_00000004_00000002_00000020_00000004_00000020
+ x86-64	    78563412_00000001_00000008_00000004_00000008_00000018_00000008_00000008_00000010_00000004_00000008_00000010_00000004_00000008_00000018_00000008_00000008_00000002_00000020_00000004_00000030
+ ppc	    12345678_00000001_00000004_00000004_00000004_00000010_00000004_00000004_00000008_00000004_00000004_00000010_00000004_00000004_00000010_00000004_00000004_00000002_00000020_00000004_0000001c
+ ppc64	    12345678_00000001_00000008_00000004_00000008_00000018_00000008_00000008_00000010_00000004_00000008_00000010_00000004_00000008_00000018_00000008_00000008_00000002_00000020_00000004_00000030
+diff -Naur /usr/src/redhat/SOURCES/fontconfig-2.4.2/fc-cache/fc-cache.c fontconfig-2.4.2/fc-cache/fc-cache.c
+--- /usr/src/redhat/SOURCES/fontconfig-2.4.2/fc-cache/fc-cache.c	2006-10-27 22:53:56.000000000 +0530
++++ fontconfig-2.4.2/fc-cache/fc-cache.c	2007-11-09 22:59:47.000000000 +0530
+@@ -267,7 +267,6 @@
+     FcBool	ret = FcTrue;
+     FcBool	remove;
+     FcCache	*cache;
+-    struct stat	file_stat;
+     struct stat	target_stat;
+ 
+     dir_base = FcStrPlus (dir, (FcChar8 *) "/");
+@@ -312,7 +311,7 @@
+ 	    ret = FcFalse;
+ 	    break;
+ 	}
+-	cache = FcDirCacheLoadFile (file_name, &file_stat);
++	cache = FcDirCacheLoadFile (file_name, NULL);
+ 	if (!cache)
+ 	{
+ 	    fprintf (stderr, "%s: invalid cache file: %s\n", dir, ent->d_name);
+@@ -329,13 +328,6 @@
+ 			dir, ent->d_name, target_dir);
+ 	    remove = FcTrue;
+ 	}
+-	else if (target_stat.st_mtime > file_stat.st_mtime)
+-	{
+-	    if (verbose)
+-		printf ("%s: %s: cache outdated: %s\n",
+-			dir, ent->d_name, target_dir);
+-	    remove = FcTrue;
+-	}
+ 	if (remove)
+ 	{
+ 	    if (unlink ((char *) file_name) < 0)
+diff -Naur /usr/src/redhat/SOURCES/fontconfig-2.4.2/src/fccache.c fontconfig-2.4.2/src/fccache.c
+--- /usr/src/redhat/SOURCES/fontconfig-2.4.2/src/fccache.c	2006-12-03 03:03:41.000000000 +0530
++++ fontconfig-2.4.2/src/fccache.c	2007-11-10 01:29:01.000000000 +0530
+@@ -135,7 +135,8 @@
+  */
+ static FcBool
+ FcDirCacheProcess (FcConfig *config, const FcChar8 *dir, 
+-		   FcBool (*callback) (int fd, struct stat *stat, void *closure),
++		   FcBool (*callback) (int fd, struct stat *stat, 
++           struct stat *dir_stat, void *closure),
+ 		   void *closure, FcChar8 **cache_file_ret)
+ {
+     int		fd = -1;
+@@ -161,20 +162,16 @@
+ 	    break;
+         fd = FcDirCacheOpenFile (cache_hashed, &file_stat);
+         if (fd >= 0) {
+-	    if (dir_stat.st_mtime <= file_stat.st_mtime)
+-	    {
+-		ret = (*callback) (fd, &file_stat, closure);
++		ret = (*callback) (fd, &file_stat, &dir_stat, closure);
++        close (fd);
+ 		if (ret)
+ 		{
+ 		    if (cache_file_ret)
+ 			*cache_file_ret = cache_hashed;
+ 		    else
+ 			FcStrFree (cache_hashed);
+-		    close (fd);
+ 		    break;
+ 		}
+-	    }
+-	    close (fd);
+ 	}
+     	FcStrFree (cache_hashed);
+     }
+@@ -424,11 +421,29 @@
+     assert (fcCacheMaxLevel == 0);
+ }
+ 
++static FcBool
++FcCacheTimeValid (FcCache *cache, struct stat *dir_stat)
++{
++    struct stat dir_static;
++
++    if (!dir_stat)
++    {
++        if (stat ((const char *) FcCacheDir (cache), &dir_static) < 0)
++            return FcFalse;
++        dir_stat = &dir_static;
++    }
++
++    if (FcDebug () & FC_DBG_CACHE)
++        printf ("FcCacheTimeValid dir \"%s\" cache time %d dir time %d\n",
++            FcCacheDir (cache), cache->mtime, (int) dir_stat->st_mtime);
++            return cache->mtime == (int) dir_stat->st_mtime;
++}
++
+ /*
+  * Map a cache file into memory
+  */
+ static FcCache *
+-FcDirCacheMapFd (int fd, struct stat *fd_stat)
++FcDirCacheMapFd (int fd, struct stat *fd_stat,  struct stat *dir_stat)
+ {
+     FcCache	*cache;
+     FcBool	allocated = FcFalse;
+@@ -477,7 +492,8 @@
+     if (cache->magic != FC_CACHE_MAGIC_MMAP || 
+ 	cache->version < FC_CACHE_CONTENT_VERSION ||
+ 	cache->size != fd_stat->st_size ||
+-	!FcCacheInsert (cache, fd_stat))
++	!FcCacheTimeValid (cache, dir_stat) ||
++    !FcCacheInsert (cache, fd_stat))
+     {
+ 	if (allocated)
+ 	    free (cache);
+@@ -515,9 +531,9 @@
+ }
+ 
+ static FcBool
+-FcDirCacheMapHelper (int fd, struct stat *fd_stat, void *closure)
++FcDirCacheMapHelper (int fd, struct stat *fd_stat, struct stat *dir_stat, void *closure)
+ {
+-    FcCache *cache = FcDirCacheMapFd (fd, fd_stat);
++    FcCache *cache = FcDirCacheMapFd (fd, fd_stat, dir_stat);
+ 
+     if (!cache)
+ 	return FcFalse;
+@@ -542,11 +558,14 @@
+ {
+     int	fd;
+     FcCache *cache;
++    struct stat my_file_stat;
+ 
++    if (!file_stat)
++        file_stat = &my_file_stat;
+     fd = FcDirCacheOpenFile (cache_file, file_stat);
+     if (fd < 0)
+ 	return NULL;
+-    cache = FcDirCacheMapFd (fd, file_stat);
++    cache = FcDirCacheMapFd (fd, file_stat, NULL);
+     close (fd);
+     return cache;
+ }
+@@ -556,7 +575,7 @@
+  * the magic number and the size field
+  */
+ static FcBool
+-FcDirCacheValidateHelper (int fd, struct stat *fd_stat, void *closure)
++FcDirCacheValidateHelper (int fd, struct stat *fd_stat, struct stat *dir_stat, void *closure)
+ {
+     FcBool  ret = FcTrue;
+     FcCache	c;
+@@ -569,6 +588,8 @@
+ 	ret = FcFalse;
+     else if (fd_stat->st_size != c.size)
+ 	ret = FcFalse;
++    else if (c.mtime != (int) dir_stat->st_mtime)
++    ret = FcFalse;
+     return ret;
+ }
+ 
+@@ -596,7 +617,7 @@
+  * Build a cache structure from the given contents
+  */
+ FcCache *
+-FcDirCacheBuild (FcFontSet *set, const FcChar8 *dir, FcStrSet *dirs)
++FcDirCacheBuild (FcFontSet *set, const FcChar8 *dir, struct stat *dir_stat, FcStrSet *dirs)
+ {
+     FcSerialize	*serialize = FcSerializeCreate ();
+     FcCache *cache;
+@@ -644,6 +665,8 @@
+     cache->magic = FC_CACHE_MAGIC_ALLOC;
+     cache->version = FC_CACHE_CONTENT_VERSION;
+     cache->size = serialize->size;
++    cache->mtime = (int) dir_stat->st_mtime;
++
+ 
+     /*
+      * Serialize directory name
+diff -Naur /usr/src/redhat/SOURCES/fontconfig-2.4.2/src/fccfg.c fontconfig-2.4.2/src/fccfg.c
+--- /usr/src/redhat/SOURCES/fontconfig-2.4.2/src/fccfg.c	2006-09-15 12:50:13.000000000 +0530
++++ fontconfig-2.4.2/src/fccfg.c	2007-11-09 22:58:04.000000000 +0530
+@@ -138,23 +138,10 @@
+     return newest;
+ }
+ 
+-FcFileTime
+-FcConfigModifiedTime (FcConfig *config)
+-{
+-    if (!config)
+-    {
+-	FcFileTime v = { 0, FcFalse };
+-	config = FcConfigGetCurrent ();
+-	if (!config)
+-	    return v;
+-    }
+-    return FcConfigNewestFile (config->configFiles);
+-}
+-
+ FcBool
+ FcConfigUptoDate (FcConfig *config)
+ {
+-    FcFileTime	config_time, font_time;
++    FcFileTime	config_time, config_dir_time, font_time;
+     time_t	now = time(0);
+     if (!config)
+     {
+@@ -163,8 +150,10 @@
+ 	    return FcFalse;
+     }
+     config_time = FcConfigNewestFile (config->configFiles);
++    config_dir_time = FcConfigNewestFile (config->configDirs);
+     font_time = FcConfigNewestFile (config->fontDirs);
+     if ((config_time.set && config_time.time - config->rescanTime > 0) ||
++    (config_dir_time.set && (config_dir_time.time - config->rescanTime) > 0) ||
+ 	(font_time.set && (font_time.time - config->rescanTime) > 0))
+     {
+ 	return FcFalse;
+diff -Naur /usr/src/redhat/SOURCES/fontconfig-2.4.2/src/fcdir.c fontconfig-2.4.2/src/fcdir.c
+--- /usr/src/redhat/SOURCES/fontconfig-2.4.2/src/fcdir.c	2006-12-03 03:14:34.000000000 +0530
++++ fontconfig-2.4.2/src/fcdir.c	2007-11-10 01:33:02.000000000 +0530
+@@ -146,6 +146,7 @@
+     int			i;
+     FcBlanks		*blanks = FcConfigGetBlanks (config);
+     FcCache		*cache = NULL;
++    struct stat     dir_stat;
+ 
+     if (FcDebug () & FC_DBG_FONTSET)
+     	printf ("cache scan dir %s\n", dir);
+@@ -174,6 +175,11 @@
+ 	    ret = FcFalse;
+ 	goto bail_1;
+     }
++    if (stat ((char *) dir, &dir_stat) < 0)
++    {
++      ret = FcFalse;
++      goto bail_1;
++    }
+ 
+     set = FcFontSetCreate();
+     if (!set) 
+@@ -218,7 +224,7 @@
+     /*
+      * Build the cache object
+      */
+-    cache = FcDirCacheBuild (set, dir, dirs);
++    cache = FcDirCacheBuild (set, dir, &dir_stat, dirs);
+     if (!cache)
+ 	goto bail3;
+     
+diff -Naur /usr/src/redhat/SOURCES/fontconfig-2.4.2/src/fcint.h fontconfig-2.4.2/src/fcint.h
+--- /usr/src/redhat/SOURCES/fontconfig-2.4.2/src/fcint.h	2006-12-03 03:22:09.000000000 +0530
++++ fontconfig-2.4.2/src/fcint.h	2007-11-10 01:29:40.000000000 +0530
+@@ -322,6 +322,7 @@
+     intptr_t	dirs;		    /* offset to subdirs */
+     int		dirs_count;	    /* number of subdir strings */
+     intptr_t	set;		    /* offset to font set */
++    int     mtime;          /* low bits of directory mtime */
+ };
+ 
+ #undef FcCacheDir
+@@ -503,7 +504,7 @@
+ FcDirCacheScan (const FcChar8 *dir, FcConfig *config);
+ 
+ FcPrivate FcCache *
+-FcDirCacheBuild (FcFontSet *set, const FcChar8 *dir, FcStrSet *dirs);
++FcDirCacheBuild (FcFontSet *set, const FcChar8 *dir, struct stat *dir_stat, FcStrSet *dirs);
+ 
+ FcPrivate FcBool
+ FcDirCacheWrite (FcCache *cache, FcConfig *config);

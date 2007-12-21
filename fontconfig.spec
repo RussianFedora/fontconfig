@@ -3,10 +3,11 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.4.2
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
+Patch: mtime_fix.patch
 URL: http://fontconfig.org
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 Source1: 25-no-hint-fedora.conf
@@ -49,6 +50,7 @@ will use fontconfig.
 
 %prep
 %setup -q
+%patch -p1 -b .buildroot
 
 %build
 %configure --with-add-fonts=/usr/share/X11/fonts/Type1,/usr/share/X11/fonts/TTF
@@ -97,7 +99,7 @@ umask 0022
 
 mkdir -p %{_localstatedir}/cache/fontconfig
 # Remove stale caches
-rm -f %{_localstatedir}/cache/fontconfig/????????????????????????????????.cache-2
+rm -f %{_localstatedir}/cache/fontconfig/????????????????????????????????????.cache-2
 rm -f %{_localstatedir}/cache/fontconfig/stamp
 
 # Force regeneration of all fontconfig cache files
@@ -105,7 +107,7 @@ rm -f %{_localstatedir}/cache/fontconfig/stamp
 #  copy of fontconfig might install the binary instead of the first)
 # The HOME setting is to avoid problems if HOME hasn't been reset
 if [ -x /usr/bin/fc-cache ] && /usr/bin/fc-cache --version 2>&1 | grep -q %{version} ; then
-  HOME=/root /usr/bin/fc-cache -f
+  HOME=/root /usr/bin/fc-cache -v -f
 fi
 
 %postun -p /sbin/ldconfig
@@ -142,6 +144,13 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Sun Dec  2 2007 Sayamindu Dasgupta <sayamindu@gmail.com> 2.4.2-4
+- Fix %post so that older cache files are deleted
+- Make fc-cache verbose to aid in debugging
+- Add  mtime_fix.patch to store directory mtime information in cache 
+- (backport from version 2.4.92)
+- Resolves: olpc ticket #1525
+
 * Fri May 11 2007 Matthias Clasen <mclasen@redhat.com> - 2.4.2-3
 - Add Liberation fonts to 30-aliases-fedora.conf
 
