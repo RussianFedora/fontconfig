@@ -1,0 +1,23 @@
+diff -Naur fontconfig-2.4.2/src/fccfg.c fontconfig-2.4.2-new/src/fccfg.c
+--- fontconfig-2.4.2/src/fccfg.c	2008-02-01 21:13:20.000000000 +0530
++++ fontconfig-2.4.2-new/src/fccfg.c	2008-02-01 21:22:28.000000000 +0530
+@@ -156,7 +156,18 @@
+     (config_dir_time.set && (config_dir_time.time - config->rescanTime) > 0) ||
+ 	(font_time.set && (font_time.time - config->rescanTime) > 0))
+     {
+-	return FcFalse;
++	/* We need to check for potential clock problems here (OLPC ticket #6046) */
++	if ((config_time.set && (config_time.time - now) > 0) ||
++    	(config_dir_time.set && (config_dir_time.time - now) > 0) ||
++        (font_time.set && (font_time.time - now) > 0))
++	{
++	    fprintf (stderr,
++                    "Fontconfig warning: Directory/file mtime in the future. New fonts may not be detected\n");
++	    config->rescanTime = now;
++	    return FcTrue;
++	}
++	else
++	    return FcFalse;
+     }
+     config->rescanTime = now;
+     return FcTrue;

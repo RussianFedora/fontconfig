@@ -3,11 +3,12 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.4.2
-Release: 4%{?dist}
+Release: 5%{?dist}
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
-Patch: mtime_fix.patch
+Patch0: mtime_fix.patch
+Patch1: FcConfigUptoDate_fix.patch
 URL: http://fontconfig.org
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 Source1: 25-no-hint-fedora.conf
@@ -51,6 +52,8 @@ will use fontconfig.
 %prep
 %setup -q
 %patch -p1 -b .buildroot
+%patch1 -p1 -b .buildroot
+
 
 %build
 %configure --with-add-fonts=/usr/share/X11/fonts/Type1,/usr/share/X11/fonts/TTF
@@ -107,7 +110,7 @@ rm -f %{_localstatedir}/cache/fontconfig/stamp
 #  copy of fontconfig might install the binary instead of the first)
 # The HOME setting is to avoid problems if HOME hasn't been reset
 if [ -x /usr/bin/fc-cache ] && /usr/bin/fc-cache --version 2>&1 | grep -q %{version} ; then
-  HOME=/root /usr/bin/fc-cache -v -f
+  HOME=/root /usr/bin/fc-cache -f
 fi
 
 %postun -p /sbin/ldconfig
@@ -144,6 +147,12 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Thu Jan 31 2008 Sayamindu Dasgupta <sayamindu@gmail.com> 2.4.2-5
+- Remove the verbose flag from fc-cache invocation during %post
+- Fix FcConfigUptoDate() so that it prints a warning and then 
+- returns FcTrue if timestamps of files/directories are in the future.
+- Resolves: OLPC ticket #6046
+
 * Sun Dec  2 2007 Sayamindu Dasgupta <sayamindu@gmail.com> 2.4.2-4
 - Fix %post so that older cache files are deleted
 - Make fc-cache verbose to aid in debugging
