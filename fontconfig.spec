@@ -3,7 +3,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.5.0
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -129,6 +129,9 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Mon Feb 18 2008 Fedora Release Engineering <rel-eng@fedoraproject.org> - 2.5.0-2
+- Autorebuild for GCC 4.3
+
 * Thu Nov 13 2007 Behdad Esfahbod <besfahbo@redhat.com> - 2.5.0-1
 - Update to 2.5.0.
 
