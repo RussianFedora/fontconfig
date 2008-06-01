@@ -3,7 +3,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.6.0
-Release: 0%{?dist}
+Release: 2%{?dist}
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -112,7 +112,7 @@ fi
 %dir %{_datadir}/fonts
 %{_sysconfdir}/fonts/fonts.dtd
 %config %{_sysconfdir}/fonts/fonts.conf
-%doc %{_sysconfdir}/fonts/conf.avail/README
+%doc %{_sysconfdir}/fonts/conf.d/README
 %config %{_sysconfdir}/fonts/conf.avail/*.conf
 %config(noreplace) %{_sysconfdir}/fonts/conf.d/*.conf
 %dir %{_localstatedir}/cache/fontconfig
@@ -129,6 +129,9 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Sat Jun 01 2008 Behdad Esfahbod <besfahbo@redhat.com> - 2.6.0-2
+- Fix build.
+
 * Sat May 31 2008 Behdad Esfahbod <besfahbo@redhat.com> - 2.6.0-1
 - Update to 2.6.0.
 
