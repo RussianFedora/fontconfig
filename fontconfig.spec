@@ -3,7 +3,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.6.0
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -22,6 +22,8 @@ Conflicts: fonts-hebrew < 0.100
 # Conflict with pre-modular X fonts, because they moved and we 
 # reference the new path in %%configure
 Conflicts: fonts-xorg-base, fonts-xorg-syriac
+
+Patch0: fontconfig-2.6.0-indic.patch
 
 %description
 Fontconfig is designed to locate fonts within the
@@ -44,6 +46,7 @@ will use fontconfig.
 
 %prep
 %setup -q
+%patch0 -p0 -b .indic
 
 %build
 
@@ -129,6 +132,10 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Mon Oct 20 2008 Behdad Esfahbod <besfahbo@redhat.com> - 2.6.0-3
+- Add fontconfig-2.6.0-indic.patch
+- Resolves: #464470
+
 * Sat Jun 01 2008 Behdad Esfahbod <besfahbo@redhat.com> - 2.6.0-2
 - Fix build.
 
