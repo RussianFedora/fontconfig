@@ -3,7 +3,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.6.90
-Release: 2.git.63.g6bb4b9a%{?dist}
+Release: 3.git.63.g6bb4b9a%{?dist}
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -105,9 +105,11 @@ fi
 %doc fontconfig-user.txt fontconfig-user.html
 %{_libdir}/libfontconfig.so.*
 %{_bindir}/fc-cache
+%{_bindir}/fc-cat
 %{_bindir}/fc-list
 %{_bindir}/fc-match
-%{_bindir}/fc-cat
+%{_bindir}/fc-query
+%{_bindir}/fc-scan
 %dir %{_sysconfdir}/fonts/conf.avail
 %dir %{_datadir}/fonts
 %{_sysconfdir}/fonts/fonts.dtd
@@ -129,6 +131,9 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Fri Jan 16 2009 Behdad Esfahbod <besfahbo@redhat.com> - 2.6.90-3.git.63.g6bb4b9a
+- Install fc-scan and fc-query
+
 * Fri Jan 16 2009 Behdad Esfahbod <besfahbo@redhat.com> - 2.6.90-2.git.63.g6bb4b9a
 - Update to 2.6.90-1.git.63.g6bb4b9a
 - Remove upstreamed patch
