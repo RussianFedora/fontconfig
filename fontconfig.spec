@@ -132,7 +132,7 @@ fi
 %{_mandir}/man3/*
 
 %changelog
-* Fri Jan 16 2008 Behdad Esfahbod <besfahbo@redhat.com> - 2.6.90-1.git.63.g6bb4b9a
+* Fri Jan 16 2009 Behdad Esfahbod <besfahbo@redhat.com> - 2.6.90-1.git.63.g6bb4b9a
 - Update to 2.6.90-1.git.63.g6bb4b9a
 
 * Mon Oct 20 2008 Behdad Esfahbod <besfahbo@redhat.com> - 2.6.0-3
