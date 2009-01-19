@@ -2,8 +2,8 @@
 
 Summary: Font configuration and customization library
 Name: fontconfig
-Version: 2.6.90
-Release: 3.git.63.g6bb4b9a%{?dist}
+Version: 2.6.91
+Release: 1.git.64.g9feaf34%{?dist}
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -131,6 +131,9 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Mon Jan 19 2009 Behdad Esfahbod <besfahbo@redhat.com> - 2.6.91-1.git.64.g9feaf34
+- Update to 2.6.91-1.git.64.g9feaf34
+
 * Fri Jan 16 2009 Behdad Esfahbod <besfahbo@redhat.com> - 2.6.90-3.git.63.g6bb4b9a
 - Install fc-scan and fc-query
 
