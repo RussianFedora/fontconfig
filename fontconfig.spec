@@ -2,8 +2,8 @@
 
 Summary: Font configuration and customization library
 Name: fontconfig
-Version: 2.6.93
-Release: 1.git.64.g6aa4dce%{?dist}
+Version: 2.6.94
+Release: 1.git.65.g628ee83%{?dist}
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -131,6 +131,9 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Fri Jan 23 2009 Behdad Esfahbod <besfahbo@redhat.com> - 2.6.94-1.git.65.g628ee83
+- Update to 2.6.94-1.git.65.g628ee83
+
 * Mon Jan 20 2009 Behdad Esfahbod <besfahbo@redhat.com> - 2.6.93-1.git.64.g6aa4dce
 - Update to 2.6.93-1.git.64.g6aa4dce
 
