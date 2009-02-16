@@ -3,13 +3,16 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.6.97
-Release: 2.g945d6a4%{?dist}
+Release: 3.g945d6a4%{?dist}
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
 URL: http://fontconfig.org
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 Source1: 25-no-bitmap-fedora.conf
+
+# behdad has this in his local tree
+Patch1: fontconfig-2.6.97-fix-provides-name.patch
 
 BuildRequires: gawk
 BuildRequires: expat-devel
@@ -44,6 +47,7 @@ will use fontconfig.
 
 %prep
 %setup -q
+%patch1 -p1
 
 %build
 
@@ -131,6 +135,9 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Mon Feb 16 2009 Richard Hughes <rhughes@redhat.com> - 2.6.97-3.g945d6a4
+- Correct the rpm provide name to be font(), not Font().
+
 * Sun Feb 15 2009 Behdad Esfahbod <besfahbo@redhat.com> - 2.6.97-2.g945d6a4
 - Another try.
 
