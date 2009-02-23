@@ -1,9 +1,9 @@
-%define freetype_version 2.1.4
+%global freetype_version 2.1.4
 
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.6.97
-Release: 3.g945d6a4%{?dist}
+Release: 4.g945d6a4%{?dist}
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -135,6 +135,10 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Mon Feb 23 2009 Nicolas Mailhot <nim at fedoraproject dot org>
+- 2.6.97-4.g945d6a4
+— global-ization
+
 * Mon Feb 16 2009 Richard Hughes <rhughes@redhat.com> - 2.6.97-3.g945d6a4
 - Correct the rpm provide name to be font(), not Font().
 
