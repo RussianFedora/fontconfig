@@ -3,7 +3,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.6.97
-Release: 4.g945d6a4%{?dist}
+Release: 5.g945d6a4%{?dist}
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -135,6 +135,9 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Tue Feb 24 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.6.97-5.g945d6a4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_11_Mass_Rebuild
+
 * Mon Feb 23 2009 Nicolas Mailhot <nim at fedoraproject dot org>
 - 2.6.97-4.g945d6a4
 — global-ization
