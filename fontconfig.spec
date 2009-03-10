@@ -2,17 +2,14 @@
 
 Summary: Font configuration and customization library
 Name: fontconfig
-Version: 2.6.97
-Release: 5.g945d6a4%{?dist}
+Version: 2.6.98
+Release: 1.gb39c36a%{?dist}
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
 URL: http://fontconfig.org
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 Source1: 25-no-bitmap-fedora.conf
-
-# behdad has this in his local tree
-Patch1: fontconfig-2.6.97-fix-provides-name.patch
 
 BuildRequires: gawk
 BuildRequires: expat-devel
@@ -47,7 +44,6 @@ will use fontconfig.
 
 %prep
 %setup -q
-%patch1 -p1
 
 %build
 
@@ -135,6 +131,9 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Tue Mar 10 2009 Behdad Esfahbod <besfahbo@redhat.com> - 2.6.98-1.gb39c36a
+- Update to 2.6.98-1.gb39c36a
+
 * Tue Feb 24 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.6.97-5.g945d6a4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_11_Mass_Rebuild
 
