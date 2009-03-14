@@ -3,7 +3,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.6.99.behdad
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -131,6 +131,9 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Tue Mar 14 2009 Behdad Esfahbod <besfahbo@redhat.com> - 2.6.99.behdad-3
+- New tarball with version fixed in the header
+
 * Tue Mar 13 2009 Behdad Esfahbod <besfahbo@redhat.com> - 2.6.99.behdad-2
 - Previous tarball was broken.  Rebuild with respinned ball.
 
