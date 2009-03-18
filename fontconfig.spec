@@ -2,7 +2,7 @@
 
 Summary: Font configuration and customization library
 Name: fontconfig
-Version: 2.6.99.behdad.20090317
+Version: 2.6.99.behdad.20090318
 Release: 1%{?dist}
 License: MIT
 Group: System Environment/Libraries
@@ -131,6 +131,10 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Tue Mar 18 2009 Behdad Esfahbod <besfahbo@redhat.com> - 2.6.99.behdad.20090318-1
+- Update to 2.6.99.behdad.20090318
+- Resolves #490888
+
 * Tue Mar 17 2009 Behdad Esfahbod <besfahbo@redhat.com> - 2.6.99.behdad.20090317-1
 - Update to 2.6.99.behdad.20090317
 - Resolves #485685
