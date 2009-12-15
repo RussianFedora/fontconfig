@@ -85,9 +85,6 @@ rm -rf $RPM_BUILD_ROOT
 umask 0022
 
 mkdir -p %{_localstatedir}/cache/fontconfig
-# Remove stale caches
-rm -f %{_localstatedir}/cache/fontconfig/????????????????????????????????.cache-2
-rm -f %{_localstatedir}/cache/fontconfig/stamp
 
 # Force regeneration of all fontconfig cache files
 # The check for existance is needed on dual-arch installs (the second
@@ -131,6 +128,8 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+- Remove stale code to remove stale caches!
+
 * Thu Dec  3 2009 Behdad Esfahbod <besfahbo@redhat.com> - 2.8.0-1
 - Update to 2.8.0
 
