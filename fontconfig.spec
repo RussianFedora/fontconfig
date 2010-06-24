@@ -3,13 +3,15 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.8.0
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
 URL: http://fontconfig.org
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 Source1: 25-no-bitmap-fedora.conf
+
+Patch0: fontconfig-2.8.0-sleep-less.patch
 
 BuildRequires: gawk
 BuildRequires: expat-devel
@@ -44,6 +46,7 @@ will use fontconfig.
 
 %prep
 %setup -q
+%patch0 -p1 -b .sleep-less
 
 %build
 
@@ -128,6 +131,10 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Thu Jun 24 2010 Adam Jackson <ajax@redhat.com> 2.8.0-2
+- fontconfig-2.8.0-sleep-less.patch: Make a stupid sleep() in fc-cache
+  slightly less stupid.
+
 * Thu Dec  3 2009 Behdad Esfahbod <besfahbo@redhat.com> - 2.8.0-1
 - Update to 2.8.0
 
