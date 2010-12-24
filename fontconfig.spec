@@ -3,20 +3,27 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.8.0
-Release: 1%{?dist}
+Release: 2%{?dist}.1
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
 URL: http://fontconfig.org
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 Source1: 25-no-bitmap-fedora.conf
+Source2: 10-antialias.conf
+Source3: 10-hinting.conf
+Source4: 10-hinting-full.conf
+Source5: 10-hinting-medium.conf
+Source6: 10-hinting-slight.conf
+Source7: 10-autohint.conf
+Patch99: fontconfig-2.6.0-lcd.patch
 
 BuildRequires: gawk
 BuildRequires: expat-devel
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: perl
 
-PreReq: freetype >= %{freetype_version}, coreutils
+Requires(pre): freetype >= %{freetype_version}, coreutils
 # Hebrew fonts referenced in fonts.conf changed names in fonts-hebrew-0.100
 Conflicts: fonts-hebrew < 0.100
 # Conflict with pre-modular X fonts, because they moved and we 
@@ -44,6 +51,7 @@ will use fontconfig.
 
 %prep
 %setup -q
+%patch99 -p1
 
 %build
 
@@ -59,6 +67,9 @@ make check
 rm -rf $RPM_BUILD_ROOT
 
 make install DESTDIR=$RPM_BUILD_ROOT
+
+install -m 0644 %{SOURCE1} %{SOURCE2} %{SOURCE3} %{SOURCE4} \
+    %{SOURCE5} %{SOURCE6} $RPM_BUILD_ROOT%{_sysconfdir}/fonts/conf.d
 
 install -m 0644 %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/fonts/conf.d
 ln -s ../conf.avail/25-unhint-nonlatin.conf $RPM_BUILD_ROOT%{_sysconfdir}/fonts/conf.d
@@ -131,6 +142,15 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Tue Aug 10 2010 Arkady L. Shane <ashejn@yandex-team.ru> - 2.8.0-2.1
+- rebuilt for Fedora 14
+
+* Tue Jun  8 2010 Arkady L. Shane <ashejn@yandex-team.ru> - 2.8.0-1.2.1
+- bump Release for updating from F12
+
+* Mon Mar 15 2010 Arkady L. Shane <ashejn@yandex-team.ru> - 2.8.0-1.1
+- apply ubuntu patches and configs
+
 * Thu Dec  3 2009 Behdad Esfahbod <besfahbo@redhat.com> - 2.8.0-1
 - Update to 2.8.0
 
