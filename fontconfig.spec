@@ -3,7 +3,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.8.0
-Release: 3%{?dist}.1
+Release: 4%{?dist}.1.R
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -17,6 +17,7 @@ Source5: 10-hinting-medium.conf
 Source6: 10-hinting-slight.conf
 Source7: 10-autohint.conf
 Patch0: fontconfig-2.8.0-sleep-less.patch
+Patch1: fontconfig-2.8.0-dingbats.patch
 Patch99: fontconfig-2.6.0-lcd.patch
 
 BuildRequires: gawk
@@ -53,6 +54,7 @@ will use fontconfig.
 %prep
 %setup -q
 %patch0 -p1 -b .sleep-less
+%patch1 -p1 -b .dingbats
 %patch99 -p1
 
 %build
@@ -144,6 +146,9 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Tue May 31 2011 Adam Jackson <ajax@redhat.com> 2.8.0-4.1.R
+- fontconfig-2.8.0-dingbats.patch: Hack for dingbats font matching. (#468565)
+
 * Fri Mar 18 2011 Arkady L. Shane <ashejn@yandex-team.ru> - 2.8.0-3.1
 - fontconfig-2.8.0-sleep-less.patch: Make a stupid sleep() in fc-cache
   slightly less stupid. 
