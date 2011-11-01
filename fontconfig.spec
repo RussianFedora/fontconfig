@@ -55,7 +55,7 @@ will use fontconfig.
 %setup -q
 %patch0 -p1 -b .zapfdingbats
 %patch1 -p1 -b .nepali
-%patch99 -p1 .lcd
+%patch99 -p1 -b .lcd
 
 %build
 
