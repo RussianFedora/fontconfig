@@ -1,0 +1,13 @@
+--- fontconfig-2.8.0/conf.d/30-urw-aliases.conf	2009-11-16 18:24:52.000000000 +0100
++++ fontconfig-2.8.0/conf.d/30-urw-aliases.conf	2010-06-25 16:45:00.735759268 +0200
+@@ -29,6 +29,10 @@
+ 	  <family>Zapf Dingbats</family>
+ 	  <accept><family>Dingbats</family></accept>
+ 	</alias>
++	<alias binding="same">
++	  <family>ZapfDingbats</family>
++	  <accept><family>Dingbats</family></accept>
++	</alias>
+ 	<match target="pattern">
+ 	  <test name="family">
+ 	    <string>Symbol</string>

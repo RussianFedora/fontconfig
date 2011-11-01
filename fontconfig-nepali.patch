@@ -1,0 +1,28 @@
+--- fontconfig-2.8.0/fc-lang/ne.orth	2009-11-16 18:24:52.000000000 +0100
++++ fontconfig-2.8.0/fc-lang/ne.orth	2010-06-29 10:19:09.000000000 +0200
+@@ -22,4 +22,24 @@
+ # PERFORMANCE OF THIS SOFTWARE.
+ #
+ # Nepali (Devanagari script) (NE)
+-include hi.orth
++#
++# From http://www.panl10n.net/english/Outputs%20Phase%202/CCs/Nepal/MPP/Papers/
++#   2007/0702/mpp_reports_pdf/report_character_encoding_constraints_nepali.pdf
++# and hi.orth
++#
++
++0901-0903  # signs
++0905-090B  # vowels
++090F-0910  # vowels
++0913-0914  # vowels
++0915-0928  # consonants
++092A-0930  # consonants
++0932       # consonant
++0935-0939  # consonants
++093E-0943  # vowel signs
++0947-0948  # vowel signs
++094B-094D  # vowel signs
++0950       # Devanagari OM
++#0964-0965  # Dandas
++#0966-096F  # digits
++#0970       # abbreviation sign

@@ -3,15 +3,22 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.8.0
-Release: 2%{?dist}
+Release: 3%{?dist}.R
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
 URL: http://fontconfig.org
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 Source1: 25-no-bitmap-fedora.conf
-
-Patch0: fontconfig-2.8.0-sleep-less.patch
+Source2: 10-antialias.conf
+Source3: 10-hinting.conf
+Source4: 10-hinting-full.conf
+Source5: 10-hinting-medium.conf
+Source6: 10-hinting-slight.conf
+Source7: 10-autohint.conf
+Patch0:  fontconfig-zapfdingbats.patch
+Patch1:  fontconfig-nepali.patch
+Patch99: fontconfig-2.6.0-lcd.patch
 
 BuildRequires: gawk
 BuildRequires: expat-devel
@@ -46,7 +53,9 @@ will use fontconfig.
 
 %prep
 %setup -q
-%patch0 -p1 -b .sleep-less
+%patch0 -p1 -b .zapfdingbats
+%patch1 -p1 -b .nepali
+%patch99 -p1 .lcd
 
 %build
 
@@ -63,7 +72,8 @@ rm -rf $RPM_BUILD_ROOT
 
 make install DESTDIR=$RPM_BUILD_ROOT
 
-install -m 0644 %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/fonts/conf.d
+install -m 0644 %{SOURCE1} %{SOURCE2} %{SOURCE3} %{SOURCE4} \
+    %{SOURCE5} %{SOURCE6} $RPM_BUILD_ROOT%{_sysconfdir}/fonts/conf.d
 ln -s ../conf.avail/25-unhint-nonlatin.conf $RPM_BUILD_ROOT%{_sysconfdir}/fonts/conf.d
 
 # move installed doc files back to build directory to package themm
@@ -88,6 +98,9 @@ rm -rf $RPM_BUILD_ROOT
 umask 0022
 
 mkdir -p %{_localstatedir}/cache/fontconfig
+# Remove stale caches
+rm -f %{_localstatedir}/cache/fontconfig/????????????????????????????????.cache-2
+rm -f %{_localstatedir}/cache/fontconfig/stamp
 
 # Force regeneration of all fontconfig cache files
 # The check for existance is needed on dual-arch installs (the second
@@ -131,9 +144,16 @@ fi
 %{_mandir}/man3/*
 
 %changelog
-* Thu Jun 24 2010 Adam Jackson <ajax@redhat.com> 2.8.0-2
-- fontconfig-2.8.0-sleep-less.patch: Make a stupid sleep() in fc-cache
-  slightly less stupid.
+* Tue Nov  1 2011 Arkady L. Shane <ashejn@russianfedora.ru> - 2.8.0-3.R
+- apply Ubuntu lcd patches
+
+* Tue Jun 29 2010 Marek Kasik <mkasik@redhat.com> - 2.8.0-3
+- Modify Nepali orthography
+- Resolves: #586898
+
+* Fri Jun 25 2010 Marek Kasik <mkasik@redhat.com> - 2.8.0-2
+- Substitute ZapfDingbats with Dingbats
+- Resolves: #566758
 
 * Thu Dec  3 2009 Behdad Esfahbod <besfahbo@redhat.com> - 2.8.0-1
 - Update to 2.8.0

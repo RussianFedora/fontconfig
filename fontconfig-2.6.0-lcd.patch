@@ -1,0 +1,95 @@
+diff -urN fontconfig-2.6.0.orig/conf.d/11-lcd-filter-lcddefault.conf fontconfig-2.6.0/conf.d/11-lcd-filter-lcddefault.conf
+--- fontconfig-2.6.0.orig/conf.d/11-lcd-filter-lcddefault.conf	1970-01-01 03:00:00.000000000 +0300
++++ fontconfig-2.6.0/conf.d/11-lcd-filter-lcddefault.conf	2008-11-18 13:35:38.000000000 +0300
+@@ -0,0 +1,11 @@
++<?xml version="1.0"?>
++<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
++<!-- conf.d/lcd-filter-lcddefault.conf -->
++<fontconfig>
++<!--  Use lcddefault as default for LCD filter -->
++  <match target="font">
++    <edit mode="assign" name="lcdfilter">
++      <const>lcddefault</const>
++    </edit>
++  </match>
++</fontconfig>
+diff -urN fontconfig-2.6.0.orig/conf.d/Makefile.am fontconfig-2.6.0/conf.d/Makefile.am
+--- fontconfig-2.6.0.orig/conf.d/Makefile.am	2008-11-18 13:34:53.000000000 +0300
++++ fontconfig-2.6.0/conf.d/Makefile.am	2008-11-18 13:36:55.000000000 +0300
+@@ -32,6 +32,7 @@
+ 	10-sub-pixel-vbgr.conf \
+ 	10-sub-pixel-vrgb.conf \
+ 	10-unhinted.conf \
++	11-lcd-filter-lcddefault.conf \
+ 	20-fix-globaladvance.conf \
+ 	20-unhint-small-vera.conf \
+ 	25-unhint-nonlatin.conf \
+@@ -53,6 +54,7 @@
+ 	90-synthetic.conf
+ 
+ CONF_LINKS = \
++	11-lcd-filter-lcddefault.conf \
+ 	20-fix-globaladvance.conf \
+ 	20-unhint-small-vera.conf \
+ 	30-urw-aliases.conf \
+diff -urN fontconfig-2.6.0.orig/conf.d/Makefile.in fontconfig-2.6.0/conf.d/Makefile.in
+--- fontconfig-2.6.0.orig/conf.d/Makefile.in	2008-11-18 13:34:53.000000000 +0300
++++ fontconfig-2.6.0/conf.d/Makefile.in	2008-11-18 13:37:32.000000000 +0300
+@@ -249,6 +249,7 @@
+ 	10-sub-pixel-vbgr.conf \
+ 	10-sub-pixel-vrgb.conf \
+ 	10-unhinted.conf \
++	11-lcd-filter-lcddefault.conf \
+ 	20-fix-globaladvance.conf \
+ 	20-unhint-small-vera.conf \
+ 	25-unhint-nonlatin.conf \
+@@ -270,6 +271,7 @@
+ 	90-synthetic.conf
+ 
+ CONF_LINKS = \
++	11-lcd-filter-lcddefault.conf \
+ 	20-fix-globaladvance.conf \
+ 	20-unhint-small-vera.conf \
+ 	30-urw-aliases.conf \
+diff -urN fontconfig-2.6.0.orig/fontconfig/fontconfig.h fontconfig-2.6.0/fontconfig/fontconfig.h
+--- fontconfig-2.6.0.orig/fontconfig/fontconfig.h	2008-11-18 13:34:53.000000000 +0300
++++ fontconfig-2.6.0/fontconfig/fontconfig.h	2008-11-18 15:26:02.000000000 +0300
+@@ -111,6 +111,7 @@
+ #define FC_EMBOLDEN	    "embolden"		/* Bool - true if emboldening needed*/
+ #define FC_EMBEDDED_BITMAP  "embeddedbitmap"	/* Bool - true to enable embedded bitmaps */
+ #define FC_DECORATIVE	    "decorative"	/* Bool - true if style is a decorative variant */
++#define FC_ANY_METRICS      "anymetrics"       /* Bool - true to allow metrics which do not match the requested font */
+ #define FC_LCD_FILTER	    "lcdfilter"		/* Int */
+ 
+ #define FC_CACHE_SUFFIX		    ".cache-"FC_CACHE_VERSION
+@@ -167,6 +168,11 @@
+ #define FC_RGBA_VBGR	    4
+ #define FC_RGBA_NONE	    5
+ 
++#define FC_LCD_FILTER_NONE    0
++#define FC_LCD_FILTER_DEFAULT 1
++#define FC_LCD_FILTER_LIGHT   2
++#define FC_LCD_FILTER_LEGACY  3
++
+ /* hinting style */
+ #define FC_HINT_NONE        0
+ #define FC_HINT_SLIGHT      1
+diff -urN fontconfig-2.6.0.orig/src/fcname.c fontconfig-2.6.0/src/fcname.c
+--- fontconfig-2.6.0.orig/src/fcname.c	2008-11-18 13:34:53.000000000 +0300
++++ fontconfig-2.6.0/src/fcname.c	2008-11-18 15:28:21.000000000 +0300
+@@ -75,6 +75,7 @@
+     { FC_EMBOLDEN,	FcTypeBool },
+     { FC_EMBEDDED_BITMAP,   FcTypeBool },
+     { FC_DECORATIVE,	FcTypeBool },
++    { FC_ANY_METRICS,  FcTypeBool },
+     { FC_LCD_FILTER,	FcTypeInteger }, /* 41 */
+ };
+ 
+@@ -440,6 +441,7 @@
+     { (FcChar8 *) "lcddefault",	    "lcdfilter",    FC_LCD_DEFAULT },
+     { (FcChar8 *) "lcdlight",	    "lcdfilter",    FC_LCD_LIGHT },
+     { (FcChar8 *) "lcdlegacy",	    "lcdfilter",    FC_LCD_LEGACY },
++    { (FcChar8 *) "lcdfilterlegacy",      "lcdfilter",    FC_LCD_LEGACY },
+ };
+ 
+ #define NUM_FC_CONSTANTS   (sizeof _FcBaseConstants/sizeof _FcBaseConstants[0])
