@@ -3,7 +3,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.8.0
-Release: 4%{?dist}.1.R
+Release: 5%{?dist}
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -146,6 +146,9 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Sat Mar 10 2012 Arkady L. Shane <ashejn@russianfedora.ru> 2.8.0-5.R
+- rebuilt
+
 * Tue May 31 2011 Adam Jackson <ajax@redhat.com> 2.8.0-4.1.R
 - fontconfig-2.8.0-dingbats.patch: Hack for dingbats font matching. (#468565)
 
