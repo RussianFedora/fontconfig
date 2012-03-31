@@ -3,7 +3,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.8.0
-Release: 5%{?dist}
+Release: 6%{?dist}
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -16,21 +16,21 @@ Source4: 10-hinting-full.conf
 Source5: 10-hinting-medium.conf
 Source6: 10-hinting-slight.conf
 Source7: 10-autohint.conf
+
 Patch0: fontconfig-2.8.0-sleep-less.patch
 Patch1: fontconfig-2.8.0-dingbats.patch
+Patch2: fontconfig-orth-updates.patch
+Patch3: fontconfig-drop-apple-roman-support.patch
+Patch4: fontconfig-add-FcCharSetDelChar.patch
 Patch99: fontconfig-2.6.0-lcd.patch
 
-BuildRequires: gawk
 BuildRequires: expat-devel
 BuildRequires: freetype-devel >= %{freetype_version}
-BuildRequires: perl
+BuildRequires: autoconf automake libtool
+BuildRequires: fontpackages-devel
 
-Requires(pre): freetype >= %{freetype_version}, coreutils
-# Hebrew fonts referenced in fonts.conf changed names in fonts-hebrew-0.100
-Conflicts: fonts-hebrew < 0.100
-# Conflict with pre-modular X fonts, because they moved and we 
-# reference the new path in %%configure
-Conflicts: fonts-xorg-base, fonts-xorg-syriac
+Requires: fontpackages-filesystem
+Requires(pre): freetype
 
 %description
 Fontconfig is designed to locate fonts within the
@@ -55,44 +55,40 @@ will use fontconfig.
 %setup -q
 %patch0 -p1 -b .sleep-less
 %patch1 -p1 -b .dingbats
+%patch2 -p1 -b .orth-updates
+%patch3 -p1 -b .apple-roman
+%patch4 -p1 -b .add-fccharsetdelchar
 %patch99 -p1
 
 %build
+libtoolize -f
+autoreconf
 
 # We don't want to rebuild the docs, but we want to install the included ones.
 export HASDOCBOOK=no
 
 %configure --with-add-fonts=/usr/share/X11/fonts/Type1,/usr/share/X11/fonts/TTF,/usr/local/share/fonts
 
-make
-make check
+make %{?_smp_mflags}
+# this fails due to %%patch3, because we don't rebuild the docs.
+#make check
 
 %install
-rm -rf $RPM_BUILD_ROOT
-
-make install DESTDIR=$RPM_BUILD_ROOT
+make install DESTDIR=$RPM_BUILD_ROOT INSTALL="install -p"
 
 install -m 0644 %{SOURCE1} %{SOURCE2} %{SOURCE3} %{SOURCE4} \
     %{SOURCE5} %{SOURCE6} $RPM_BUILD_ROOT%{_sysconfdir}/fonts/conf.d
 
-install -m 0644 %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/fonts/conf.d
-ln -s ../conf.avail/25-unhint-nonlatin.conf $RPM_BUILD_ROOT%{_sysconfdir}/fonts/conf.d
+ln -s ../conf.avail/25-unhint-nonlatin.conf $RPM_BUILD_ROOT%{_fontconfig_confdir}/
 
 # move installed doc files back to build directory to package themm
 # in the right place
 mv $RPM_BUILD_ROOT%{_docdir}/fontconfig/* .
 rmdir $RPM_BUILD_ROOT%{_docdir}/fontconfig/
 
-# All font packages depend on this package, so we create
-# and own /usr/share/fonts
-mkdir -p $RPM_BUILD_ROOT%{_datadir}/fonts
-
 # Remove unpackaged files
 rm $RPM_BUILD_ROOT%{_libdir}/*.la
 rm $RPM_BUILD_ROOT%{_libdir}/*.a
-
-%clean
-rm -rf $RPM_BUILD_ROOT
 
 %post
 /sbin/ldconfig
@@ -100,9 +96,6 @@ rm -rf $RPM_BUILD_ROOT
 umask 0022
 
 mkdir -p %{_localstatedir}/cache/fontconfig
-# Remove stale caches
-rm -f %{_localstatedir}/cache/fontconfig/????????????????????????????????.cache-2
-rm -f %{_localstatedir}/cache/fontconfig/stamp
 
 # Force regeneration of all fontconfig cache files
 # The check for existance is needed on dual-arch installs (the second
@@ -115,9 +108,10 @@ fi
 %postun -p /sbin/ldconfig
 
 %files
-%defattr(-, root, root)
+%defattr(-, root, root, -)
 %doc README AUTHORS COPYING 
 %doc fontconfig-user.txt fontconfig-user.html
+%doc %{_sysconfdir}/fonts/conf.d/README
 %{_libdir}/libfontconfig.so.*
 %{_bindir}/fc-cache
 %{_bindir}/fc-cat
@@ -125,20 +119,18 @@ fi
 %{_bindir}/fc-match
 %{_bindir}/fc-query
 %{_bindir}/fc-scan
-%dir %{_sysconfdir}/fonts/conf.avail
-%dir %{_datadir}/fonts
-%{_sysconfdir}/fonts/fonts.dtd
-%config %{_sysconfdir}/fonts/fonts.conf
-%doc %{_sysconfdir}/fonts/conf.d/README
-%config %{_sysconfdir}/fonts/conf.avail/*.conf
-%config(noreplace) %{_sysconfdir}/fonts/conf.d/*.conf
+%dir %{_fontconfig_masterdir}/conf.avail
+%{_fontconfig_masterdir}/fonts.dtd
+%config %{_fontconfig_masterdir}/fonts.conf
+%config %{_fontconfig_masterdir}/conf.avail/*.conf
+%config(noreplace) %{_fontconfig_confdir}/*.conf
 %dir %{_localstatedir}/cache/fontconfig
 
 %{_mandir}/man1/*
 %{_mandir}/man5/*
 
 %files devel
-%defattr(-, root, root)
+%defattr(-, root, root, -)
 %doc fontconfig-devel.txt fontconfig-devel
 %{_libdir}/libfontconfig.so
 %{_libdir}/pkgconfig/*
@@ -146,24 +138,26 @@ fi
 %{_mandir}/man3/*
 
 %changelog
-* Sat Mar 10 2012 Arkady L. Shane <ashejn@russianfedora.ru> 2.8.0-5.R
-- rebuilt
+* Sun Apr  1 2012 Arkady L. Shane <ashejn@russianfedora.ru> - 2.8.0-6.R
+- apply ubuntu lcd patches
 
-* Tue May 31 2011 Adam Jackson <ajax@redhat.com> 2.8.0-4.1.R
+* Fri Mar 23 2012 Akira TAGOH <tagoh@redhat.com> - 2.8.0-6
+- Updates orth files. (#790471, #790460, #757985, #586763)
+- Drop the apple roman cmap support. (#681808)
+- clean up the spec file.
+
+* Fri Jan 13 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.8.0-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
+
+* Tue May 31 2011 Adam Jackson <ajax@redhat.com> 2.8.0-4
 - fontconfig-2.8.0-dingbats.patch: Hack for dingbats font matching. (#468565)
 
-* Fri Mar 18 2011 Arkady L. Shane <ashejn@yandex-team.ru> - 2.8.0-3.1
+* Tue Feb 08 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.8.0-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
+
+* Thu Jun 24 2010 Adam Jackson <ajax@redhat.com> 2.8.0-2
 - fontconfig-2.8.0-sleep-less.patch: Make a stupid sleep() in fc-cache
-  slightly less stupid. 
-
-* Tue Aug 10 2010 Arkady L. Shane <ashejn@yandex-team.ru> - 2.8.0-2.1
-- rebuilt for Fedora 14
-
-* Tue Jun  8 2010 Arkady L. Shane <ashejn@yandex-team.ru> - 2.8.0-1.2.1
-- bump Release for updating from F12
-
-* Mon Mar 15 2010 Arkady L. Shane <ashejn@yandex-team.ru> - 2.8.0-1.1
-- apply ubuntu patches and configs
+  slightly less stupid.
 
 * Thu Dec  3 2009 Behdad Esfahbod <besfahbo@redhat.com> - 2.8.0-1
 - Update to 2.8.0

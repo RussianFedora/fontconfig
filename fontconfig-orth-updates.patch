@@ -1,0 +1,605 @@
+diff --git a/fc-lang/Makefile.am b/fc-lang/Makefile.am
+index 923a4ff..d2eca5b 100644
+--- a/fc-lang/Makefile.am
++++ b/fc-lang/Makefile.am
+@@ -1,3 +1,4 @@
++# -*- encoding: utf-8 -*-
+ #
+ # $Id $
+ #
+@@ -7,9 +8,9 @@
+ # documentation for any purpose is hereby granted without fee, provided that
+ # the above copyright notice appear in all copies and that both that
+ # copyright notice and this permission notice appear in supporting
+-# documentation, and that the name of Keith Packard not be used in
++# documentation, and that the name of the author(s) not be used in
+ # advertising or publicity pertaining to distribution of the software without
+-# specific, written prior permission.  Keith Packard makes no
++# specific, written prior permission.  The authors make no
+ # representations about the suitability of this software for any purpose.  It
+ # is provided "as is" without express or implied warranty.
+ #
+@@ -22,10 +23,6 @@
+ # PERFORMANCE OF THIS SOFTWARE.
+ #
+ 
+-CC = @CC_FOR_BUILD@
+-EXEEXT = @EXEEXT_FOR_BUILD@
+-LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+-
+ INCLUDES=-I${top_srcdir}/src -I${top_srcdir} $(WARN_CFLAGS)
+ 
+ TMPL=fclang.tmpl.h
+@@ -36,21 +33,30 @@ noinst_PROGRAMS=fc-lang
+ 
+ noinst_MANS=fc-lang.man
+ 
+-EXTRA_DIST=$(TMPL) $(ORTH)
++EXTRA_DIST = $(TARG) $(TMPL) $(ORTH)
+ 
++if CROSS_COMPILING
++$(TARG):$(ORTH) fc-lang.c $(STMPL)
++	@echo Warning: cannot rebuild $(TARG) when cross-compiling
++else
+ $(TARG):$(ORTH) fc-lang${EXEEXT} $(STMPL)
+ 	$(AM_V_GEN) $(RM) $(TARG); \
+ 	./fc-lang${EXEEXT} -d ${srcdir} $(ORTH) < $(STMPL) > $(TARG).tmp && \
+ 	mv $(TARG).tmp $(TARG)
++endif
+ 
+ ALIAS_FILES = fcalias.h fcaliastail.h
+ 
+ BUILT_SOURCES = $(ALIAS_FILES) $(TARG)
+ 
+-$(ALIAS_FILES): 
++$(ALIAS_FILES):
+ 	touch $(ALIAS_FILES)
+ 
+-CLEANFILES = $(TARG) $(ALIAS_FILES)
++CLEANFILES = $(ALIAS_FILES)
++
++DISTCLEANFILES = $(TARG)
++
++MAINTAINERCLEANFILES = $(TARG)
+ 
+ # NOTE:
+ #
+@@ -296,5 +302,10 @@ ORTH = \
+ 	ty.orth \
+ 	wal.orth \
+ 	za.orth \
+-	lah.orth
++	lah.orth \
++	nqo.orth \
++	brx.orth \
++	sat.orth \
++	doi.orth \
++	mni.orth
+ #	^-------------- Add new orth files here
+diff --git a/fc-lang/ast.orth b/fc-lang/ast.orth
+index 20b81f4..55aaed5 100644
+--- a/fc-lang/ast.orth
++++ b/fc-lang/ast.orth
+@@ -7,9 +7,9 @@
+ # documentation for any purpose is hereby granted without fee, provided that
+ # the above copyright notice appear in all copies and that both that
+ # copyright notice and this permission notice appear in supporting
+-# documentation, and that the name of Keith Packard not be used in
++# documentation, and that the name of the author(s) not be used in
+ # advertising or publicity pertaining to distribution of the software without
+-# specific, written prior permission.  Keith Packard makes no
++# specific, written prior permission.  The authors make no
+ # representations about the suitability of this software for any purpose.  It
+ # is provided "as is" without express or implied warranty.
+ #
+@@ -41,3 +41,7 @@
+ 00f3
+ 00fa
+ 00fc
++1e24
++1e25
++1e36
++1e37
+diff --git a/fc-lang/brx.orth b/fc-lang/brx.orth
+new file mode 100644
+index 0000000..eab2046
+--- /dev/null
++++ b/fc-lang/brx.orth
+@@ -0,0 +1,46 @@
++#
++# fontconfig/fc-lang/brx.orth
++#
++# Copyright © 2012 Parag Nemade
++#
++# Permission to use, copy, modify, distribute, and sell this software and its
++# documentation for any purpose is hereby granted without fee, provided that
++# the above copyright notice appear in all copies and that both that
++# copyright notice and this permission notice appear in supporting
++# documentation, and that the name of Keith Packard not be used in
++# advertising or publicity pertaining to distribution of the software without
++# specific, written prior permission.  Keith Packard makes no
++# representations about the suitability of this software for any purpose.  It
++# is provided "as is" without express or implied warranty.
++#
++# THE AUTHOR(S) DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
++# INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO
++# EVENT SHALL THE AUTHOR(S) BE LIABLE FOR ANY SPECIAL, INDIRECT OR
++# CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE,
++# DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
++# TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
++# PERFORMANCE OF THIS SOFTWARE.
++#
++# Bodo (Devanagari script) (brx)
++#
++# Source: Enhanced inscript: http://pune.cdac.in/html/gist/down/inscript_d.asp
++# Or
++# Source: http://malayalam.kerala.gov.in/images/8/80/Qwerty_enhancedinscriptkeyboardlayout.pdf Page No. 44
++#
++0901-0903       # Various Signs 
++0905-090c	# Independent vowels
++090f-0910       # Independent vowels
++0913-0914       # Independent vowels
++0915-0928       # Consonants
++092a-0930       # Consonants
++0932-0932       # Consonants
++0935-0939       # Consonants
++093c-0944       # Various and Dependent vowel signs
++0947-0948       # Dependent vowel signs
++094b-094d       # Dependent vowel signs and virama
++0950-0952       # Sign and vedic tone marks
++0960-0963       # Additional vowels
++0964-0965       # Punctuations
++0966-096F       # Digits
++0970            # Abbrevation sign
++
+diff --git a/fc-lang/doi.orth b/fc-lang/doi.orth
+new file mode 100644
+index 0000000..d4a274a
+--- /dev/null
++++ b/fc-lang/doi.orth
+@@ -0,0 +1,40 @@
++#
++# fontconfig/fc-lang/doi.orth
++#
++# Copyright © 2012 Pravin Satpute <psatpute@redhat.com>
++#
++# Permission to use, copy, modify, distribute, and sell this software and its
++# documentation for any purpose is hereby granted without fee, provided that
++# the above copyright notice appear in all copies and that both that
++# copyright notice and this permission notice appear in supporting
++# documentation, and that the name of the author(s) not be used in
++# advertising or publicity pertaining to distribution of the software without
++# specific, written prior permission.  The author(s) make(s) no
++# representations about the suitability of this software for any purpose.  It
++# is provided "as is" without express or implied warranty.
++#
++# THE AUTHOR(S) DISCLAIM(S) ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
++# INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO
++# EVENT SHALL THE AUTHOR(S) BE LIABLE FOR ANY SPECIAL, INDIRECT OR
++# CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE,
++# DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
++# TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
++# PERFORMANCE OF THIS SOFTWARE.
++#
++# Dogri (doi)
++#
++# Source: Enhanced inscript: http://malayalam.kerala.gov.in/images/8/80/Qwerty_enhancedinscriptkeyboardlayout.pdf Page No. 58
++# Encircled these characters in Unicode chart:  http://pravins.fedorapeople.org/Dogri-characters.pdf
++# documents
++0902-0903
++0905-090c
++090f-0910
++0913-0928
++092a-0930
++0932
++0935-0939
++093c-0944
++0947-0948
++094b-094d
++0950-0952
++095b-096f
+diff --git a/fc-lang/fc-lang.c b/fc-lang/fc-lang.c
+index 21d568d..51717f9 100644
+--- a/fc-lang/fc-lang.c
++++ b/fc-lang/fc-lang.c
+@@ -7,9 +7,9 @@
+  * documentation for any purpose is hereby granted without fee, provided that
+  * the above copyright notice appear in all copies and that both that
+  * copyright notice and this permission notice appear in supporting
+- * documentation, and that the name of Keith Packard not be used in
++ * documentation, and that the name of the author(s) not be used in
+  * advertising or publicity pertaining to distribution of the software without
+- * specific, written prior permission.  Keith Packard makes no
++ * specific, written prior permission.  The authors make no
+  * representations about the suitability of this software for any purpose.  It
+  * is provided "as is" without express or implied warranty.
+  *
+@@ -76,10 +76,14 @@ fatal (const char *file, int lineno, const char *msg)
+ }
+ 
+ static char *
+-get_line (FILE *f, char *line, int *lineno)
++get_line (FILE *f, char *buf, int *lineno)
+ {
+     char    *hash;
++    char    *line;
+     int	    end;
++
++next:
++    line = buf;
+     if (!fgets (line, 1024, f))
+ 	return 0;
+     ++(*lineno);
+@@ -87,12 +91,15 @@ get_line (FILE *f, char *line, int *lineno)
+     if (hash)
+ 	*hash = '\0';
+ 
++    while (line[0] && isspace (line[0]))
++      line++;
+     end = strlen (line);
+     while (end > 0 && isspace (line[end-1]))
+       line[--end] = '\0';
+ 
+-    if (line[0] == '\0' || line[0] == '\n' || line[0] == '\032' || line[0] == '\r')
+-	return get_line (f, line, lineno);
++    if (line[0] == '\0' || line[0] == '\n' || line[0] == '\r')
++      goto next;
++
+     return line;
+ }
+ 
+@@ -125,16 +132,18 @@ scanopen (char *file)
+  * Comments begin with '#'
+  */
+ 
+-static const FcCharSet *
++static FcCharSet *
+ scan (FILE *f, char *file, FcCharSetFreezer *freezer)
+ {
+     FcCharSet	    *c = 0;
+     FcCharSet	    *n;
++    FcBool	    del;
+     int		    start, end, ucs4;
+-    char	    line[1024];
++    char	    buf[1024];
++    char	    *line;
+     int		    lineno = 0;
+ 
+-    while (get_line (f, line, &lineno))
++    while ((line = get_line (f, buf, &lineno)))
+     {
+ 	if (!strncmp (line, "include", 7))
+ 	{
+@@ -158,6 +167,12 @@ scan (FILE *f, char *file, FcCharSetFreezer *freezer)
+ 	    FcCharSetDestroy (n);
+ 	    continue;
+ 	}
++	del = FcFalse;
++	if (line[0] == '-')
++	{
++	  del = FcTrue;
++	  line++;
++	}
+ 	if (strchr (line, '-'))
+ 	{
+ 	    if (sscanf (line, "%x-%x", &start, &end) != 2)
+@@ -173,11 +188,11 @@ scan (FILE *f, char *file, FcCharSetFreezer *freezer)
+ 	    c = FcCharSetCreate ();
+ 	for (ucs4 = start; ucs4 <= end; ucs4++)
+ 	{
+-	    if (!FcCharSetAddChar (c, ucs4))
++	    if (!((del ? FcCharSetDelChar : FcCharSetAddChar) (c, ucs4)))
+ 		fatal (file, lineno, "out of memory");
+ 	}
+     }
+-    n = FcCharSetFreeze (freezer, c);
++    n = (FcCharSet *) FcCharSetFreeze (freezer, c);
+     FcCharSetDestroy (c);
+     return n;
+ }
+@@ -231,8 +246,8 @@ typedef struct _Entry {
+ 
+ static int compare (const void *a, const void *b)
+ {
+-    const Entry const *as = a, *bs = b;
+-    return FcStrCmpIgnoreCase (as->file, bs->file);
++    const Entry *as = a, *bs = b;
++    return FcStrCmpIgnoreCase ((const FcChar8 *) as->file, (const FcChar8 *) bs->file);
+ }
+ 
+ #define MAX_LANG	    1024
+@@ -245,7 +260,7 @@ int
+ main (int argc, char **argv)
+ {
+     static Entry	entries[MAX_LANG];
+-    static const FcCharSet	*sets[MAX_LANG];
++    static FcCharSet	*sets[MAX_LANG];
+     static int		duplicate[MAX_LANG];
+     static int		country[MAX_LANG];
+     static char		*names[MAX_LANG];
+@@ -363,9 +378,9 @@ main (int argc, char **argv)
+ 
+     printf ("#define LEAF0       (%d * sizeof (FcLangCharSet))\n", nsets);
+     printf ("#define OFF0        (LEAF0 + %d * sizeof (FcCharLeaf))\n", tl);
+-    printf ("#define NUM0        (OFF0 + %d * sizeof (intptr_t))\n", tn);
++    printf ("#define NUM0        (OFF0 + %d * sizeof (uintptr_t))\n", tn);
+     printf ("#define SET(n)      (n * sizeof (FcLangCharSet) + offsetof (FcLangCharSet, charset))\n");
+-    printf ("#define OFF(s,o)    (OFF0 + o * sizeof (intptr_t) - SET(s))\n");
++    printf ("#define OFF(s,o)    (OFF0 + o * sizeof (uintptr_t) - SET(s))\n");
+     printf ("#define NUM(s,n)    (NUM0 + n * sizeof (FcChar16) - SET(s))\n");
+     printf ("#define LEAF(o,l)   (LEAF0 + l * sizeof (FcCharLeaf) - (OFF0 + o * sizeof (intptr_t)))\n");
+     printf ("#define fcLangCharSets (fcLangData.langCharSets)\n");
+@@ -376,7 +391,7 @@ main (int argc, char **argv)
+     printf ("static const struct {\n"
+ 	    "    FcLangCharSet  langCharSets[%d];\n"
+ 	    "    FcCharLeaf     leaves[%d];\n"
+-	    "    intptr_t       leaf_offsets[%d];\n"
++	    "    uintptr_t      leaf_offsets[%d];\n"
+ 	    "    FcChar16       numbers[%d];\n"
+ 	    "    FcChar%s       langIndices[%d];\n"
+ 	    "    FcChar%s       langIndicesInv[%d];\n"
+diff --git a/fc-lang/ks.orth b/fc-lang/ks.orth
+index e86ba0d..6697e15 100644
+--- a/fc-lang/ks.orth
++++ b/fc-lang/ks.orth
+@@ -23,8 +23,10 @@
+ #
+ # Kashmiri (ks)
+ #
+-# Kashmiri is written in Arabic in both India and Pakistan. The problem is,
+-# Unicode 5.1 does not contain all the letters required in the orthography,
+-# including Wavy Hamza Below and the Alef Maksura With Ring Below. We'll
+-# just include Urdu for now.
+ include ur.orth
++0620
++0657
++065f
++0672
++0673
++06c4
+diff --git a/fc-lang/mni.orth b/fc-lang/mni.orth
+new file mode 100644
+index 0000000..4388269
+--- /dev/null
++++ b/fc-lang/mni.orth
+@@ -0,0 +1,35 @@
++#
++# fontconfig/fc-lang/mni.orth
++#
++# Copyright © 2012 Pravin Satpute <psatpute@redhat.com>
++#
++# Permission to use, copy, modify, distribute, and sell this software and its
++# documentation for any purpose is hereby granted without fee, provided that
++# the above copyright notice appear in all copies and that both that
++# copyright notice and this permission notice appear in supporting
++# documentation, and that the name of the author(s) not be used in
++# advertising or publicity pertaining to distribution of the software without
++# specific, written prior permission.  The author(s) make(s) no
++# representations about the suitability of this software for any purpose.  It
++# is provided "as is" without express or implied warranty.
++#
++# THE AUTHOR(S) DISCLAIM(S) ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
++# INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO
++# EVENT SHALL THE AUTHOR(S) BE LIABLE FOR ANY SPECIAL, INDIRECT OR
++# CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE,
++# DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
++# TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
++# PERFORMANCE OF THIS SOFTWARE.
++#
++# Maniputi (mni)
++#
++# Source: Script grammer: http://tdil-dc.in/tdildcMain/articles/283709Script_Grammar_for_Manipuri.pdf 6th page
++# Characters are encirled in Unicode chart http://pravins.fedorapeople.org/Manipuri-characters.pdf
++# documents
++include bn.orth
++0964
++- 09c4
++09bd
++09ce
++09e6-09ef
++09f1
+diff --git a/fc-lang/ne.orth b/fc-lang/ne.orth
+index 18cf011..246386f 100644
+--- a/fc-lang/ne.orth
++++ b/fc-lang/ne.orth
+@@ -7,9 +7,9 @@
+ # documentation for any purpose is hereby granted without fee, provided that
+ # the above copyright notice appear in all copies and that both that
+ # copyright notice and this permission notice appear in supporting
+-# documentation, and that the name of Keith Packard not be used in
++# documentation, and that the name of the author(s) not be used in
+ # advertising or publicity pertaining to distribution of the software without
+-# specific, written prior permission.  Keith Packard makes no
++# specific, written prior permission.  The authors make no
+ # representations about the suitability of this software for any purpose.  It
+ # is provided "as is" without express or implied warranty.
+ #
+@@ -23,3 +23,4 @@
+ #
+ # Nepali (Devanagari script) (NE)
+ include hi.orth
++-090C-090E	# See bug 30685
+diff --git a/fc-lang/nqo.orth b/fc-lang/nqo.orth
+new file mode 100644
+index 0000000..285e1d7
+--- /dev/null
++++ b/fc-lang/nqo.orth
+@@ -0,0 +1,31 @@
++#
++# fontconfig/fc-lang/nqo.orth
++#
++# Copyright © 2011 Akira TAGOH
++#
++# Permission to use, copy, modify, distribute, and sell this software and its
++# documentation for any purpose is hereby granted without fee, provided that
++# the above copyright notice appear in all copies and that both that
++# copyright notice and this permission notice appear in supporting
++# documentation, and that the name of the author(s) not be used in
++# advertising or publicity pertaining to distribution of the software without
++# specific, written prior permission.  The authors make no
++# representations about the suitability of this software for any purpose.  It
++# is provided "as is" without express or implied warranty.
++#
++# THE AUTHOR(S) DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
++# INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO
++# EVENT SHALL THE AUTHOR(S) BE LIABLE FOR ANY SPECIAL, INDIRECT OR
++# CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE,
++# DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
++# TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
++# PERFORMANCE OF THIS SOFTWARE.
++#
++# N'Ko (nqo)
++#
++# See:
++#  http://www.unicode.org/charts/PDF/U07C0.pdf
++#  http://en.wikipedia.org/wiki/N'Ko_alphabet
++#
++07c0-07ff
++
+diff --git a/fc-lang/sat.orth b/fc-lang/sat.orth
+new file mode 100644
+index 0000000..d5d91d0
+--- /dev/null
++++ b/fc-lang/sat.orth
+@@ -0,0 +1,44 @@
++# fontconfig/fc-lang/sat.orth
++#
++# Copyright © 2012 Parag Nemade
++#
++# Permission to use, copy, modify, distribute, and sell this software and its
++# documentation for any purpose is hereby granted without fee, provided that
++# the above copyright notice appear in all copies and that both that
++# copyright notice and this permission notice appear in supporting
++# documentation, and that the name of Keith Packard not be used in
++# advertising or publicity pertaining to distribution of the software without
++# specific, written prior permission.  Keith Packard makes no
++# representations about the suitability of this software for any purpose.  It
++# is provided "as is" without express or implied warranty.
++#
++# THE AUTHOR(S) DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
++# INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO
++# EVENT SHALL THE AUTHOR(S) BE LIABLE FOR ANY SPECIAL, INDIRECT OR
++# CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE,
++# DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
++# TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
++# PERFORMANCE OF THIS SOFTWARE.
++#
++# Santali (Devanagari script) (sat)
++#
++# Source: Enhanced inscript: http://pune.cdac.in/html/gist/down/inscript_d.asp
++# Or
++# Source: http://malayalam.kerala.gov.in/images/8/80/Qwerty_enhancedinscriptkeyboardlayout.pdf Page No. 86
++#
++0901-0903       # Various Signs 
++0905-090a	# Independent vowels
++090f-0910       # Independent vowels
++0913-0914       # Independent vowels
++0915-0928       # Consonants
++092a-0930       # Consonants
++0932-0932      # Consonants
++0935            # Consonants
++0938-0939       # Consonants
++093c-0942       # Various and Dependent vowel signs
++0947-0948       # Dependent vowel signs
++094b-094d       # Dependent vowel signs and virama
++0950            # Sign
++0964-0965       # Punctuations
++0966-096F       # Digits
++0970            # Abbrevation sign
+diff --git a/fc-lang/ug.orth b/fc-lang/ug.orth
+index bf8e674..1a6f28d 100644
+--- a/fc-lang/ug.orth
++++ b/fc-lang/ug.orth
+@@ -1,15 +1,19 @@
+ #
+ # fontconfig/fc-lang/ug.orth
+ #
+-# Copyright © 2002 Keith Packard
++# Copyright © 2010
++# UKIJ - Uyghur Computer Science Association (http://www.ukij.org/)
++# Ubuntu Uyghur Translation Team (https://launchpad.net/~ubuntu-l10n-ug)
++# Kenjisoft (http://kenjisoft.homelinux.com/)
++# Bilik (http://www.bilik.cn/)
+ #
+ # Permission to use, copy, modify, distribute, and sell this software and its
+ # documentation for any purpose is hereby granted without fee, provided that
+ # the above copyright notice appear in all copies and that both that
+ # copyright notice and this permission notice appear in supporting
+-# documentation, and that the name of Keith Packard not be used in
++# documentation, and that the name of the author(s) not be used in
+ # advertising or publicity pertaining to distribution of the software without
+-# specific, written prior permission.  Keith Packard makes no
++# specific, written prior permission.  The authors makes no
+ # representations about the suitability of this software for any purpose.  It
+ # is provided "as is" without express or implied warranty.
+ #
+@@ -21,9 +25,26 @@
+ # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ # PERFORMANCE OF THIS SOFTWARE.
+ #
+-# Uighur (UG)
++# Uyghur (UG)
+ #
+-# Uighur is written in a varient of Perso-Arabic, but I haven't found
+-# any references which define the variations.  So, for now we'll use Arabic
+-# fonts
+-include ar.orth
++# Uyghur is written in a modified Persian-Arabic script. For detailed
++# information, refer to http://en.wikipedia.org/wiki/Uyghur_language
++#
++0626-0628
++062A
++062C
++062E-062F
++0631-0634
++063A
++0641-0646
++0648-064A
++067E
++0686
++0698
++06AD
++06AF
++06BE
++06C6-06C8
++06CB
++06D0
++06D5
+diff --git a/fc-lang/ur.orth b/fc-lang/ur.orth
+index d9b944a..5b39a50 100644
+--- a/fc-lang/ur.orth
++++ b/fc-lang/ur.orth
+@@ -8,9 +8,9 @@
+ # documentation for any purpose is hereby granted without fee, provided that
+ # the above copyright notice appear in all copies and that both that
+ # copyright notice and this permission notice appear in supporting
+-# documentation, and that the name of Keith Packard not be used in
++# documentation, and that the name of the author(s) not be used in
+ # advertising or publicity pertaining to distribution of the software without
+-# specific, written prior permission.  Keith Packard makes no
++# specific, written prior permission.  The authors make no
+ # representations about the suitability of this software for any purpose.  It
+ # is provided "as is" without express or implied warranty.
+ #
+@@ -34,9 +34,11 @@
+ #
+ # General forms:
+ 0621-0624
+-0626-063a
++0626-0628
++063a
+ 0641-0642
+-0644-0648
++0644-0646
++0648
+ 0679
+ 067e
+ 0686
+@@ -47,6 +49,7 @@
+ 06af
+ 06ba
+ 06be
++06c3
+ 06cc
+ 06d2
+ # Presentations forms:

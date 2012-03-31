@@ -1,0 +1,56 @@
+From 52960d05ebb8af34a302e3959978d2930a39fb39 Mon Sep 17 00:00:00 2001
+From: Behdad Esfahbod <behdad@behdad.org>
+Date: Tue, 21 Sep 2010 13:14:41 -0400
+Subject: [PATCH] Add new public API: FcCharSetDelChar()
+
+---
+ doc/fccharset.fncs      |   11 +++++++++++
+ fontconfig/fontconfig.h |    3 +++
+ src/fccharset.c         |   17 +++++++++++++++++
+ 3 files changed, 31 insertions(+), 0 deletions(-)
+
+diff --git a/fontconfig/fontconfig.h b/fontconfig/fontconfig.h
+index c9f20cc..6a6d511 100644
+--- a/fontconfig/fontconfig.h
++++ b/fontconfig/fontconfig.h
+@@ -423,6 +423,9 @@ FcCharSetDestroy (FcCharSet *fcs);
+ FcPublic FcBool
+ FcCharSetAddChar (FcCharSet *fcs, FcChar32 ucs4);
+ 
++FcPublic FcBool
++FcCharSetDelChar (FcCharSet *fcs, FcChar32 ucs4);
++
+ FcPublic FcCharSet*
+ FcCharSetCopy (FcCharSet *src);
+ 
+diff --git a/src/fccharset.c b/src/fccharset.c
+index 9228b09..14e4c3c 100644
+--- a/src/fccharset.c
++++ b/src/fccharset.c
+@@ -262,6 +262,23 @@ FcCharSetAddChar (FcCharSet *fcs, FcChar32 ucs4)
+     return FcTrue;
+ }
+ 
++FcBool
++FcCharSetDelChar (FcCharSet *fcs, FcChar32 ucs4)
++{
++    FcCharLeaf	*leaf;
++    FcChar32	*b;
++
++    if (fcs->ref == FC_REF_CONSTANT)
++	return FcFalse;
++    leaf = FcCharSetFindLeaf (fcs, ucs4);
++    if (!leaf)
++	return FcTrue;
++    b = &leaf->map[(ucs4 & 0xff) >> 5];
++    *b &= ~(1 << (ucs4 & 0x1f));
++    /* We don't bother removing the leaf if it's empty */
++    return FcTrue;
++}
++
+ /*
+  * An iterator for the leaves of a charset
+  */
+-- 
+1.7.7.6
+
