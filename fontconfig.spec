@@ -3,7 +3,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.8.0
-Release: 6%{?dist}
+Release: 7%{?dist}
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -31,6 +31,7 @@ BuildRequires: fontpackages-devel
 
 Requires: fontpackages-filesystem
 Requires(pre): freetype
+Requires(post): grep coreutils
 
 %description
 Fontconfig is designed to locate fonts within the
@@ -138,6 +139,9 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Wed May 16 2012 Akira TAGOH <tagoh@redhat.com> - 2.8.0-7.R
+- Add grep and coreutils to Requires(post). (#821957)
+
 * Sun Apr  1 2012 Arkady L. Shane <ashejn@russianfedora.ru> - 2.8.0-6.R
 - apply ubuntu lcd patches
 
