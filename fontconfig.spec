@@ -3,7 +3,7 @@
 Summary: Font configuration and customization library
 Name: fontconfig
 Version: 2.8.0
-Release: 7%{?dist}
+Release: 8%{?dist}
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -22,6 +22,7 @@ Patch1: fontconfig-2.8.0-dingbats.patch
 Patch2: fontconfig-orth-updates.patch
 Patch3: fontconfig-drop-apple-roman-support.patch
 Patch4: fontconfig-add-FcCharSetDelChar.patch
+Patch5: fontconfig-fix-lang-match.patch
 Patch99: fontconfig-2.6.0-lcd.patch
 
 BuildRequires: expat-devel
@@ -59,6 +60,7 @@ will use fontconfig.
 %patch2 -p1 -b .orth-updates
 %patch3 -p1 -b .apple-roman
 %patch4 -p1 -b .add-fccharsetdelchar
+%patch5 -p1 -b .fix-lang-match
 %patch99 -p1
 
 %build
@@ -139,6 +141,9 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Fri Sep  7 2012 Akira TAGOH <tagoh@redhat.com> - 2.8.0-8.R
+- Fix matching lang wrongly. (#771093)
+
 * Wed May 16 2012 Akira TAGOH <tagoh@redhat.com> - 2.8.0-7.R
 - Add grep and coreutils to Requires(post). (#821957)
 
