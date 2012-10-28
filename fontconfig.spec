@@ -3,8 +3,8 @@
 Summary:	Font configuration and customization library
 Name:		fontconfig
 Version:	2.10.1
-Release:	1%{?dist}
-License:	MIT
+Release:	2%{?dist}
+License:	MIT and Public Domain and UCD
 Group:		System Environment/Libraries
 Source:		http://fontconfig.org/release/fontconfig-%{version}.tar.bz2
 URL:		http://fontconfig.org
@@ -135,6 +135,9 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Sun Oct 28 2012 Arkady L. Shane <ashejn@russianfedora.ru> - 2.10.1-2
+- Update License field (#869614)
+
 * Wed Oct 17 2012 Arkady L. Shane <ashejn@russianfedora.ru> - 2.10.1-1
 - apply ubuntu patches
 
