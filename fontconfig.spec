@@ -1,43 +1,50 @@
 %global freetype_version 2.1.4
 
-Summary: Font configuration and customization library
-Name: fontconfig
-Version: 2.8.0
-Release: 2%{?dist}
-License: MIT
-Group: System Environment/Libraries
-Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
-URL: http://fontconfig.org
-BuildRoot: %{_tmppath}/%{name}-%{version}-root
-Source1: 25-no-bitmap-fedora.conf
+Summary:	Font configuration and customization library
+Name:		fontconfig
+Version:	2.10.91
+Release:	1%{?dist}
+# src/ftglue.[ch] is in Public Domain
+# src/fccache.c contains Public Domain code
+# fc-case/CaseFolding.txt is in the UCD
+# otherwise MIT
+License:	MIT and Public Domain and UCD
+Group:		System Environment/Libraries
+Source:		http://fontconfig.org/release/fontconfig-%{version}.tar.bz2
+URL:		http://fontconfig.org
+Source1:	25-no-bitmap-fedora.conf
 
-Patch0: fontconfig-2.8.0-sleep-less.patch
+Patch0:		fontconfig-2.8.0-sleep-less.patch
 
-BuildRequires: gawk
-BuildRequires: expat-devel
-BuildRequires: freetype-devel >= %{freetype_version}
-BuildRequires: perl
+Patch10:        00_old_diff_gz.patch
+Patch11:        01_fonts_nanum.patch
+Patch12:        04_ubuntu_monospace_lcd_filter_conf.patch
+Patch13:        05_lcdfilterlegacy.patch
+Patch14:        05_ubuntu_add_hinting_and_antialiasing_confs.patch
+Patch15:        06_ubuntu_lcddefault.patch
 
-PreReq: freetype >= %{freetype_version}, coreutils
-# Hebrew fonts referenced in fonts.conf changed names in fonts-hebrew-0.100
-Conflicts: fonts-hebrew < 0.100
-# Conflict with pre-modular X fonts, because they moved and we 
-# reference the new path in %%configure
-Conflicts: fonts-xorg-base, fonts-xorg-syriac
+BuildRequires:	expat-devel
+BuildRequires:	freetype-devel >= %{freetype_version}
+BuildRequires:	autoconf automake libtool
+BuildRequires:	fontpackages-devel
+
+Requires:	fontpackages-filesystem
+Requires(pre):	freetype
+Requires(post):	grep coreutils
 
 %description
 Fontconfig is designed to locate fonts within the
 system and select them according to requirements specified by 
 applications.
 
-%package devel
-Summary: Font configuration and customization library
-Group: Development/Libraries
-Requires: fontconfig = %{version}-%{release}
-Requires: freetype-devel >= %{freetype_version}
-Requires: pkgconfig
+%package	devel
+Summary:	Font configuration and customization library
+Group:		Development/Libraries
+Requires:	fontconfig = %{version}-%{release}
+Requires:	freetype-devel >= %{freetype_version}
+Requires:	pkgconfig
 
-%description devel
+%description	devel
 The fontconfig-devel package includes the header files,
 and developer docs for the fontconfig package.
 
@@ -48,39 +55,41 @@ will use fontconfig.
 %setup -q
 %patch0 -p1 -b .sleep-less
 
+%patch10 -p1
+%patch11 -p1
+%patch12 -p1
+%patch13 -p1
+%patch14 -p1
+%patch15 -p1
+
 %build
+# update autotools stuff to avoid rpath definition.
+libtoolize -f
+autoreconf -f
 
 # We don't want to rebuild the docs, but we want to install the included ones.
 export HASDOCBOOK=no
 
-%configure --with-add-fonts=/usr/share/X11/fonts/Type1,/usr/share/X11/fonts/TTF,/usr/local/share/fonts
+%configure	--with-add-fonts=/usr/share/X11/fonts/Type1,/usr/share/X11/fonts/TTF,/usr/local/share/fonts \
+		--disable-static
 
-make
-make check
+make %{?_smp_mflags}
 
 %install
-rm -rf $RPM_BUILD_ROOT
+make install DESTDIR=$RPM_BUILD_ROOT INSTALL="install -p"
 
-make install DESTDIR=$RPM_BUILD_ROOT
+find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
 
-install -m 0644 %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/fonts/conf.d
-ln -s ../conf.avail/25-unhint-nonlatin.conf $RPM_BUILD_ROOT%{_sysconfdir}/fonts/conf.d
+install -p -m 0644 %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/fonts/conf.d
+ln -s %{_fontconfig_templatedir}/25-unhint-nonlatin.conf $RPM_BUILD_ROOT%{_fontconfig_confdir}/
 
 # move installed doc files back to build directory to package themm
 # in the right place
 mv $RPM_BUILD_ROOT%{_docdir}/fontconfig/* .
 rmdir $RPM_BUILD_ROOT%{_docdir}/fontconfig/
 
-# All font packages depend on this package, so we create
-# and own /usr/share/fonts
-mkdir -p $RPM_BUILD_ROOT%{_datadir}/fonts
-
-# Remove unpackaged files
-rm $RPM_BUILD_ROOT%{_libdir}/*.la
-rm $RPM_BUILD_ROOT%{_libdir}/*.a
-
-%clean
-rm -rf $RPM_BUILD_ROOT
+%check
+make check
 
 %post
 /sbin/ldconfig
@@ -100,30 +109,28 @@ fi
 %postun -p /sbin/ldconfig
 
 %files
-%defattr(-, root, root)
-%doc README AUTHORS COPYING 
+%doc README AUTHORS COPYING
 %doc fontconfig-user.txt fontconfig-user.html
+%doc %{_fontconfig_confdir}/README
 %{_libdir}/libfontconfig.so.*
 %{_bindir}/fc-cache
 %{_bindir}/fc-cat
 %{_bindir}/fc-list
 %{_bindir}/fc-match
+%{_bindir}/fc-pattern
 %{_bindir}/fc-query
 %{_bindir}/fc-scan
-%dir %{_sysconfdir}/fonts/conf.avail
-%dir %{_datadir}/fonts
-%{_sysconfdir}/fonts/fonts.dtd
-%config %{_sysconfdir}/fonts/fonts.conf
-%doc %{_sysconfdir}/fonts/conf.d/README
-%config %{_sysconfdir}/fonts/conf.avail/*.conf
-%config(noreplace) %{_sysconfdir}/fonts/conf.d/*.conf
+%{_bindir}/fc-validate
+%{_fontconfig_templatedir}/*.conf
+%{_datadir}/xml/fontconfig/fonts.dtd
+%config %{_fontconfig_masterdir}/fonts.conf
+%config(noreplace) %{_fontconfig_confdir}/*.conf
 %dir %{_localstatedir}/cache/fontconfig
 
 %{_mandir}/man1/*
 %{_mandir}/man5/*
 
 %files devel
-%defattr(-, root, root)
 %doc fontconfig-devel.txt fontconfig-devel
 %{_libdir}/libfontconfig.so
 %{_libdir}/pkgconfig/*
@@ -131,6 +138,68 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Wed Jan 16 2013 Arkady L. Shane <ashejn@russianfedora.ru> - 2.10.91-1.R
+- apply ubuntu patches
+
+* Fri Jan 11 2013 Akira TAGOH <tagoh@redhat.com> - 2.10.91-1
+- New upstream release (#894109)
+  - threadsafe
+  - new tool to validate the glyph coverage
+  - add new rule to scale the bitmap font.
+
+* Mon Nov 26 2012 Akira TAGOH <tagoh@redhat.com> - 2.10.2-1
+- New upstream release.
+  - Fix an regression on FcFontMatch with namelang. (#876970)
+
+* Thu Oct 25 2012 Akira TAGOH <tagoh@redhat.com> - 2.10.1-2
+- Update License field (#869614)
+
+* Fri Jul 27 2012 Akira TAGOH <tagoh@redhat.com> - 2.10.1-1
+- New upstream release.
+
+* Thu Jul 19 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.10.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
+
+* Mon Jul 17 2012 Akira TAGOH <tagoh@redhat.com> - 2.10.0-1
+- New upstream release.
+
+* Mon Jun 25 2012 Akira TAGOH <tagoh@redhat.com> - 2.9.92-1
+- New upstream release.
+
+* Mon Jun 11 2012 Akira TAGOH <tagoh@redhat.com> - 2.9.91-1
+- New upstream release.
+  - docs are generated with the fixed docbook (#826145)
+  - handle whitespace in family name correctly (#468565, #591634)
+  - Updated ne.orth. (#586763)
+
+* Wed May 16 2012 Akira TAGOH <tagoh@redhat.com> - 2.9.0-2
+- Add grep and coreutils to Requires(post). (#821957)
+
+* Fri Mar 23 2012 Akira TAGOH <tagoh@redhat.com>
+- backport patch to make 'result' from FcFontMatch() and FcFontSort()
+  more reliable.
+
+* Wed Mar 21 2012 Akira TAGOH <tagoh@redhat.com> - 2.9.0-1
+- New upstream release (#803559)
+  - Update ks.orth (#790471)
+  - Add brx.orth (#790460)
+  - Update ur.orth (#757985)
+  - No Apple Roman cmap support anymore. should works. (#681808)
+  - Update ne.orth (#586763)
+  - Add a workaround for ZapfDingbats. (#562952, #497648, #468565)
+- clean up the spec file.
+- Add BR: fontpackages-devel.
+- Add R: fontpackages-filesystem.
+
+* Fri Jan 13 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.8.0-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
+
+* Tue May 31 2011 Adam Jackson <ajax@redhat.com> 2.8.0-4
+- fontconfig-2.8.0-dingbats.patch: Hack for dingbats font matching. (#468565)
+
+* Tue Feb 08 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.8.0-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
+
 * Thu Jun 24 2010 Adam Jackson <ajax@redhat.com> 2.8.0-2
 - fontconfig-2.8.0-sleep-less.patch: Make a stupid sleep() in fc-cache
   slightly less stupid.
@@ -307,7 +376,7 @@ fi
 - inclusion of zhong yi font and rearranged font prefer list. (bug# 201300)
 
 * Fri Aug 11 2006 Ray Strode <rstrode@redhat.com> - 2.3.95-10
-- use "%5x" instead of " %4x" to support 64k instead of
+- use "%%5x" instead of " %%4x" to support 64k instead of
   clamping.  Idea from Behdad.
 
 * Fri Aug 11 2006 Ray Strode <rstrode@redhat.com> - 2.3.95-9
@@ -396,8 +465,8 @@ fi
 
 * Fri Dec  9 2005 Carl Worth <cworth@redhat.com> - 2.3.92.cvs20051129-2
 - Add two new Chinese font names to the default fonts.conf file:
-  	AR PL ShanHeiSun Uni
-  	AR PL Zenkai Uni
+    AR PL ShanHeiSun Uni
+    AR PL Zenkai Uni
 
 * Fri Dec 09 2005 Jesse Keating <jkeating@redhat.com>
 - rebuilt

@@ -1,0 +1,22 @@
+diff -urN fontconfig-2.10.91.orig/conf.d/Makefile.am fontconfig-2.10.91/conf.d/Makefile.am
+--- fontconfig-2.10.91.orig/conf.d/Makefile.am	2013-01-16 12:37:18.497497942 +0400
++++ fontconfig-2.10.91/conf.d/Makefile.am	2013-01-16 12:38:31.608689494 +0400
+@@ -28,6 +28,7 @@
+ 	10-antialias.conf \
+ 	10-hinting.conf \
+ 	10-hinting-slight.conf \
++	11-lcdfilter-default.conf \
+ 	10-scale-bitmap-fonts.conf \
+ 	20-unhint-small-vera.conf \
+ 	30-urw-aliases.conf \
+diff -urN fontconfig-2.10.91.orig/conf.d/Makefile.in fontconfig-2.10.91/conf.d/Makefile.in
+--- fontconfig-2.10.91.orig/conf.d/Makefile.in	2013-01-16 12:37:18.496497940 +0400
++++ fontconfig-2.10.91/conf.d/Makefile.in	2013-01-16 12:40:04.728933995 +0400
+@@ -300,6 +300,7 @@
+ 	10-antialias.conf \
+ 	10-hinting.conf \
+ 	10-hinting-slight.conf \
++	11-lcdfilter-default.conf \
+ 	10-scale-bitmap-fonts.conf \
+ 	20-unhint-small-vera.conf \
+ 	30-urw-aliases.conf \
