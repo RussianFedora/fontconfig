@@ -65,7 +65,7 @@ will use fontconfig.
 %build
 # update autotools stuff to avoid rpath definition.
 libtoolize -f
-autoreconf -f
+#autoreconf -f
 
 # We don't want to rebuild the docs, but we want to install the included ones.
 export HASDOCBOOK=no
