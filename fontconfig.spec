@@ -3,7 +3,11 @@
 Summary:	Font configuration and customization library
 Name:		fontconfig
 Version:	2.10.2
-Release:	1%{?dist}
+Release:	2%{?dist}
+# src/ftglue.[ch] is in Public Domain
+# src/fccache.c contains Public Domain code
+# fc-case/CaseFolding.txt is in the UCD
+# otherwise MIT
 License:	MIT and Public Domain and UCD
 Group:		System Environment/Libraries
 Source:		http://fontconfig.org/release/fontconfig-%{version}.tar.bz2
@@ -105,7 +109,6 @@ fi
 %postun -p /sbin/ldconfig
 
 %files
-%defattr(-, root, root, -)
 %doc README AUTHORS COPYING
 %doc fontconfig-user.txt fontconfig-user.html
 %doc %{_fontconfig_confdir}/README
@@ -118,7 +121,7 @@ fi
 %{_bindir}/fc-query
 %{_bindir}/fc-scan
 %{_fontconfig_templatedir}/*.conf
-%{_datadir}/xml/fontconfig/fonts.dtd
+%{_datadir}/xml/fontconfig
 %config %{_fontconfig_masterdir}/fonts.conf
 %config(noreplace) %{_fontconfig_confdir}/*.conf
 %dir %{_localstatedir}/cache/fontconfig
@@ -127,7 +130,6 @@ fi
 %{_mandir}/man5/*
 
 %files devel
-%defattr(-, root, root, -)
 %doc fontconfig-devel.txt fontconfig-devel
 %{_libdir}/libfontconfig.so
 %{_libdir}/pkgconfig/*
@@ -135,6 +137,9 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Tue Feb 12 2013 Akira TAGOH <tagoh@redhat.com> - 2.10.2-2.R
+- Own %%{_datadir}/xml/fontconfig dir. (#902373)
+
 * Mon Dec  3 2012 Arkady L. Shane <ashejn@russianfedora.ru> - 2.10.2-1
 - update to 2.10.2
 
