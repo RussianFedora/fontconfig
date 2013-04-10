@@ -2,8 +2,8 @@
 
 Summary:	Font configuration and customization library
 Name:		fontconfig
-Version:	2.10.91
-Release:	3%{?dist}
+Version:	2.10.92
+Release:	2%{?dist}
 # src/ftglue.[ch] is in Public Domain
 # src/fccache.c contains Public Domain code
 # fc-case/CaseFolding.txt is in the UCD
@@ -16,8 +16,7 @@ Source1:	25-no-bitmap-fedora.conf
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=140335
 Patch0:		fontconfig-2.8.0-sleep-less.patch
-# http://cgit.freedesktop.org/fontconfig/commit/?id=96220a5ed9d1d761b14a7ac516ac6786c132f280
-Patch1:		fontconfig-automake-1.13.patch
+Patch1:		fontconfig-929372.patch
 # Ubuntu patches
 Patch10:        00_old_diff_gz.patch
 Patch11:        01_fonts_nanum.patch
@@ -67,7 +66,7 @@ which is useful for developing applications that uses fontconfig.
 %prep
 %setup -q
 %patch0 -p1 -b .sleep-less
-%patch1 -p1 -b .1-automake113
+%patch1 -p1
 
 %patch10 -p1
 %patch11 -p1
@@ -77,10 +76,6 @@ which is useful for developing applications that uses fontconfig.
 %patch15 -p1
 
 %build
-# update autotools stuff to avoid rpath definition.
-libtoolize -f
-autoreconf -f -i
-
 # We don't want to rebuild the docs, but we want to install the included ones.
 export HASDOCBOOK=no
 
@@ -155,6 +150,10 @@ fi
 %doc fontconfig-devel.txt fontconfig-devel
 
 %changelog
+* Wed Apr 10 2013 Arkady L. Shane <ashejn@russianfedora.ru> - 2.10.92-2.R
+- update to 2.10.92
+- sync with upstream
+
 * Mon Feb 25 2013 Arkady L. Shane <ashejn@russianfedora.ru> - 2.10.91-3.R
 - sync with upstream
 - Improve the spec to meet the latest packaging guidelines (#225759)
