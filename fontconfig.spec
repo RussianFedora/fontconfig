@@ -2,8 +2,8 @@
 
 Summary:	Font configuration and customization library
 Name:		fontconfig
-Version:	2.10.92
-Release:	3%{?dist}
+Version:	2.10.93
+Release:	1%{?dist}
 # src/ftglue.[ch] is in Public Domain
 # src/fccache.c contains Public Domain code
 # fc-case/CaseFolding.txt is in the UCD
@@ -16,8 +16,6 @@ Source1:	25-no-bitmap-fedora.conf
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=140335
 Patch0:		fontconfig-2.8.0-sleep-less.patch
-Patch1:		fontconfig-929372.patch
-Patch2:         %{name}-fix-woff.patch
 # Ubuntu patches
 Patch10:        00_old_diff_gz.patch
 Patch11:        01_fonts_nanum.patch
@@ -67,8 +65,6 @@ which is useful for developing applications that uses fontconfig.
 %prep
 %setup -q
 %patch0 -p1 -b .sleep-less
-%patch1 -p1
-%patch2 -p1
 
 %patch10 -p1
 %patch11 -p1
@@ -152,6 +148,9 @@ fi
 %doc fontconfig-devel.txt fontconfig-devel
 
 %changelog
+* Wed May 22 2013 Arkady L. Shane <ashejn@russianfedora.ru> - 2.10.93-1.R
+- update to 2.10.93
+
 * Thu Apr 11 2013 Akira TAGOH <tagoh@redhat.com> - 2.10.92-3.R
 - Fix a web font issue in firefox. (#946859)
 
