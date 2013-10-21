@@ -2,7 +2,7 @@
 
 Summary:	Font configuration and customization library
 Name:		fontconfig
-Version:	2.10.93
+Version:	2.11.0
 Release:	1%{?dist}
 # src/ftglue.[ch] is in Public Domain
 # src/fccache.c contains Public Domain code
@@ -15,7 +15,7 @@ URL:		http://fontconfig.org
 Source1:	25-no-bitmap-fedora.conf
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=140335
-Patch0:		fontconfig-2.8.0-sleep-less.patch
+Patch0:		fontconfig-sleep-less.patch
 # Ubuntu patches
 Patch10:        00_old_diff_gz.patch
 Patch11:        01_fonts_nanum.patch
