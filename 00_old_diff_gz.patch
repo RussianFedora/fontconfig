@@ -1,20 +1,6 @@
-diff -urN fontconfig-2.10.93.orig/conf.d/40-nonlatin.conf fontconfig-2.10.93/conf.d/40-nonlatin.conf
---- fontconfig-2.10.93.orig/conf.d/40-nonlatin.conf	2013-05-22 11:30:43.028790107 +0400
-+++ fontconfig-2.10.93/conf.d/40-nonlatin.conf	2013-05-22 11:32:12.902796017 +0400
-@@ -161,6 +161,10 @@
- 		<default><family>sans-serif</family></default>
- 	</alias>
- 	<alias>
-+               <family>MgOpen Moderna</family>
-+               <default><family>sans-serif</family></default>
-+        </alias>
-+        <alias>
- 		<family>Sazanami Gothic</family>
- 		<default><family>sans-serif</family></default>
- 	</alias>
-diff -urN fontconfig-2.10.93.orig/conf.d/60-latin.conf fontconfig-2.10.93/conf.d/60-latin.conf
---- fontconfig-2.10.93.orig/conf.d/60-latin.conf	2013-05-22 11:30:43.027790107 +0400
-+++ fontconfig-2.10.93/conf.d/60-latin.conf	2013-05-22 11:32:41.675797909 +0400
+diff -urN fontconfig-2.11.0.orig/conf.d/60-latin.conf fontconfig-2.11.0/conf.d/60-latin.conf
+--- fontconfig-2.11.0.orig/conf.d/60-latin.conf	2013-10-21 15:37:54.121043659 +0400
++++ fontconfig-2.11.0/conf.d/60-latin.conf	2013-10-21 15:39:05.318048928 +0400
 @@ -4,8 +4,8 @@
  	<alias>
  		<family>serif</family>
@@ -45,9 +31,9 @@ diff -urN fontconfig-2.10.93.orig/conf.d/60-latin.conf fontconfig-2.10.93/conf.d
  			<family>Inconsolata</family>
  			<family>Andale Mono</family>
  			<family>Courier New</family>
-diff -urN fontconfig-2.10.93.orig/conf.d/Makefile.am fontconfig-2.10.93/conf.d/Makefile.am
---- fontconfig-2.10.93.orig/conf.d/Makefile.am	2013-05-22 11:30:43.027790107 +0400
-+++ fontconfig-2.10.93/conf.d/Makefile.am	2013-05-22 11:37:10.523815587 +0400
+diff -urN fontconfig-2.11.0.orig/conf.d/Makefile.am fontconfig-2.11.0/conf.d/Makefile.am
+--- fontconfig-2.11.0.orig/conf.d/Makefile.am	2013-10-21 15:37:54.121043659 +0400
++++ fontconfig-2.11.0/conf.d/Makefile.am	2013-10-21 15:44:36.529073443 +0400
 @@ -26,6 +26,9 @@
  DOC_FILES = $(DOC_SOURCES:.in=)
  
@@ -64,37 +50,37 @@ diff -urN fontconfig-2.10.93.orig/conf.d/Makefile.am fontconfig-2.10.93/conf.d/M
  template_DATA =				\
 +	10-antialias.conf		\
  	10-autohint.conf		\
-+	10-hinting.conf                 \
-+	10-hinting-full.conf            \
-+	10-hinting-medium.conf          \
-+	10-hinting-slight.conf          \
++	10-hinting.conf			\
++	10-hinting-full.conf		\
++	10-hinting-medium.conf		\
++	10-hinting-slight.conf		\
  	10-no-sub-pixel.conf		\
  	10-scale-bitmap-fonts.conf	\
  	10-sub-pixel-bgr.conf		\
-@@ -69,6 +77,7 @@
- 	45-latin.conf			\
+@@ -70,6 +78,7 @@
  	49-sansserif.conf		\
  	50-user.conf			\
-+	53-monospace-lcd-filter.conf	\
  	51-local.conf			\
++	53-monospace-lcd-filter.conf	\
  	60-latin.conf			\
  	65-fonts-persian.conf		\
-diff -urN fontconfig-2.10.93.orig/conf.d/Makefile.in fontconfig-2.10.93/conf.d/Makefile.in
---- fontconfig-2.10.93.orig/conf.d/Makefile.in	2013-05-22 11:30:43.026790107 +0400
-+++ fontconfig-2.10.93/conf.d/Makefile.in	2013-05-22 11:36:36.786813369 +0400
-@@ -300,6 +300,9 @@
+ 	65-khmer.conf			\
+diff -urN fontconfig-2.11.0.orig/conf.d/Makefile.in fontconfig-2.11.0/conf.d/Makefile.in
+--- fontconfig-2.11.0.orig/conf.d/Makefile.in	2013-10-21 15:37:54.120043659 +0400
++++ fontconfig-2.11.0/conf.d/Makefile.in	2013-10-21 15:42:09.979062596 +0400
+@@ -327,6 +327,9 @@
  DOC_SOURCES = README.in
  DOC_FILES = $(DOC_SOURCES:.in=)
  CONF_LINKS = \
-+	10-antialias.conf \
-+	10-hinting.conf \
-+	10-hinting-slight.conf \
++        10-antialias.conf \
++        10-hinting.conf \
++        10-hinting-slight.conf \
  	10-scale-bitmap-fonts.conf \
  	20-unhint-small-vera.conf \
  	30-urw-aliases.conf \
-@@ -320,7 +323,12 @@
- CLEANFILES = $(DOC_FILES)
+@@ -349,7 +352,12 @@
  config_DATA = $(DOC_FILES)
+ templatedir = $(TEMPLATEDIR)
  template_DATA = \
 +	10-antialias.conf		\
  	10-autohint.conf		\
@@ -105,7 +91,7 @@ diff -urN fontconfig-2.10.93.orig/conf.d/Makefile.in fontconfig-2.10.93/conf.d/M
  	10-no-sub-pixel.conf		\
  	10-scale-bitmap-fonts.conf	\
  	10-sub-pixel-bgr.conf		\
-@@ -340,6 +348,7 @@
+@@ -369,6 +377,7 @@
  	49-sansserif.conf		\
  	50-user.conf			\
  	51-local.conf			\
