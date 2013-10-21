@@ -26,7 +26,6 @@ Patch15:        06_ubuntu_lcddefault.patch
 
 BuildRequires:	expat-devel
 BuildRequires:	freetype-devel >= %{freetype_version}
-BuildRequires:	autoconf automake libtool
 BuildRequires:	fontpackages-devel
 
 Requires:	fontpackages-filesystem
@@ -148,6 +147,9 @@ fi
 %doc fontconfig-devel.txt fontconfig-devel
 
 %changelog
+* Mon Oct 21 2013 Arkady L. Shane <ashejn@russianfedora.ru> - 2.11.0-1.R
+- update to 2.11.0
+
 * Wed May 22 2013 Arkady L. Shane <ashejn@russianfedora.ru> - 2.10.93-1.R
 - update to 2.10.93
 
