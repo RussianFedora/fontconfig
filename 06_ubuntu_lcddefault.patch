@@ -1,22 +1,24 @@
-diff -urN fontconfig-2.11.0.orig/conf.d/Makefile.am fontconfig-2.11.0/conf.d/Makefile.am
---- fontconfig-2.11.0.orig/conf.d/Makefile.am	2013-10-21 15:47:27.291086081 +0400
-+++ fontconfig-2.11.0/conf.d/Makefile.am	2013-10-21 15:47:48.750087670 +0400
-@@ -29,6 +29,7 @@
- 	10-antialias.conf \
+Index: fontconfig-2.11.0/conf.d/Makefile.am
+===================================================================
+--- fontconfig-2.11.0.orig/conf.d/Makefile.am	2013-11-06 11:31:03.312296507 +0100
++++ fontconfig-2.11.0/conf.d/Makefile.am	2013-11-06 11:31:03.308296506 +0100
+@@ -30,6 +30,7 @@
  	10-hinting.conf \
  	10-hinting-slight.conf \
-+	11-lcdfilter-default.conf \
  	10-scale-bitmap-fonts.conf \
++	11-lcdfilter-default.conf \
  	20-unhint-small-vera.conf \
  	30-urw-aliases.conf \
-diff -urN fontconfig-2.11.0.orig/conf.d/Makefile.in fontconfig-2.11.0/conf.d/Makefile.in
---- fontconfig-2.11.0.orig/conf.d/Makefile.in	2013-10-21 15:47:27.291086081 +0400
-+++ fontconfig-2.11.0/conf.d/Makefile.in	2013-10-21 15:48:03.410088755 +0400
-@@ -330,6 +330,7 @@
-         10-antialias.conf \
-         10-hinting.conf \
-         10-hinting-slight.conf \
-+	11-lcdfilter-default.conf \
+ 	30-metric-aliases.conf \
+Index: fontconfig-2.11.0/conf.d/Makefile.in
+===================================================================
+--- fontconfig-2.11.0.orig/conf.d/Makefile.in	2013-11-06 11:31:03.312296507 +0100
++++ fontconfig-2.11.0/conf.d/Makefile.in	2013-11-06 11:31:03.308296506 +0100
+@@ -331,6 +331,7 @@
+ 	10-hinting.conf \
+ 	10-hinting-slight.conf \
  	10-scale-bitmap-fonts.conf \
++	11-lcdfilter-default.conf \
  	20-unhint-small-vera.conf \
  	30-urw-aliases.conf \
+ 	30-metric-aliases.conf \

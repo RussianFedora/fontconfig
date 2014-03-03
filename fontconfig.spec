@@ -3,7 +3,7 @@
 Summary:	Font configuration and customization library
 Name:		fontconfig
 Version:	2.11.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 # src/ftglue.[ch] is in Public Domain
 # src/fccache.c contains Public Domain code
 # fc-case/CaseFolding.txt is in the UCD
@@ -31,6 +31,7 @@ BuildRequires:	fontpackages-devel
 Requires:	fontpackages-filesystem
 Requires(pre):	freetype
 Requires(post):	grep coreutils
+Requires:	font(:lang=en)
 
 %description
 Fontconfig is designed to locate fonts within the
@@ -147,29 +148,52 @@ fi
 %doc fontconfig-devel.txt fontconfig-devel
 
 %changelog
-* Mon Oct 21 2013 Arkady L. Shane <ashejn@russianfedora.ru> - 2.11.0-1.R
-- update to 2.11.0
+* Mon Mar  3 2014 Arkady L. Shane <ashejn@russianfedora.ru> - 2.11.0-2.R
+- apply Ubuntu patches
 
-* Wed May 22 2013 Arkady L. Shane <ashejn@russianfedora.ru> - 2.10.93-1.R
-- update to 2.10.93
+* Fri Jan 24 2014 Akira TAGOH <tagoh@redhat.com> - 2.11.0-2
+- Add Requires: font(:lang=en) (#1025331, #845712)
 
-* Thu Apr 11 2013 Akira TAGOH <tagoh@redhat.com> - 2.10.92-3.R
+* Fri Oct 11 2013 Akira TAGOH <tagoh@redhat.com> - 2.11.0-1
+- New upstream release.
+
+* Fri Sep 13 2013 Akira TAGOH <tagoh@redhat.com> - 2.10.95-4
+- Fix memory leaks in FcFreeTypeQueryFace().
+
+* Mon Sep  2 2013 Akira TAGOH <tagoh@redhat.com> - 2.10.95-3
+- Do not create a directory for migration when no old config file and directory.
+  (#1003495)
+
+* Sat Aug 31 2013 Akira TAGOH <tagoh@redhat.com> - 2.10.95-1
+- Fix a crash issue (#1003069)
+
+* Fri Aug 30 2013 Akira TAGOH <tagoh@redhat.com> - 2.10.94-1
+- New upstream release.
+- migrate the configuration for XDG Base Directory spec automatically (#882267)
+
+* Sat Aug 03 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.10.93-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
+
+* Mon May 20 2013 Akira TAGOH <tagoh@redhat.com> - 2.10.93-1
+- New upstream release.
+
+* Thu Apr 11 2013 Akira TAGOH <tagoh@redhat.com> - 2.10.92-3
 - Fix a web font issue in firefox. (#946859)
 
-* Wed Apr 10 2013 Arkady L. Shane <ashejn@russianfedora.ru> - 2.10.92-2.R
-- update to 2.10.92
-- sync with upstream
+* Mon Apr  1 2013 Akira TAGOH <tagoh@redhat.com> - 2.10.92-2
+- Fix font matching issue. (#929372)
 
-* Mon Feb 25 2013 Arkady L. Shane <ashejn@russianfedora.ru> - 2.10.91-3.R
-- sync with upstream
+* Fri Mar 29 2013 Akira TAGOH <tagoh@redhat.com> - 2.10.92-1
+- New upstream release.
+
+* Tue Feb 12 2013 Akira TAGOH <tagoh@redhat.com> - 2.10.91-3
 - Improve the spec to meet the latest packaging guidelines (#225759)
   - add -devel-doc subpackage.
 - Fix a build issue with automake 1.13
+
+* Fri Feb  8 2013 Ville Skyttä <ville.skytta@iki.fi> - 2.10.91-2
 - Own the %%{_datadir}/xml/fontconfig dir.
 - Fix bogus dates in %%changelog.
-
-* Wed Jan 16 2013 Arkady L. Shane <ashejn@russianfedora.ru> - 2.10.91-1.R
-- apply ubuntu patches
 
 * Fri Jan 11 2013 Akira TAGOH <tagoh@redhat.com> - 2.10.91-1
 - New upstream release (#894109)

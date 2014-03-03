@@ -1,8 +1,8 @@
-Index: fontconfig-2.10.1/src/fcname.c
+Index: fontconfig-2.11.0/src/fcname.c
 ===================================================================
---- fontconfig-2.10.1.orig/src/fcname.c	2012-07-24 04:01:32.000000000 +0200
-+++ fontconfig-2.10.1/src/fcname.c	2012-08-02 22:28:09.282578437 +0200
-@@ -453,6 +453,7 @@
+--- fontconfig-2.11.0.orig/src/fcname.c	2013-11-06 11:30:58.368296342 +0100
++++ fontconfig-2.11.0/src/fcname.c	2013-11-06 11:30:58.364296342 +0100
+@@ -190,6 +190,7 @@
      { (FcChar8 *) "lcddefault",	    "lcdfilter",    FC_LCD_DEFAULT },
      { (FcChar8 *) "lcdlight",	    "lcdfilter",    FC_LCD_LIGHT },
      { (FcChar8 *) "lcdlegacy",	    "lcdfilter",    FC_LCD_LEGACY },
