@@ -13,9 +13,11 @@ Group:		System Environment/Libraries
 Source:		http://fontconfig.org/release/%{name}-%{version}.tar.bz2
 URL:		http://fontconfig.org
 Source1:	25-no-bitmap-fedora.conf
+Source2:	FcDirCacheRescan.3
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=140335
 Patch0:		fontconfig-sleep-less.patch
+Patch1:		fontconfig-fix-race-condition.patch
 # Ubuntu patches
 Patch10:        00_old_diff_gz.patch
 Patch11:        01_fonts_nanum.patch
@@ -65,6 +67,8 @@ which is useful for developing applications that uses fontconfig.
 %prep
 %setup -q
 %patch0 -p1 -b .sleep-less
+%patch1 -p1 -b .race
+cp -p %{SOURCE2} doc/
 
 %patch10 -p1
 %patch11 -p1
@@ -150,9 +154,7 @@ fi
 %changelog
 * Mon Mar  3 2014 Arkady L. Shane <ashejn@russianfedora.ru> - 2.11.0-2.R
 - apply Ubuntu patches
-
-* Fri Jan 24 2014 Akira TAGOH <tagoh@redhat.com> - 2.11.0-2
-- Add Requires: font(:lang=en) (#1025331, #845712)
+- Fix the race condition issue on updating caches. (#921706)
 
 * Fri Oct 11 2013 Akira TAGOH <tagoh@redhat.com> - 2.11.0-1
 - New upstream release.

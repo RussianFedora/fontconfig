@@ -1,0 +1,418 @@
+diff -pruN fontconfig-2.11.0.orig/doc/fcdircache.fncs fontconfig-2.11.0/doc/fcdircache.fncs
+--- fontconfig-2.11.0.orig/doc/fcdircache.fncs	2013-10-11 12:10:17.000000000 +0900
++++ fontconfig-2.11.0/doc/fcdircache.fncs	2014-07-08 12:49:36.000000000 +0900
+@@ -55,6 +55,16 @@ FcDirCacheRead.
+ @@
+ 
+ @RET@		FcCache *
++@FUNC@		FcDirCacheRescan
++@TYPE1@		const FcChar8 *			@ARG1@		dir
++@TYPE2@		FcConfig *    			@ARG2@		config
++@PURPOSE@	Re-scan a directory cache
++@DESC@
++Re-scan directories only at <parameter>dir</parameter> and update the cache.
++returns NULL if failed.
++@@
++
++@RET@		FcCache *
+ @FUNC@		FcDirCacheRead
+ @TYPE1@		const FcChar8 *			@ARG1@		dir
+ @TYPE2@		FcBool%				@ARG2@		force
+diff -pruN fontconfig-2.11.0.orig/fc-cache/fc-cache.c fontconfig-2.11.0/fc-cache/fc-cache.c
+--- fontconfig-2.11.0.orig/fc-cache/fc-cache.c	2013-10-11 12:10:17.000000000 +0900
++++ fontconfig-2.11.0/fc-cache/fc-cache.c	2014-07-08 12:37:59.000000000 +0900
+@@ -118,7 +118,7 @@ usage (char *program, int error)
+ static FcStrSet *processed_dirs;
+ 
+ static int
+-scanDirs (FcStrList *list, FcConfig *config, FcBool force, FcBool really_force, FcBool verbose, FcBool recursive, int *changed)
++scanDirs (FcStrList *list, FcConfig *config, FcBool force, FcBool really_force, FcBool verbose, FcBool recursive, int *changed, FcStrSet *updateDirs)
+ {
+     int		    ret = 0;
+     const FcChar8   *dir;
+@@ -137,7 +137,10 @@ scanDirs (FcStrList *list, FcConfig *con
+     {
+ 	if (verbose)
+ 	{
+-	    printf ("%s: ", dir);
++	    if (!recursive)
++		printf ("Re-scanning %s: ", dir);
++	    else
++		printf ("%s: ", dir);
+ 	    fflush (stdout);
+ 	}
+ 	
+@@ -184,8 +187,13 @@ scanDirs (FcStrList *list, FcConfig *con
+ 	
+ 	if (!cache)
+ 	{
+-	    (*changed)++;
+-	    cache = FcDirCacheRead (dir, FcTrue, config);
++	    if (!recursive)
++		cache = FcDirCacheRescan (dir, config);
++	    else
++	    {
++		(*changed)++;
++		cache = FcDirCacheRead (dir, FcTrue, config);
++	    }
+ 	    if (!cache)
+ 	    {
+ 		fprintf (stderr, "%s: error scanning\n", dir);
+@@ -226,6 +234,8 @@ scanDirs (FcStrList *list, FcConfig *con
+ 	    }
+ 	    for (i = 0; i < FcCacheNumSubdir (cache); i++)
+ 		FcStrSetAdd (subdirs, FcCacheSubdir (cache, i));
++	    if (updateDirs && FcCacheNumSubdir (cache) > 0)
++		FcStrSetAdd (updateDirs, dir);
+ 	
+ 	    FcDirCacheUnload (cache);
+ 	
+@@ -238,7 +248,7 @@ scanDirs (FcStrList *list, FcConfig *con
+ 		continue;
+ 	    }
+ 	    FcStrSetAdd (processed_dirs, dir);
+-	    ret += scanDirs (sublist, config, force, really_force, verbose, recursive, changed);
++	    ret += scanDirs (sublist, config, force, really_force, verbose, recursive, changed, updateDirs);
+ 	    FcStrListDone (sublist);
+ 	}
+ 	else
+@@ -271,7 +281,7 @@ cleanCacheDirectories (FcConfig *config,
+ int
+ main (int argc, char **argv)
+ {
+-    FcStrSet	*dirs;
++    FcStrSet	*dirs, *updateDirs;
+     FcStrList	*list;
+     FcBool    	verbose = FcFalse;
+     FcBool	force = FcFalse;
+@@ -369,13 +379,19 @@ main (int argc, char **argv)
+ 	fprintf(stderr, "Cannot malloc\n");
+ 	return 1;
+     }
+-	
++
++    updateDirs = FcStrSetCreate ();
+     changed = 0;
+-    ret = scanDirs (list, config, force, really_force, verbose, FcTrue, &changed);
++    ret = scanDirs (list, config, force, really_force, verbose, FcTrue, &changed, updateDirs);
+     /* Update the directory cache again to avoid the race condition as much as possible */
+-    FcStrListFirst (list);
+-    ret += scanDirs (list, config, FcTrue, really_force, verbose, FcFalse, &changed);
+     FcStrListDone (list);
++    list = FcStrListCreate (updateDirs);
++    if (list)
++    {
++	ret += scanDirs (list, config, FcTrue, really_force, verbose, FcFalse, &changed, NULL);
++	FcStrListDone (list);
++    }
++    FcStrSetDestroy (updateDirs);
+ 
+     /*
+      * Try to create CACHEDIR.TAG anyway.
+diff -pruN fontconfig-2.11.0.orig/fontconfig/fontconfig.h fontconfig-2.11.0/fontconfig/fontconfig.h
+--- fontconfig-2.11.0.orig/fontconfig/fontconfig.h	2013-10-11 13:27:42.000000000 +0900
++++ fontconfig-2.11.0/fontconfig/fontconfig.h	2014-07-08 12:37:59.000000000 +0900
+@@ -541,6 +541,9 @@ FcDirSave (FcFontSet *set, FcStrSet *dir
+ 
+ FcPublic FcCache *
+ FcDirCacheLoad (const FcChar8 *dir, FcConfig *config, FcChar8 **cache_file);
++
++FcPublic FcCache *
++FcDirCacheRescan (const FcChar8 *dir, FcConfig *config);
+     
+ FcPublic FcCache *
+ FcDirCacheRead (const FcChar8 *dir, FcBool force, FcConfig *config);
+diff -pruN fontconfig-2.11.0.orig/src/fccache.c fontconfig-2.11.0/src/fccache.c
+--- fontconfig-2.11.0.orig/src/fccache.c	2013-10-11 12:10:18.000000000 +0900
++++ fontconfig-2.11.0/src/fccache.c	2014-07-08 12:39:27.000000000 +0900
+@@ -544,6 +544,26 @@ FcCacheTimeValid (FcCache *cache, struct
+     return cache->checksum == (int) dir_stat->st_mtime;
+ }
+ 
++static FcBool
++FcCacheDirsValid (FcCache *cache)
++{
++    FcStrSet *dirs = FcStrSetCreate ();
++    FcBool ret = FcFalse;
++
++    if (!dirs)
++	goto bail;
++    if (!FcDirScanOnly (dirs, FcCacheDir (cache)))
++	goto bail1;
++    ret = cache->dirs_count == dirs->num;
++    if (FcDebug () & FC_DBG_CACHE)
++	printf ("%s: cache: %d, fs: %d\n", FcCacheDir (cache), cache->dirs_count, dirs->num);
++
++bail1:
++    FcStrSetDestroy (dirs);
++bail:
++    return ret;
++}
++
+ /*
+  * Map a cache file into memory
+  */
+@@ -558,7 +578,8 @@ FcDirCacheMapFd (int fd, struct stat *fd
+     cache = FcCacheFindByStat (fd_stat);
+     if (cache)
+     {
+-	if (FcCacheTimeValid (cache, dir_stat))
++	if (FcCacheTimeValid (cache, dir_stat) &&
++	    FcCacheDirsValid (cache))
+ 	    return cache;
+ 	FcDirCacheUnload (cache);
+ 	cache = NULL;
+@@ -610,6 +631,7 @@ FcDirCacheMapFd (int fd, struct stat *fd
+ 	cache->version < FC_CACHE_CONTENT_VERSION ||
+ 	cache->size != (intptr_t) fd_stat->st_size ||
+ 	!FcCacheTimeValid (cache, dir_stat) ||
++	!FcCacheDirsValid (cache) ||
+ 	!FcCacheInsert (cache, fd_stat))
+     {
+ 	if (allocated)
+@@ -827,6 +849,19 @@ bail1:
+     return NULL;
+ }
+ 
++FcCache *
++FcDirCacheRebuild (FcCache *cache, struct stat *dir_stat, FcStrSet *dirs)
++{
++    FcCache *new;
++    FcFontSet *set = FcFontSetDeserialize (FcCacheSet (cache));
++    const FcChar8 *dir = FcCacheDir (cache);
++
++    new = FcDirCacheBuild (set, dir, dir_stat, dirs);
++    FcFontSetDestroy (set);
++
++    return new;
++}
++
+ /* write serialized state to the cache file */
+ FcBool
+ FcDirCacheWrite (FcCache *cache, FcConfig *config)
+diff -pruN fontconfig-2.11.0.orig/src/fcdir.c fontconfig-2.11.0/src/fcdir.c
+--- fontconfig-2.11.0.orig/src/fcdir.c	2013-10-11 12:10:18.000000000 +0900
++++ fontconfig-2.11.0/src/fcdir.c	2014-07-08 12:39:27.000000000 +0900
+@@ -130,7 +130,12 @@ FcFileScanConfig (FcFontSet	*set,
+     if (FcFileIsDir (file))
+ 	return FcStrSetAdd (dirs, file);
+     else
+-	return FcFileScanFontConfig (set, blanks, file, config);
++    {
++	if (set)
++	    return FcFileScanFontConfig (set, blanks, file, config);
++	else
++	    return FcTrue;
++    }
+ }
+ 
+ FcBool
+@@ -159,7 +164,8 @@ FcDirScanConfig (FcFontSet	*set,
+ 		 FcBlanks	*blanks,
+ 		 const FcChar8	*dir,
+ 		 FcBool		force, /* XXX unused */
+-		 FcConfig	*config)
++		 FcConfig	*config,
++		 FcBool		scanOnly)
+ {
+     DIR			*d;
+     struct dirent	*e;
+@@ -175,7 +181,7 @@ FcDirScanConfig (FcFontSet	*set,
+     if (!set && !dirs)
+ 	return FcTrue;
+ 
+-    if (!blanks)
++    if (!blanks && !scanOnly)
+ 	blanks = FcConfigGetBlanks (config);
+ 
+     /* freed below */
+@@ -228,7 +234,17 @@ FcDirScanConfig (FcFontSet	*set,
+      * Scan file files to build font patterns
+      */
+     for (i = 0; i < files->num; i++)
+-	FcFileScanConfig (set, dirs, blanks, files->strs[i], config);
++    {
++	if (scanOnly)
++	{
++	    if (FcFileIsDir (files->strs[i]))
++		FcStrSetAdd (dirs, files->strs[i]);
++	}
++	else
++	{
++	    FcFileScanConfig (set, dirs, blanks, files->strs[i], config);
++	}
++    }
+ 
+ bail2:
+     FcStrSetDestroy (files);
+@@ -252,7 +268,14 @@ FcDirScan (FcFontSet	    *set,
+     if (cache || !force)
+ 	return FcFalse;
+ 
+-    return FcDirScanConfig (set, dirs, blanks, dir, force, FcConfigGetCurrent ());
++    return FcDirScanConfig (set, dirs, blanks, dir, force, FcConfigGetCurrent (), FcFalse);
++}
++
++FcBool
++FcDirScanOnly (FcStrSet		*dirs,
++	       const FcChar8	*dir)
++{
++    return FcDirScanConfig (NULL, dirs, NULL, dir, FcTrue, NULL, FcTrue);
+ }
+ 
+ /*
+@@ -283,7 +306,7 @@ FcDirCacheScan (const FcChar8 *dir, FcCo
+     /*
+      * Scan the dir
+      */
+-    if (!FcDirScanConfig (set, dirs, NULL, dir, FcTrue, config))
++    if (!FcDirScanConfig (set, dirs, NULL, dir, FcTrue, config, FcFalse))
+ 	goto bail2;
+ 
+     /*
+@@ -306,6 +329,45 @@ FcDirCacheScan (const FcChar8 *dir, FcCo
+     return cache;
+ }
+ 
++FcCache *
++FcDirCacheRescan (const FcChar8 *dir, FcConfig *config)
++{
++    FcCache *cache = FcDirCacheLoad (dir, config, NULL);
++    FcCache *new = NULL;
++    struct stat dir_stat;
++    FcStrSet *dirs;
++
++    if (!cache)
++	return NULL;
++    if (FcStatChecksum (dir, &dir_stat) < 0)
++	goto bail;
++    dirs = FcStrSetCreate ();
++    if (!dirs)
++	goto bail;
++
++    /*
++     * Scan the dir
++     */
++    if (!FcDirScanConfig (NULL, dirs, NULL, dir, FcTrue, config, FcFalse))
++	goto bail1;
++    /*
++     * Rebuild the cache object
++     */
++    new = FcDirCacheRebuild (cache, &dir_stat, dirs);
++    if (!new)
++	goto bail1;
++    FcDirCacheUnload (cache);
++    /*
++     * Write out the cache file, ignoring any troubles
++     */
++    FcDirCacheWrite (new, config);
++
++bail1:
++    FcStrSetDestroy (dirs);
++bail:
++    return new;
++}
++
+ /*
+  * Read (or construct) the cache for a directory
+  */
+diff -pruN fontconfig-2.11.0.orig/src/fcfs.c fontconfig-2.11.0/src/fcfs.c
+--- fontconfig-2.11.0.orig/src/fcfs.c	2013-10-11 12:10:18.000000000 +0900
++++ fontconfig-2.11.0/src/fcfs.c	2014-07-08 12:37:59.000000000 +0900
+@@ -122,6 +122,28 @@ FcFontSetSerialize (FcSerialize *seriali
+ 
+     return s_serialize;
+ }
++
++FcFontSet *
++FcFontSetDeserialize (const FcFontSet *set)
++{
++    int i;
++    FcFontSet *new = FcFontSetCreate ();
++
++    if (!new)
++	return NULL;
++    for (i = 0; i < set->nfont; i++)
++    {
++	if (!FcFontSetAdd (new, FcPatternDuplicate (FcFontSetFont (set, i))))
++	    goto bail;
++    }
++
++    return new;
++bail:
++    FcFontSetDestroy (new);
++
++    return NULL;
++}
++
+ #define __fcfs__
+ #include "fcaliastail.h"
+ #undef __fcfs__
+diff -pruN fontconfig-2.11.0.orig/src/fcint.h fontconfig-2.11.0/src/fcint.h
+--- fontconfig-2.11.0.orig/src/fcint.h	2013-10-11 12:10:18.000000000 +0900
++++ fontconfig-2.11.0/src/fcint.h	2014-07-08 12:39:27.000000000 +0900
+@@ -567,6 +567,9 @@ FcDirCacheScan (const FcChar8 *dir, FcCo
+ FcPrivate FcCache *
+ FcDirCacheBuild (FcFontSet *set, const FcChar8 *dir, struct stat *dir_stat, FcStrSet *dirs);
+ 
++FcPrivate FcCache *
++FcDirCacheRebuild (FcCache *cache, struct stat *dir_stat, FcStrSet *dirs);
++
+ FcPrivate FcBool
+ FcDirCacheWrite (FcCache *cache, FcConfig *config);
+ 
+@@ -824,7 +827,12 @@ FcDirScanConfig (FcFontSet	*set,
+ 		 FcBlanks	*blanks,
+ 		 const FcChar8	*dir,
+ 		 FcBool		force,
+-		 FcConfig	*config);
++		 FcConfig	*config,
++		 FcBool		scanOnly);
++
++FcPrivate FcBool
++FcDirScanOnly (FcStrSet		*dirs,
++	       const FcChar8	*dir);
+ 
+ /* fcfont.c */
+ FcPrivate int
+@@ -838,6 +846,9 @@ FcFontSetSerializeAlloc (FcSerialize *se
+ FcPrivate FcFontSet *
+ FcFontSetSerialize (FcSerialize *serialize, const FcFontSet * s);
+ 
++FcPrivate FcFontSet *
++FcFontSetDeserialize (const FcFontSet *set);
++
+ /* fchash.c */
+ FcPrivate FcChar8 *
+ FcHashGetSHA256Digest (const FcChar8 *input_strings,
+diff -pruN fontconfig-2.11.0.orig/src/fcpat.c fontconfig-2.11.0/src/fcpat.c
+--- fontconfig-2.11.0.orig/src/fcpat.c	2013-10-11 12:10:18.000000000 +0900
++++ fontconfig-2.11.0/src/fcpat.c	2014-07-08 12:37:59.000000000 +0900
+@@ -33,6 +33,7 @@ FcPatternCreate (void)
+     p = (FcPattern *) malloc (sizeof (FcPattern));
+     if (!p)
+ 	return 0;
++    memset (p, 0, sizeof (FcPattern));
+     p->num = 0;
+     p->size = 0;
+     p->elts_offset = FcPtrToOffset (p, NULL);
+@@ -1310,6 +1311,7 @@ FcValueListSerialize (FcSerialize *seria
+     }
+     return head_serialized;
+ }
++
+ #define __fcpat__
+ #include "fcaliastail.h"
+ #include "fcftaliastail.h"
+diff -pruN fontconfig-2.11.0.orig/test/test-migration.c fontconfig-2.11.0/test/test-migration.c
+--- fontconfig-2.11.0.orig/test/test-migration.c	2013-10-11 12:10:18.000000000 +0900
++++ fontconfig-2.11.0/test/test-migration.c	2014-07-08 14:56:45.000000000 +0900
+@@ -14,7 +14,7 @@ mkdir_p(const char *dir)
+ 
+     if (strlen (dir) == 0)
+ 	return FcFalse;
+-    parent = (char *) FcStrDirname (dir);
++    parent = (char *) FcStrDirname ((const FcChar8 *)dir);
+     if (!parent)
+ 	return FcFalse;
+     if (access (parent, F_OK) == 0)
