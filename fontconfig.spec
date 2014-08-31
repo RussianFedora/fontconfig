@@ -2,8 +2,8 @@
 
 Summary:	Font configuration and customization library
 Name:		fontconfig
-Version:	2.11.0
-Release:	2%{?dist}
+Version:	2.11.1
+Release:	5%{?dist}
 # src/ftglue.[ch] is in Public Domain
 # src/fccache.c contains Public Domain code
 # fc-case/CaseFolding.txt is in the UCD
@@ -16,6 +16,9 @@ Source1:	25-no-bitmap-fedora.conf
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=140335
 Patch0:		fontconfig-sleep-less.patch
+# https://bugs.freedesktop.org/show_bug.cgi?id=77252
+Patch1:		%{name}-fix-fccache-fail.patch
+Patch2:		%{name}-fix-broken-cache.patch
 # Ubuntu patches
 Patch10:        00_old_diff_gz.patch
 Patch11:        01_fonts_nanum.patch
@@ -65,6 +68,8 @@ which is useful for developing applications that uses fontconfig.
 %prep
 %setup -q
 %patch0 -p1 -b .sleep-less
+%patch1 -p1 -b .cache-fail
+%patch2 -p1 -b .broken-cache
 
 %patch10 -p1
 %patch11 -p1
@@ -148,6 +153,10 @@ fi
 %doc fontconfig-devel.txt fontconfig-devel
 
 %changelog
+* Sun Aug 31 2014 Arkady L. Shane <ashejn@russianfedora.ru> - 2.11.1-5.R
+- sync with upstream
+- update to 2.11.1
+
 * Mon Mar  3 2014 Arkady L. Shane <ashejn@russianfedora.ru> - 2.11.0-2.R
 - apply Ubuntu patches
 
