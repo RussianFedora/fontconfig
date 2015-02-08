@@ -1,0 +1,26 @@
+From 8a174b6c51581df6ffd6a5da056949c6c79337cf Mon Sep 17 00:00:00 2001
+From: Akira TAGOH <akira@tagoh.org>
+Date: Tue, 24 Sep 2013 11:14:57 +0900
+Subject: [PATCH] Fix a crash when FcPattern is set to null on FcFontSetList()
+ and FcFontList()
+
+---
+ src/fclist.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/fclist.c b/src/fclist.c
+index c56e24c..a365098 100644
+--- a/src/fclist.c
++++ b/src/fclist.c
+@@ -212,6 +212,8 @@ FcListPatternMatchAny (const FcPattern *p,
+ {
+     int		    i;
+ 
++    if (!p)
++	return FcFalse;
+     for (i = 0; i < p->num; i++)
+     {
+ 	FcPatternElt	*pe = &FcPatternElts(p)[i];
+-- 
+1.8.3.1
+

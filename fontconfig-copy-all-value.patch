@@ -1,0 +1,36 @@
+From 5e6b8894ea9d03caabdfc3a6bcd0c402edf840a8 Mon Sep 17 00:00:00 2001
+From: Akira TAGOH <akira@tagoh.org>
+Date: Wed, 18 Sep 2013 17:31:10 +0900
+Subject: [PATCH] Copy all values from the font to the pattern if the pattern
+ doesn't have the element
+
+---
+ src/fcmatch.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/src/fcmatch.c b/src/fcmatch.c
+index dec92b9..627aa1a 100644
+--- a/src/fcmatch.c
++++ b/src/fcmatch.c
+@@ -552,14 +552,16 @@ FcFontRenderPrepare (FcConfig	    *config,
+ 
+ 		continue;
+ 	    }
++	    FcPatternObjectAdd (new, fe->object, v, FcFalse);
+ 	}
+ 	else
+ 	{
+ 	    if (fel)
+ 		goto copy_lang;
+-	    v = FcValueCanonicalize(&FcPatternEltValues (fe)->value);
++	    FcPatternObjectListAdd (new, fe->object,
++				    FcValueListDuplicate (FcPatternEltValues (fe)),
++				    FcTrue);
+ 	}
+-	FcPatternObjectAdd (new, fe->object, v, FcFalse);
+     }
+     for (i = 0; i < pat->num; i++)
+     {
+-- 
+1.8.3.1
+

@@ -2,8 +2,8 @@
 
 Summary:	Font configuration and customization library
 Name:		fontconfig
-Version:	2.10.93
-Release:	2%{?dist}
+Version:	2.10.95
+Release:	7%{?dist}
 # src/ftglue.[ch] is in Public Domain
 # src/fccache.c contains Public Domain code
 # fc-case/CaseFolding.txt is in the UCD
@@ -13,10 +13,16 @@ Group:		System Environment/Libraries
 Source:		http://fontconfig.org/release/%{name}-%{version}.tar.bz2
 URL:		http://fontconfig.org
 Source1:	25-no-bitmap-fedora.conf
+Source2:	FcStrListFirst.3
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=140335
 Patch0:		fontconfig-2.8.0-sleep-less.patch
-Patch1:         fontconfig-fix-race-condition.patch
+Patch1:		fontconfig-no-dir-when-no-conf.patch
+Patch2:		fontconfig-fix-memleak.patch
+Patch3:		fontconfig-copy-all-value.patch
+Patch4:		fontconfig-fix-crash-on-fcfontsort.patch
+Patch5:		fontconfig-fix-race-condition.patch
+
 # Ubuntu patches
 Patch10:        00_old_diff_gz.patch
 Patch11:        01_fonts_nanum.patch
@@ -27,7 +33,6 @@ Patch15:        06_ubuntu_lcddefault.patch
 
 BuildRequires:	expat-devel
 BuildRequires:	freetype-devel >= %{freetype_version}
-BuildRequires:	autoconf automake libtool
 BuildRequires:	fontpackages-devel
 
 Requires:	fontpackages-filesystem
@@ -66,7 +71,11 @@ which is useful for developing applications that uses fontconfig.
 %prep
 %setup -q
 %patch0 -p1 -b .sleep-less
-%patch1 -p1 -b .race
+%patch1 -p1 -b .nodir
+%patch2 -p1 -b .memleak
+%patch3 -p1 -b .copy-all
+%patch4 -p1 -b .fix-crash
+%patch5 -p1 -b .fix-race
 
 %patch10 -p1
 %patch11 -p1
@@ -75,6 +84,8 @@ which is useful for developing applications that uses fontconfig.
 %patch14 -p1
 %patch15 -p1
 
+cp %{SOURCE2} doc/
+
 %build
 # We don't want to rebuild the docs, but we want to install the included ones.
 export HASDOCBOOK=no
@@ -82,10 +93,10 @@ export HASDOCBOOK=no
 %configure	--with-add-fonts=/usr/share/X11/fonts/Type1,/usr/share/X11/fonts/TTF,/usr/local/share/fonts \
 		--disable-static
 
-make %{?_smp_mflags}
+make %{?_smp_mflags} V=1
 
 %install
-make install DESTDIR=$RPM_BUILD_ROOT INSTALL="install -p"
+make install DESTDIR=$RPM_BUILD_ROOT INSTALL="install -p" V=1
 
 find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
 
@@ -98,7 +109,7 @@ mv $RPM_BUILD_ROOT%{_docdir}/fontconfig/* .
 rmdir $RPM_BUILD_ROOT%{_docdir}/fontconfig/
 
 %check
-make check
+make check V=1
 
 %post
 /sbin/ldconfig
@@ -150,29 +161,57 @@ fi
 %doc fontconfig-devel.txt fontconfig-devel
 
 %changelog
-* Tue Jul  8 2014 Akira TAGOH <tagoh@redhat.com> - 2.10.93-2.R
-- Fix the race condition issue on updating caches. (#921706)
+* Sun Feb  8 2015 Arkady L. Shane <ashejn@russianfedora.ru> - 2.10.95-7.R
+- rebuilt with Ubuntu patches
 
-* Wed May 22 2013 Arkady L. Shane <ashejn@russianfedora.ru> - 2.10.93-1.R
-- update to 2.10.93
+* Fri Jan 24 2014 Daniel Mach <dmach@redhat.com> - 2.10.95-7
+- Mass rebuild 2014-01-24
 
-* Thu Apr 11 2013 Akira TAGOH <tagoh@redhat.com> - 2.10.92-3.R
+* Fri Dec 27 2013 Daniel Mach <dmach@redhat.com> - 2.10.95-6
+- Mass rebuild 2013-12-27
+
+* Tue Oct  8 2013 Akira TAGOH <tagoh@redhat.com> - 2.10.95-5
+- Fix the race condition issue on updating cache (#1011510)
+- Fix crash issue in FcFontSort()
+- Fix an issue not copying all values from the font.
+
+* Fri Sep 13 2013 Akira TAGOH <tagoh@redhat.com> - 2.10.95-4
+- Fix memory leaks in FcFreeTypeQueryFace().
+
+* Mon Sep  2 2013 Akira TAGOH <tagoh@redhat.com> - 2.10.95-3
+- Do not create a directory for migration when no old config file and directory.
+  (#1003495)
+
+* Sat Aug 31 2013 Akira TAGOH <tagoh@redhat.com> - 2.10.95-1
+- Fix a crash issue (#1003069)
+
+* Fri Aug 30 2013 Akira TAGOH <tagoh@redhat.com> - 2.10.94-1
+- New upstream release.
+- migrate the configuration for XDG Base Directory spec automatically (#882267)
+
+* Sat Aug 03 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.10.93-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
+
+* Mon May 20 2013 Akira TAGOH <tagoh@redhat.com> - 2.10.93-1
+- New upstream release.
+
+* Thu Apr 11 2013 Akira TAGOH <tagoh@redhat.com> - 2.10.92-3
 - Fix a web font issue in firefox. (#946859)
 
-* Wed Apr 10 2013 Arkady L. Shane <ashejn@russianfedora.ru> - 2.10.92-2.R
-- update to 2.10.92
-- sync with upstream
+* Mon Apr  1 2013 Akira TAGOH <tagoh@redhat.com> - 2.10.92-2
+- Fix font matching issue. (#929372)
 
-* Mon Feb 25 2013 Arkady L. Shane <ashejn@russianfedora.ru> - 2.10.91-3.R
-- sync with upstream
+* Fri Mar 29 2013 Akira TAGOH <tagoh@redhat.com> - 2.10.92-1
+- New upstream release.
+
+* Tue Feb 12 2013 Akira TAGOH <tagoh@redhat.com> - 2.10.91-3
 - Improve the spec to meet the latest packaging guidelines (#225759)
   - add -devel-doc subpackage.
 - Fix a build issue with automake 1.13
+
+* Fri Feb  8 2013 Ville Skyttä <ville.skytta@iki.fi> - 2.10.91-2
 - Own the %%{_datadir}/xml/fontconfig dir.
 - Fix bogus dates in %%changelog.
-
-* Wed Jan 16 2013 Arkady L. Shane <ashejn@russianfedora.ru> - 2.10.91-1.R
-- apply ubuntu patches
 
 * Fri Jan 11 2013 Akira TAGOH <tagoh@redhat.com> - 2.10.91-1
 - New upstream release (#894109)
