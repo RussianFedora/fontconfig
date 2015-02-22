@@ -3,7 +3,7 @@
 Summary:	Font configuration and customization library
 Name:		fontconfig
 Version:	2.11.92
-Release:	2%{?dist}
+Release:	1%{?dist}
 # src/ftglue.[ch] is in Public Domain
 # src/fccache.c contains Public Domain code
 # fc-case/CaseFolding.txt is in the UCD
@@ -148,7 +148,7 @@ fi
 %doc fontconfig-devel.txt fontconfig-devel
 
 %changelog
-* Sun Feb 22 2015 Arkady L. Shane <ashejn@russianfedora.ru> - 2.11.92-2.R
+* Sun Feb 22 2015 Arkady L. Shane <ashejn@russianfedora.ru> - 2.11.92-1.R
 - apply Ubuntu lcd patches
 
 * Sat Feb 21 2015 Till Maas <opensource@till.name> - 2.11.92-2
