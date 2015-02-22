@@ -2,8 +2,8 @@
 
 Summary:	Font configuration and customization library
 Name:		fontconfig
-Version:	2.11.1
-Release:	5%{?dist}
+Version:	2.11.92
+Release:	2%{?dist}
 # src/ftglue.[ch] is in Public Domain
 # src/fccache.c contains Public Domain code
 # fc-case/CaseFolding.txt is in the UCD
@@ -15,10 +15,7 @@ URL:		http://fontconfig.org
 Source1:	25-no-bitmap-fedora.conf
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=140335
-Patch0:		fontconfig-sleep-less.patch
-# https://bugs.freedesktop.org/show_bug.cgi?id=77252
-Patch1:		%{name}-fix-fccache-fail.patch
-Patch2:		%{name}-fix-broken-cache.patch
+Patch0:		%{name}-sleep-less.patch
 # Ubuntu patches
 Patch10:        00_old_diff_gz.patch
 Patch11:        01_fonts_nanum.patch
@@ -68,8 +65,6 @@ which is useful for developing applications that uses fontconfig.
 %prep
 %setup -q
 %patch0 -p1 -b .sleep-less
-%patch1 -p1 -b .cache-fail
-%patch2 -p1 -b .broken-cache
 
 %patch10 -p1
 %patch11 -p1
@@ -153,12 +148,33 @@ fi
 %doc fontconfig-devel.txt fontconfig-devel
 
 %changelog
-* Sun Aug 31 2014 Arkady L. Shane <ashejn@russianfedora.ru> - 2.11.1-5.R
-- sync with upstream
-- update to 2.11.1
+* Sun Feb 22 2015 Arkady L. Shane <ashejn@russianfedora.ru> - 2.11.92-2.R
+- apply Ubuntu lcd patches
 
-* Mon Mar  3 2014 Arkady L. Shane <ashejn@russianfedora.ru> - 2.11.0-2.R
-- apply Ubuntu patches
+* Sat Feb 21 2015 Till Maas <opensource@till.name> - 2.11.92-2
+- Rebuilt for Fedora 23 Change
+  https://fedoraproject.org/wiki/Changes/Harden_all_packages_with_position-independent_code
+
+* Tue Jan 13 2015 Akira TAGOH <tagoh@redhat.com> - 2.11.92-1
+- New upstream release.
+
+* Thu Dec 25 2014 Akira TAGOH <tagoh@redhat.com> - 2.11.91-1
+- New upstream release.
+
+* Sat Aug 16 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.11.1-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
+
+* Sat Jun 07 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.11.1-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
+
+* Thu Jun  5 2014 Akira TAGOH <tagoh@redhat.com> - 2.11.1-3
+- Workaround that the cache isn't updated properly. (#921706)
+
+* Fri Apr 11 2014 Akira TAGOH <tagoh@redhat.com> - 2.11.1-2
+- Fix failing on updating cache with --really-force.
+
+* Mon Mar 24 2014 Akira TAGOH <tagoh@redhat.com> - 2.11.1-1
+- New upstream release.
 
 * Fri Jan 24 2014 Akira TAGOH <tagoh@redhat.com> - 2.11.0-2
 - Add Requires: font(:lang=en) (#1025331, #845712)
