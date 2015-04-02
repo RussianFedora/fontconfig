@@ -17,7 +17,7 @@ Source1:	25-no-bitmap-fedora.conf
 # https://bugzilla.redhat.com/show_bug.cgi?id=140335
 Patch0:		%{name}-sleep-less.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=1203118
-Patch1:         %{name}-fix-SIGFPE.patc
+Patch1:         %{name}-fix-SIGFPE.patch
 # Ubuntu patches
 Patch10:        00_old_diff_gz.patch
 Patch11:        01_fonts_nanum.patch
