@@ -3,7 +3,7 @@
 Summary:	Font configuration and customization library
 Name:		fontconfig
 Version:	2.11.93
-Release:	1%{?dist}
+Release:	2%{?dist}
 # src/ftglue.[ch] is in Public Domain
 # src/fccache.c contains Public Domain code
 # fc-case/CaseFolding.txt is in the UCD
@@ -16,6 +16,8 @@ Source1:	25-no-bitmap-fedora.conf
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=140335
 Patch0:		%{name}-sleep-less.patch
+# https://bugzilla.redhat.com/show_bug.cgi?id=1203118
+Patch1:         %{name}-fix-SIGFPE.patc
 # Ubuntu patches
 Patch10:        00_old_diff_gz.patch
 Patch11:        01_fonts_nanum.patch
@@ -65,6 +67,7 @@ which is useful for developing applications that uses fontconfig.
 %prep
 %setup -q
 %patch0 -p1 -b .sleep-less
+%patch1 -p1 -b .sigfpe
 
 %patch10 -p1
 %patch11 -p1
@@ -148,7 +151,10 @@ fi
 %doc fontconfig-devel.txt fontconfig-devel
 
 %changelog
-* Mon Mar  9 2015 Akira TAGOH <tagoh@redhat.com> - 2.11.93-1
+* Mon Mar 30 2015 Akira TAGOH <tagoh@redhat.com> - 2.11.93-2.R
+- Fix SIGFPE (#1203118)
+
+* Mon Mar  9 2015 Akira TAGOH <tagoh@redhat.com> - 2.11.93-1.R
 - New upstream release.
 
 * Sun Feb 22 2015 Arkady L. Shane <ashejn@russianfedora.ru> - 2.11.92-1.R
