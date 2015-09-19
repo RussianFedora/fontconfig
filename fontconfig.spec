@@ -29,6 +29,7 @@ Patch15:        06_ubuntu_lcddefault.patch
 BuildRequires:	expat-devel
 BuildRequires:	freetype-devel >= %{freetype_version}
 BuildRequires:	fontpackages-devel
+BuildRequires:	automake
 
 Requires:	fontpackages-filesystem
 Requires(pre):	freetype
