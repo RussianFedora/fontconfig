@@ -3,7 +3,7 @@
 Summary:	Font configuration and customization library
 Name:		fontconfig
 Version:	2.11.94
-Release:	1%{?dist}
+Release:	4%{?dist}
 # src/ftglue.[ch] is in Public Domain
 # src/fccache.c contains Public Domain code
 # fc-case/CaseFolding.txt is in the UCD
@@ -16,6 +16,8 @@ Source1:	25-no-bitmap-fedora.conf
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=140335
 Patch0:		%{name}-sleep-less.patch
+# https://bugzilla.redhat.com/show_bug.cgi?id=1236034
+Patch1:         %{name}-lock-cache.patch
 # Ubuntu patches
 Patch10:        00_old_diff_gz.patch
 Patch11:        01_fonts_nanum.patch
@@ -65,6 +67,7 @@ which is useful for developing applications that uses fontconfig.
 %prep
 %setup -q
 %patch0 -p1 -b .sleep-less
+%patch1 -p1 -b .lock-cache
 
 %patch10 -p1
 %patch11 -p1
@@ -148,6 +151,15 @@ fi
 %doc fontconfig-devel.txt fontconfig-devel
 
 %changelog
+* Fri Aug 14 2015 Akira TAGOH <tagoh@redhat.com> - 2.11.94-4.R
+- Revise the patch. (#1236034)
+
+* Wed Aug 12 2015 Akira TAGOH <tagoh@redhat.com> - 2.11.94-3.R
+- Lock the cache file until scanning and writing finished. (#1236034)
+
+* Wed Jun 17 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.11.94-2.R
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
+
 * Tue Jun  2 2015 Akira TAGOH <tagoh@redhat.com> - 2.11.94-1.R
 - New upstream release.
   - Fix bitmap scaling. (#1187528, #1226433, 1226522, #1226722)
