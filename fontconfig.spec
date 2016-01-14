@@ -3,7 +3,7 @@
 Summary:	Font configuration and customization library
 Name:		fontconfig
 Version:	2.11.94
-Release:	4%{?dist}
+Release:	5%{?dist}
 # src/ftglue.[ch] is in Public Domain
 # src/fccache.c contains Public Domain code
 # fc-case/CaseFolding.txt is in the UCD
@@ -119,6 +119,12 @@ fi
 
 %postun -p /sbin/ldconfig
 
+%transfiletriggerin -- /usr/share/fonts /usr/share/X11/fonts/Type1 /usr/share/X11/fonts/TTF /usr/local/share/fonts
+HOME=/root /usr/bin/fc-cache -s
+
+%transfiletriggerpostun -- /usr/share/fonts /usr/share/X11/fonts/Type1 /usr/share/X11/fonts/TTF /usr/local/share/fonts
+HOME=/root /usr/bin/fc-cache -s
+
 %files
 %doc README AUTHORS COPYING
 %doc fontconfig-user.txt fontconfig-user.html
@@ -152,6 +158,9 @@ fi
 %doc fontconfig-devel.txt fontconfig-devel
 
 %changelog
+* Mon Sep  7 2015 Akira TAGOH <tagoh@redhat.com> - 2.11.94-5.R
+- Add file triggers for fonts.
+
 * Fri Aug 14 2015 Akira TAGOH <tagoh@redhat.com> - 2.11.94-4.R
 - Revise the patch. (#1236034)
 
