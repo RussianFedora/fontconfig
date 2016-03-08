@@ -3,7 +3,7 @@
 Summary:	Font configuration and customization library
 Name:		fontconfig
 Version:	2.11.94
-Release:	5%{?dist}
+Release:	6%{?dist}
 # src/ftglue.[ch] is in Public Domain
 # src/fccache.c contains Public Domain code
 # fc-case/CaseFolding.txt is in the UCD
@@ -158,6 +158,9 @@ HOME=/root /usr/bin/fc-cache -s
 %doc fontconfig-devel.txt fontconfig-devel
 
 %changelog
+* Tue Mar  8 2016 Arkady L. Shane <ashejn@russianfedora.pro> - 2.11.94-6.R
+- just rebuilt
+
 * Mon Sep  7 2015 Akira TAGOH <tagoh@redhat.com> - 2.11.94-5.R
 - Add file triggers for fonts.
 
