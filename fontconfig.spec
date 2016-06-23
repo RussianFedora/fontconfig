@@ -2,22 +2,19 @@
 
 Summary:	Font configuration and customization library
 Name:		fontconfig
-Version:	2.11.94
-Release:	6%{?dist}
+Version:	2.12.0
+Release:	1%{?dist}.R
 # src/ftglue.[ch] is in Public Domain
 # src/fccache.c contains Public Domain code
 # fc-case/CaseFolding.txt is in the UCD
 # otherwise MIT
 License:	MIT and Public Domain and UCD
-Group:		System Environment/Libraries
 Source:		http://fontconfig.org/release/%{name}-%{version}.tar.bz2
 URL:		http://fontconfig.org
 Source1:	25-no-bitmap-fedora.conf
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=140335
 Patch0:		%{name}-sleep-less.patch
-# https://bugzilla.redhat.com/show_bug.cgi?id=1236034
-Patch1:         %{name}-lock-cache.patch
 # Ubuntu patches
 Patch10:        00_old_diff_gz.patch
 Patch11:        01_fonts_nanum.patch
@@ -31,7 +28,7 @@ BuildRequires:	freetype-devel >= %{freetype_version}
 BuildRequires:	fontpackages-devel
 BuildRequires:	autoconf automake libtool
 
-Requires:	fontpackages-filesystem
+Requires:	fontpackages-filesystem freetype
 Requires(pre):	freetype
 Requires(post):	grep coreutils
 Requires:	font(:lang=en)
@@ -68,7 +65,6 @@ which is useful for developing applications that uses fontconfig.
 %prep
 %setup -q
 %patch0 -p1 -b .sleep-less
-%patch1 -p1 -b .lock-cache
 
 %patch10 -p1
 %patch11 -p1
@@ -126,9 +122,10 @@ HOME=/root /usr/bin/fc-cache -s
 HOME=/root /usr/bin/fc-cache -s
 
 %files
-%doc README AUTHORS COPYING
+%doc README AUTHORS
 %doc fontconfig-user.txt fontconfig-user.html
 %doc %{_fontconfig_confdir}/README
+%license COPYING
 %{_libdir}/libfontconfig.so.*
 %{_bindir}/fc-cache
 %{_bindir}/fc-cat
@@ -158,33 +155,42 @@ HOME=/root /usr/bin/fc-cache -s
 %doc fontconfig-devel.txt fontconfig-devel
 
 %changelog
-* Tue Mar  8 2016 Arkady L. Shane <ashejn@russianfedora.pro> - 2.11.94-6.R
-- just rebuilt
+* Thu Jun 23 2016 Arkady L. Shane <ashejn@russianfedora.pro> - 2.12.0-1.R
+- apply rebased Ubuntu patches
 
-* Mon Sep  7 2015 Akira TAGOH <tagoh@redhat.com> - 2.11.94-5.R
+* Wed Jun 15 2016 Akira TAGOH <tagoh@redhat.com> - 2.12.0-1
+- New upstream release.
+
+* Tue Apr 12 2016 Akira TAGOH <tagoh@redhat.com> - 2.11.95-1
+- New upstream release. (#1325560)
+
+* Mon Mar 28 2016 Akira TAGOH <tagoh@redhat.com> - 2.11.94-7
+- Add Requires: freetype.
+
+* Wed Feb 03 2016 Fedora Release Engineering <releng@fedoraproject.org> - 2.11.94-6
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
+
+* Mon Sep  7 2015 Akira TAGOH <tagoh@redhat.com> - 2.11.94-5
 - Add file triggers for fonts.
 
-* Fri Aug 14 2015 Akira TAGOH <tagoh@redhat.com> - 2.11.94-4.R
+* Fri Aug 14 2015 Akira TAGOH <tagoh@redhat.com> - 2.11.94-4
 - Revise the patch. (#1236034)
 
-* Wed Aug 12 2015 Akira TAGOH <tagoh@redhat.com> - 2.11.94-3.R
+* Wed Aug 12 2015 Akira TAGOH <tagoh@redhat.com> - 2.11.94-3
 - Lock the cache file until scanning and writing finished. (#1236034)
 
-* Wed Jun 17 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.11.94-2.R
+* Wed Jun 17 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.11.94-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
 
-* Tue Jun  2 2015 Akira TAGOH <tagoh@redhat.com> - 2.11.94-1.R
+* Tue Jun  2 2015 Akira TAGOH <tagoh@redhat.com> - 2.11.94-1
 - New upstream release.
   - Fix bitmap scaling. (#1187528, #1226433, 1226522, #1226722)
 
-* Mon Mar 30 2015 Akira TAGOH <tagoh@redhat.com> - 2.11.93-2.R
+* Mon Mar 30 2015 Akira TAGOH <tagoh@redhat.com> - 2.11.93-2
 - Fix SIGFPE (#1203118)
 
-* Mon Mar  9 2015 Akira TAGOH <tagoh@redhat.com> - 2.11.93-1.R
+* Mon Mar  9 2015 Akira TAGOH <tagoh@redhat.com> - 2.11.93-1
 - New upstream release.
-
-* Sun Feb 22 2015 Arkady L. Shane <ashejn@russianfedora.ru> - 2.11.92-1.R
-- apply Ubuntu lcd patches
 
 * Sat Feb 21 2015 Till Maas <opensource@till.name> - 2.11.92-2
 - Rebuilt for Fedora 23 Change
