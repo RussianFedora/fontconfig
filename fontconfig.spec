@@ -3,7 +3,7 @@
 Summary:	Font configuration and customization library
 Name:		fontconfig
 Version:	2.11.94
-Release:	6%{?dist}
+Release:	7%{?dist}
 # src/ftglue.[ch] is in Public Domain
 # src/fccache.c contains Public Domain code
 # fc-case/CaseFolding.txt is in the UCD
@@ -17,7 +17,9 @@ Source1:	25-no-bitmap-fedora.conf
 # https://bugzilla.redhat.com/show_bug.cgi?id=140335
 Patch0:		%{name}-sleep-less.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=1236034
-Patch1:         %{name}-lock-cache.patch
+Patch1:		%{name}-lock-cache.patch
+# https://bugzilla.redhat.com/show_bug.cgi?id=1364439
+Patch2:		%{name}-validate-offset-in-cache.patch
 # Ubuntu patches
 Patch10:        00_old_diff_gz.patch
 Patch11:        01_fonts_nanum.patch
@@ -69,6 +71,7 @@ which is useful for developing applications that uses fontconfig.
 %setup -q
 %patch0 -p1 -b .sleep-less
 %patch1 -p1 -b .lock-cache
+%patch2 -p1 -b .validate-offset
 
 %patch10 -p1
 %patch11 -p1
@@ -158,6 +161,9 @@ HOME=/root /usr/bin/fc-cache -s
 %doc fontconfig-devel.txt fontconfig-devel
 
 %changelog
+* Fri Aug  5 2016 Akira TAGOH <tagoh@redhat.com> - 2.11.94-7.R
+- CVE-2016-5384: Validate offsets in cache files properly. (#1364439)
+
 * Tue Mar  8 2016 Arkady L. Shane <ashejn@russianfedora.pro> - 2.11.94-6.R
 - just rebuilt
 
