@@ -15,6 +15,9 @@ Source1:	25-no-bitmap-fedora.conf
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=140335
 Patch0:		%{name}-sleep-less.patch
+Patch1:		%{name}-glibc-limits.patch
+Patch2:		%{name}-gperf-3.1.patch
+Patch3:		%{name}-freetype-2.7.1.patch
 # Ubuntu patches
 Patch10:        00_old_diff_gz.patch
 Patch11:        01_fonts_nanum.patch
@@ -27,6 +30,7 @@ BuildRequires:	expat-devel
 BuildRequires:	freetype-devel >= %{freetype_version}
 BuildRequires:	fontpackages-devel
 BuildRequires:	autoconf automake libtool
+BuildRequires:	gperf
 
 Requires:	fontpackages-filesystem freetype
 Requires(pre):	freetype
@@ -65,6 +69,9 @@ which is useful for developing applications that uses fontconfig.
 %prep
 %setup -q
 %patch0 -p1 -b .sleep-less
+%patch1 -p1 -b .glibc-limits
+%patch2 -p1 -b .gperf
+%patch3 -p1 -b .freetype
 
 %patch10 -p1
 %patch11 -p1
@@ -77,8 +84,9 @@ which is useful for developing applications that uses fontconfig.
 # We don't want to rebuild the docs, but we want to install the included ones.
 export HASDOCBOOK=no
 
+autoreconf
 %configure	--with-add-fonts=/usr/share/X11/fonts/Type1,/usr/share/X11/fonts/TTF,/usr/local/share/fonts \
-		--disable-static
+		--disable-static --with-cache-dir=/usr/lib/fontconfig/cache
 
 make %{?_smp_mflags}
 
@@ -103,7 +111,9 @@ make check
 
 umask 0022
 
-mkdir -p %{_localstatedir}/cache/fontconfig
+mkdir -p /usr/lib/fontconfig/cache
+
+[[ -d %{_localstatedir}/cache/fontconfig ]] && rm -rf %{_localstatedir}/cache/fontconfig/* 2> /dev/null || :
 
 # Force regeneration of all fontconfig cache files
 # The check for existance is needed on dual-arch installs (the second
@@ -141,7 +151,7 @@ HOME=/root /usr/bin/fc-cache -s
 # If you want to do so, you should use local.conf instead.
 %config %{_fontconfig_masterdir}/fonts.conf
 %config(noreplace) %{_fontconfig_confdir}/*.conf
-%dir %{_localstatedir}/cache/fontconfig
+%dir /usr/lib/fontconfig/cache
 %{_mandir}/man1/*
 %{_mandir}/man5/*
 
@@ -155,6 +165,15 @@ HOME=/root /usr/bin/fc-cache -s
 %doc fontconfig-devel.txt fontconfig-devel
 
 %changelog
+* Thu Feb 23 2017 Akira TAGOH <tagoh@redhat.com> - 2.12.1-4.R
+- Move the cache files into /usr/lib/fontconfig/cache (#1377367, #1416380)
+
+* Wed Feb 22 2017 Akira TAGOH <tagoh@redhat.com> - 2.12.1-3.R
+- Fix FTBFS (#1423570)
+
+* Fri Feb 10 2017 Fedora Release Engineering <releng@fedoraproject.org> - 2.12.1-2.R
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
+
 * Fri Aug  5 2016 Akira TAGOH <tagoh@redhat.com> - 2.12.1-1.R
 - New upstream release.
 
