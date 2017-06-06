@@ -2,7 +2,7 @@
 
 Summary:	Font configuration and customization library
 Name:		fontconfig
-Version:	2.12.1
+Version:	2.12.3
 Release:	1%{?dist}.R
 # src/ftglue.[ch] is in Public Domain
 # src/fccache.c contains Public Domain code
@@ -15,9 +15,6 @@ Source1:	25-no-bitmap-fedora.conf
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=140335
 Patch0:		%{name}-sleep-less.patch
-Patch1:		%{name}-glibc-limits.patch
-Patch2:		%{name}-gperf-3.1.patch
-Patch3:		%{name}-freetype-2.7.1.patch
 # Ubuntu patches
 Patch10:        00_old_diff_gz.patch
 Patch11:        01_fonts_nanum.patch
@@ -69,9 +66,6 @@ which is useful for developing applications that uses fontconfig.
 %prep
 %setup -q
 %patch0 -p1 -b .sleep-less
-%patch1 -p1 -b .glibc-limits
-%patch2 -p1 -b .gperf
-%patch3 -p1 -b .freetype
 
 %patch10 -p1
 %patch11 -p1
@@ -88,6 +82,8 @@ autoreconf
 %configure	--with-add-fonts=/usr/share/X11/fonts/Type1,/usr/share/X11/fonts/TTF,/usr/local/share/fonts \
 		--disable-static --with-cache-dir=/usr/lib/fontconfig/cache
 
+# regenerate hash functions
+rm src/fcobjshash.h
 make %{?_smp_mflags}
 
 %install
@@ -165,6 +161,9 @@ HOME=/root /usr/bin/fc-cache -s
 %doc fontconfig-devel.txt fontconfig-devel
 
 %changelog
+* Wed May 31 2017 Akira TAGOH <tagoh@redhat.com> - 2.12.3-1.R
+- New upstream release.
+
 * Thu Feb 23 2017 Akira TAGOH <tagoh@redhat.com> - 2.12.1-4.R
 - Move the cache files into /usr/lib/fontconfig/cache (#1377367, #1416380)
 
