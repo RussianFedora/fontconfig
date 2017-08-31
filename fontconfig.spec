@@ -2,8 +2,8 @@
 
 Summary:	Font configuration and customization library
 Name:		fontconfig
-Version:	2.12.3
-Release:	1%{?dist}.R
+Version:	2.12.4
+Release:	4%{?dist}.R
 # src/ftglue.[ch] is in Public Domain
 # src/fccache.c contains Public Domain code
 # fc-case/CaseFolding.txt is in the UCD
@@ -12,6 +12,7 @@ License:	MIT and Public Domain and UCD
 Source:		http://fontconfig.org/release/%{name}-%{version}.tar.bz2
 URL:		http://fontconfig.org
 Source1:	25-no-bitmap-fedora.conf
+Source2:	fc-cache
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=140335
 Patch0:		%{name}-sleep-less.patch
@@ -94,10 +95,15 @@ find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
 install -p -m 0644 %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/fonts/conf.d
 ln -s %{_fontconfig_templatedir}/25-unhint-nonlatin.conf $RPM_BUILD_ROOT%{_fontconfig_confdir}/
 
-# move installed doc files back to build directory to package themm
+# move installed doc files back to build directory to package them
 # in the right place
 mv $RPM_BUILD_ROOT%{_docdir}/fontconfig/* .
 rmdir $RPM_BUILD_ROOT%{_docdir}/fontconfig/
+
+# rename fc-cache binary
+mv $RPM_BUILD_ROOT%{_bindir}/fc-cache $RPM_BUILD_ROOT%{_bindir}/fc-cache-%{__isa_bits}
+
+install -p -m 0755 %{SOURCE2} $RPM_BUILD_ROOT%{_bindir}/fc-cache
 
 %check
 make check
@@ -133,7 +139,7 @@ HOME=/root /usr/bin/fc-cache -s
 %doc %{_fontconfig_confdir}/README
 %license COPYING
 %{_libdir}/libfontconfig.so.*
-%{_bindir}/fc-cache
+%{_bindir}/fc-cache*
 %{_bindir}/fc-cat
 %{_bindir}/fc-list
 %{_bindir}/fc-match
@@ -161,6 +167,19 @@ HOME=/root /usr/bin/fc-cache -s
 %doc fontconfig-devel.txt fontconfig-devel
 
 %changelog
+* Mon Jul 31 2017 Akira TAGOH <tagoh@redhat.com> - 2.12.4-4.R
+- Fix exiting with 1 on 32bit arch. (#1476831)
+
+* Wed Jul 26 2017 Fedora Release Engineering <releng@fedoraproject.org> - 2.12.4-3.R
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Mass_Rebuild
+
+* Mon Jul 24 2017 Akira TAGOH <tagoh@redhat.com> - 2.12.4-2.R
+- Allow installing 32/64 bit version of fc-cache at the same time. (#1474257)
+- Add fc-cache script to invoke both version of fc-cache if available.
+
+* Wed Jul  5 2017 Akira TAGOH <tagoh@redhat.com> - 2.12.4-1.R
+- New upstream release.
+
 * Wed May 31 2017 Akira TAGOH <tagoh@redhat.com> - 2.12.3-1.R
 - New upstream release.
 
