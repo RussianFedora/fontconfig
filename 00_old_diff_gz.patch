@@ -1,53 +1,47 @@
-diff -urN fontconfig-2.12.1.orig/conf.d/40-nonlatin.conf fontconfig-2.12.1/conf.d/40-nonlatin.conf
---- fontconfig-2.12.1.orig/conf.d/40-nonlatin.conf	2016-08-09 19:06:38.896630968 +0300
-+++ fontconfig-2.12.1/conf.d/40-nonlatin.conf	2016-08-09 19:08:32.929477521 +0300
-@@ -160,6 +160,10 @@
- 		<family>MgOpen Modata</family>
+diff -urN fontconfig-2.12.5.orig/conf.d/40-nonlatin.conf fontconfig-2.12.5/conf.d/40-nonlatin.conf
+--- fontconfig-2.12.5.orig/conf.d/40-nonlatin.conf	2017-09-14 17:29:11.251491680 +0300
++++ fontconfig-2.12.5/conf.d/40-nonlatin.conf	2017-09-14 17:30:21.688411010 +0300
+@@ -161,6 +161,10 @@
  		<default><family>sans-serif</family></default>
  	</alias>
-+        <alias>
-+                <family>MgOpen Moderna</family>
-+                <default><family>sans-serif</family></default>
-+        </alias>
  	<alias>
++		<family>MgOpen Moderna</family>
++		<default><family>sans-serif</family></default>
++	</alias>
++	<alias>
  		<family>Sazanami Gothic</family>
  		<default><family>sans-serif</family></default>
-diff -urN fontconfig-2.12.1.orig/conf.d/60-latin.conf fontconfig-2.12.1/conf.d/60-latin.conf
---- fontconfig-2.12.1.orig/conf.d/60-latin.conf	2016-08-09 19:06:38.897630975 +0300
-+++ fontconfig-2.12.1/conf.d/60-latin.conf	2016-08-09 19:10:59.178556468 +0300
-@@ -4,8 +4,8 @@
- 	<alias>
- 		<family>serif</family>
+ 	</alias>
+diff -urN fontconfig-2.12.5.orig/conf.d/60-latin.conf fontconfig-2.12.5/conf.d/60-latin.conf
+--- fontconfig-2.12.5.orig/conf.d/60-latin.conf	2017-09-14 17:29:11.254491719 +0300
++++ fontconfig-2.12.5/conf.d/60-latin.conf	2017-09-14 17:31:01.791934434 +0300
+@@ -6,6 +6,7 @@
  		<prefer>
--			<family>Bitstream Vera Serif</family>
+ 			<family>Bitstream Vera Serif</family>
  			<family>DejaVu Serif</family>
 +			<family>Bitstream Vera Serif</family>
  			<family>Times New Roman</family>
  			<family>Thorndale AMT</family>
  			<family>Luxi Serif</family>
-@@ -17,8 +17,8 @@
- 	<alias>
- 		<family>sans-serif</family>
+@@ -19,6 +20,7 @@
  		<prefer>
--			<family>Bitstream Vera Sans</family>
+ 			<family>Bitstream Vera Sans</family>
  			<family>DejaVu Sans</family>
 +			<family>Bitstream Vera Sans</family>
  			<family>Verdana</family>
  			<family>Arial</family>
  			<family>Albany AMT</family>
-@@ -34,8 +34,8 @@
- 	<alias>
- 		<family>monospace</family>
+@@ -36,6 +38,7 @@
  		<prefer>
--			<family>Bitstream Vera Sans Mono</family>
+ 			<family>Bitstream Vera Sans Mono</family>
  			<family>DejaVu Sans Mono</family>
 +			<family>Bitstream Vera Sans Mono</family>
  			<family>Inconsolata</family>
  			<family>Andale Mono</family>
  			<family>Courier New</family>
-diff -urN fontconfig-2.12.1.orig/conf.d/Makefile.am fontconfig-2.12.1/conf.d/Makefile.am
---- fontconfig-2.12.1.orig/conf.d/Makefile.am	2016-08-09 19:06:38.897630975 +0300
-+++ fontconfig-2.12.1/conf.d/Makefile.am	2016-08-09 19:13:00.688445053 +0300
+diff -urN fontconfig-2.12.5.orig/conf.d/Makefile.am fontconfig-2.12.5/conf.d/Makefile.am
+--- fontconfig-2.12.5.orig/conf.d/Makefile.am	2017-09-14 17:29:11.253491706 +0300
++++ fontconfig-2.12.5/conf.d/Makefile.am	2017-09-14 17:32:58.995462338 +0300
 @@ -26,6 +26,8 @@
  DOC_FILES = $(DOC_SOURCES:.in=)
  
@@ -57,7 +51,7 @@ diff -urN fontconfig-2.12.1.orig/conf.d/Makefile.am fontconfig-2.12.1/conf.d/Mak
  	10-hinting-$(PREFERRED_HINTING).conf	\
  	10-scale-bitmap-fonts.conf \
  	20-unhint-small-vera.conf \
-@@ -51,7 +53,9 @@
+@@ -53,7 +55,9 @@
  
  templatedir = $(TEMPLATEDIR)
  template_DATA =				\
@@ -67,11 +61,11 @@ diff -urN fontconfig-2.12.1.orig/conf.d/Makefile.am fontconfig-2.12.1/conf.d/Mak
  	10-hinting-full.conf		\
  	10-hinting-medium.conf		\
  	10-hinting-none.conf		\
-@@ -75,6 +79,7 @@
+@@ -78,6 +82,7 @@
  	49-sansserif.conf		\
  	50-user.conf			\
  	51-local.conf			\
 +	53-monospace-lcd-filter.conf	\
+ 	60-generic.conf			\
  	60-latin.conf			\
  	65-fonts-persian.conf		\
- 	65-khmer.conf			\

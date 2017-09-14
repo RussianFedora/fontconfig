@@ -2,8 +2,8 @@
 
 Summary:	Font configuration and customization library
 Name:		fontconfig
-Version:	2.12.4
-Release:	4%{?dist}.R
+Version:	2.12.5
+Release:	1%{?dist}.R
 # src/ftglue.[ch] is in Public Domain
 # src/fccache.c contains Public Domain code
 # fc-case/CaseFolding.txt is in the UCD
@@ -167,6 +167,9 @@ HOME=/root /usr/bin/fc-cache -s
 %doc fontconfig-devel.txt fontconfig-devel
 
 %changelog
+* Sat Sep 09 2017 Akira TAGOH <tagoh@redhat.com> - 2.12.5-1.R
+- New upstream release.
+
 * Mon Jul 31 2017 Akira TAGOH <tagoh@redhat.com> - 2.12.4-4.R
 - Fix exiting with 1 on 32bit arch. (#1476831)
 
