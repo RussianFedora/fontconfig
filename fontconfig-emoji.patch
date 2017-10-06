@@ -1,0 +1,94 @@
+From b861a2a5b09e06795dea4de6e72447d364b89473 Mon Sep 17 00:00:00 2001
+From: Bastien Nocera <hadess@hadess.net>
+Date: Thu, 5 Oct 2017 12:17:59 +0200
+Subject: [PATCH] conf: Prefer system emoji fonts to third-party ones
+
+Prefer the system provided emoji fonts on systems which provide one,
+such as Windows, MacOS and Android, even if the Emoji One or Emoji Two
+fonts are installed.
+
+This also allows free software OSes such as GNOME to prefer the Emoji
+One font, which is not used in other OSes and therefore has a unique
+brand identity, by installing them and only them by default.
+
+Users can use more capable fonts while Emoji One and Emoji Two catch up
+by installing a font otherwise already used by another system, such as
+Google's freely redistributable Noto Emoji font.
+
+https://bugzilla.redhat.com/show_bug.cgi?id=1496761
+---
+ conf.d/45-generic.conf | 16 +++++++++-------
+ conf.d/60-generic.conf |  5 +++--
+ 2 files changed, 12 insertions(+), 9 deletions(-)
+
+diff --git a/conf.d/45-generic.conf b/conf.d/45-generic.conf
+index f6076bb..791d12d 100644
+--- a/conf.d/45-generic.conf
++++ b/conf.d/45-generic.conf
+@@ -5,32 +5,34 @@
+ 
+ <!-- Emoji -->
+ 
++	<!-- System emoji -->
+ 	<alias binding="same">
+-		<family>Emoji Two</family>
++		<family>Noto Color Emoji</family> <!-- Google -->
+ 		<default><family>emoji</family></default>
+ 	</alias>
+ 	<alias binding="same">
+-		<family>Emoji One</family>
++		<family>Apple Color Emoji</family> <!-- Apple -->
+ 		<default><family>emoji</family></default>
+ 	</alias>
+ 	<alias binding="same">
+-		<family>Noto Color Emoji</family> <!-- Google -->
++		<family>Segoe UI Emoji</family> <!-- Microsoft -->
+ 		<default><family>emoji</family></default>
+ 	</alias>
+ 	<alias binding="same">
+-		<family>Apple Color Emoji</family> <!-- Apple -->
++		<family>Twitter Color Emoji</family> <!-- Twitter -->
+ 		<default><family>emoji</family></default>
+ 	</alias>
+ 	<alias binding="same">
+-		<family>Segoe UI Emoji</family> <!-- Microsoft -->
++		<family>EmojiOne Mozilla</family> <!-- Mozilla -->
+ 		<default><family>emoji</family></default>
+ 	</alias>
++	<!-- Third-party emoji -->
+ 	<alias binding="same">
+-		<family>Twitter Color Emoji</family> <!-- Twitter -->
++		<family>Emoji Two</family>
+ 		<default><family>emoji</family></default>
+ 	</alias>
+ 	<alias binding="same">
+-		<family>EmojiOne Mozilla</family> <!-- Mozilla -->
++		<family>Emoji One</family>
+ 		<default><family>emoji</family></default>
+ 	</alias>
+ 	<!-- B&W -->
+diff --git a/conf.d/60-generic.conf b/conf.d/60-generic.conf
+index 2a2b809..7985ce9 100644
+--- a/conf.d/60-generic.conf
++++ b/conf.d/60-generic.conf
+@@ -29,14 +29,15 @@
+ 	<alias binding="same">
+ 		<family>emoji</family>
+ 		<prefer>
+-			<family>Emoji Two</family>
+-			<family>Emoji One</family>
+ 			<!-- System fonts -->
+ 			<family>Noto Color Emoji</family> <!-- Google -->
+ 			<family>Apple Color Emoji</family> <!-- Apple -->
+ 			<family>Segoe UI Emoji</family> <!-- Microsoft -->
+ 			<family>Twitter Color Emoji</family> <!-- Twitter -->
+ 			<family>EmojiOne Mozilla</family> <!-- Mozilla -->
++			<!-- Third-Party fonts -->
++			<family>Emoji Two</family>
++			<family>Emoji One</family>
+ 			<!-- Non-color -->
+ 			<family>Noto Emoji</family> <!-- Google -->
+ 			<family>Android Emoji</family> <!-- Google -->
+-- 
+2.14.1
+
