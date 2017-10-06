@@ -2,7 +2,7 @@
 
 Summary:	Font configuration and customization library
 Name:		fontconfig
-Version:	2.12.5
+Version:	2.12.6
 Release:	1%{?dist}.R
 # src/ftglue.[ch] is in Public Domain
 # src/fccache.c contains Public Domain code
@@ -16,6 +16,8 @@ Source2:	fc-cache
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=140335
 Patch0:		%{name}-sleep-less.patch
+# https://bugzilla.redhat.com/show_bug.cgi?id=1496761
+Patch1:		%{name}-emoji.patch
 # Ubuntu patches
 Patch10:        00_old_diff_gz.patch
 Patch11:        01_fonts_nanum.patch
@@ -37,7 +39,7 @@ Requires:	font(:lang=en)
 
 %description
 Fontconfig is designed to locate fonts within the
-system and select them according to requirements specified by 
+system and select them according to requirements specified by
 applications.
 
 %package	devel
@@ -51,7 +53,7 @@ Requires:	pkgconfig
 The fontconfig-devel package includes the header files,
 and developer docs for the fontconfig package.
 
-Install fontconfig-devel if you want to develop programs which 
+Install fontconfig-devel if you want to develop programs which
 will use fontconfig.
 
 %package	devel-doc
@@ -67,6 +69,7 @@ which is useful for developing applications that uses fontconfig.
 %prep
 %setup -q
 %patch0 -p1 -b .sleep-less
+%patch1 -p1 -b .emoji
 
 %patch10 -p1
 %patch11 -p1
@@ -167,6 +170,15 @@ HOME=/root /usr/bin/fc-cache -s
 %doc fontconfig-devel.txt fontconfig-devel
 
 %changelog
+* Thu Oct  5 2017 Akira TAGOH <tagoh@redhat.com> - 2.12.6-3.R
+- Backport a patch to change the order of the emoji fonts. (#1496761)
+
+* Tue Oct  3 2017 Akira TAGOH <tagoh@redhat.com> - 2.12.6-2.R
+- Bump the release to address the upgrade path issue.
+
+* Thu Sep 21 2017 Akira TAGOH <tagoh@redhat.com> - 2.12.6-1.R
+- New upstream release.
+
 * Sat Sep 09 2017 Akira TAGOH <tagoh@redhat.com> - 2.12.5-1.R
 - New upstream release.
 
@@ -611,7 +623,7 @@ HOME=/root /usr/bin/fc-cache -s
 
 * Tue Jan 17 2006 Ray Strode <rstrode@redhat.com> - 2.3.93-4
 - apply patch from Tim Mayberry to correct aliasing and disable
-  hinting for the two Chinese font names AR PL ShanHeiSun Uni 
+  hinting for the two Chinese font names AR PL ShanHeiSun Uni
   and AR PL Zenkai Uni
 
 * Tue Jan 10 2006 Bill Nottingham <notting@redhat.com> - 2.3.93-3
@@ -642,7 +654,7 @@ HOME=/root /usr/bin/fc-cache -s
 
 * Wed Nov 16 2005 Bill Nottingham <notting@redhat.com> - 2.3.93-3
 - modular X moved fonts from /usr/X11R6/lib/X11/fonts to
-  /usr/share/X11/fonts, adjust %%configure accordingly and 
+  /usr/share/X11/fonts, adjust %%configure accordingly and
   conflict with older font packages
 
 * Wed Nov  9 2005 Carl Worth <cworth@redhat.com> - 2.3.92-2
@@ -714,7 +726,7 @@ HOME=/root /usr/bin/fc-cache -s
 - Rebuild
 
 * Wed Dec  1 2004 Owen Taylor <otaylor@redhat.com> - 2.2.3-6
-- Sleep a second before the exit of fc-cache to fix problems with fast 
+- Sleep a second before the exit of fc-cache to fix problems with fast
   serial installs of fonts (#140335)
 - Turn off hinting for Lohit Hindi/Bengali/Punjabi (#139816)
 
@@ -726,7 +738,7 @@ HOME=/root /usr/bin/fc-cache -s
 - Update fonts-hebrew names to include CLM suffix
 
 * Thu Sep  2 2004 Owen Taylor <otaylor@redhat.com> - 2.2.3-3
-- Backport code from head branch of fontconfig CVS to parse names 
+- Backport code from head branch of fontconfig CVS to parse names
   for postscript fonts (fixes #127500, J. J. Ramsey)
 - Own /usr/share/fonts (#110956, David K. Levine)
 - Add KacstQura to serif/sans-serif/monospace aliases (#101182)
@@ -756,7 +768,7 @@ HOME=/root /usr/bin/fc-cache -s
 - Rebuild
 
 * Wed Mar 10 2004 Owen Taylor <otaylor@redhat.com> 2.2.1-8.0
-- Add Albany/Cumberland/Thorndale as fallbacks for Microsoft core fonts and 
+- Add Albany/Cumberland/Thorndale as fallbacks for Microsoft core fonts and
   as non-preferred alternatives for Sans/Serif/Monospace
 - Fix FreeType includes for recent FreeType
 
@@ -767,7 +779,7 @@ HOME=/root /usr/bin/fc-cache -s
 - rebuilt
 
 * Mon Sep 22 2003 Owen Taylor <otaylor@redhat.com> 2.2.1-6.0
-- Should have been passing --with-add-fonts, not --with-add-dirs to 
+- Should have been passing --with-add-fonts, not --with-add-dirs to
   configure ... caused wrong version of Luxi to be used. (#100862)
 
 * Fri Sep 19 2003 Owen Taylor <otaylor@redhat.com> 2.2.1-5.0
@@ -795,12 +807,12 @@ HOME=/root /usr/bin/fc-cache -s
 - Fix segfault in fc-cache from .dircache patch
 
 * Mon Feb 24 2003 Owen Taylor <otaylor@redhat.com>
-- Back out patch that wrote fonts.conf entries that crash RH-8.0 
+- Back out patch that wrote fonts.conf entries that crash RH-8.0
   gnome-terminal, go with patch from fontconfig CVS instead.
   (#84863)
 
 * Tue Feb 11 2003 Owen Taylor <otaylor@redhat.com>
-- Move fontconfig man page to main package, since it contains non-devel 
+- Move fontconfig man page to main package, since it contains non-devel
   information (#76189)
 - Look in the OTF subdirectory of /usr/X11R6/lib/fonts as well
   so we find Syriac fonts (#82627)
@@ -817,7 +829,7 @@ HOME=/root /usr/bin/fc-cache -s
 - Try a different tack when fixing cache problem
 
 * Tue Jan 14 2003 Owen Taylor <otaylor@redhat.com>
-- Try to fix bug where empty cache entries would be found in 
+- Try to fix bug where empty cache entries would be found in
   ~/.fonts.cache-1 during scanning (#81335)
 
 * Thu Nov 21 2002 Mike A. Harris <mharris@redhat.com> 2.1-1
@@ -861,7 +873,7 @@ HOME=/root /usr/bin/fc-cache -s
 - Upgrade to rc2
 - Turn off hinting for all CJK fonts
 - Fix typo in %%post
-- Remove the custom language tag stuff in favor of Keith's standard 
+- Remove the custom language tag stuff in favor of Keith's standard
   solution.
 
 * Mon Jul 15 2002 Owen Taylor <otaylor@redhat.com>
@@ -887,7 +899,7 @@ HOME=/root /usr/bin/fc-cache -s
 - New upstream version, fixing locale problem
 
 * Mon Jun 24 2002 Owen Taylor <otaylor@redhat.com>
-- Add a hack where we set the "language" fontconfig property based on the locale, then 
+- Add a hack where we set the "language" fontconfig property based on the locale, then
   we conditionalize base on that in the fonts.conf file.
 
 * Sun Jun 23 2002 Owen Taylor <otaylor@redhat.com>
