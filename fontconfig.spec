@@ -3,7 +3,7 @@
 Summary:	Font configuration and customization library
 Name:		fontconfig
 Version:	2.12.6
-Release:	3%{?dist}.R
+Release:	4%{?dist}.R
 # src/ftglue.[ch] is in Public Domain
 # src/fccache.c contains Public Domain code
 # fc-case/CaseFolding.txt is in the UCD
@@ -18,6 +18,8 @@ Source2:	fc-cache
 Patch0:		%{name}-sleep-less.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=1496761
 Patch1:		%{name}-emoji.patch
+# https://bugzilla.redhat.com/show_bug.cgi?id=1509790
+Patch2:		%{name}-remove-debug-print-in-fc-query.patch
 # Ubuntu patches
 Patch10:        00_old_diff_gz.patch
 Patch11:        01_fonts_nanum.patch
@@ -70,6 +72,7 @@ which is useful for developing applications that uses fontconfig.
 %setup -q
 %patch0 -p1 -b .sleep-less
 %patch1 -p1 -b .emoji
+%patch2 -p1 -b .fc-query
 
 %patch10 -p1
 %patch11 -p1
@@ -170,6 +173,9 @@ HOME=/root /usr/bin/fc-cache -s
 %doc fontconfig-devel.txt fontconfig-devel
 
 %changelog
+* Wed Nov  8 2017 Akira TAGOH <tagoh@redhat.com> - 2.12.6-4.R
+- Remove the debug print in fc-query. (#1509790)
+
 * Thu Oct  5 2017 Akira TAGOH <tagoh@redhat.com> - 2.12.6-3.R
 - Backport a patch to change the order of the emoji fonts. (#1496761)
 
