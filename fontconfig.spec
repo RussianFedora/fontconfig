@@ -2,8 +2,8 @@
 
 Summary:	Font configuration and customization library
 Name:		fontconfig
-Version:	2.12.6
-Release:	4%{?dist}.R
+Version:	2.13.0
+Release:	3%{?dist}.R
 # src/ftglue.[ch] is in Public Domain
 # src/fccache.c contains Public Domain code
 # fc-case/CaseFolding.txt is in the UCD
@@ -15,11 +15,12 @@ Source1:	25-no-bitmap-fedora.conf
 Source2:	fc-cache
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=140335
-Patch0:		%{name}-sleep-less.patch
-# https://bugzilla.redhat.com/show_bug.cgi?id=1496761
-Patch1:		%{name}-emoji.patch
-# https://bugzilla.redhat.com/show_bug.cgi?id=1509790
-Patch2:		%{name}-remove-debug-print-in-fc-query.patch
+Patch0:         %{name}-sleep-less.patch
+Patch1:         %{name}-required-freetype-version.patch
+Patch2:         %{name}-const-name-in-range.patch
+Patch3:         %{name}-implicit-object-for-const-name.patch
+Patch4:         %{name}-locale.patch
+
 # Ubuntu patches
 Patch10:        00_old_diff_gz.patch
 Patch11:        01_fonts_nanum.patch
@@ -31,11 +32,12 @@ Patch15:        06_ubuntu_lcddefault.patch
 BuildRequires:	expat-devel
 BuildRequires:	freetype-devel >= %{freetype_version}
 BuildRequires:	fontpackages-devel
-BuildRequires:	autoconf automake libtool
+BuildRequires:	libuuid-devel
+BuildRequires:	autoconf automake libtool gettext itstool
 BuildRequires:	gperf
 
 Requires:	fontpackages-filesystem freetype
-Requires(pre):	freetype
+Requires(pre):	freetype >= 2.8-7
 Requires(post):	grep coreutils
 Requires:	font(:lang=en)
 
@@ -50,6 +52,7 @@ Group:		Development/Libraries
 Requires:	%{name}%{?_isa} = %{version}-%{release}
 Requires:	freetype-devel >= %{freetype_version}
 Requires:	pkgconfig
+Requires:	gettext
 
 %description	devel
 The fontconfig-devel package includes the header files,
@@ -69,17 +72,7 @@ The fontconfig-devel-doc package contains the documentation files
 which is useful for developing applications that uses fontconfig.
 
 %prep
-%setup -q
-%patch0 -p1 -b .sleep-less
-%patch1 -p1 -b .emoji
-%patch2 -p1 -b .fc-query
-
-%patch10 -p1
-%patch11 -p1
-%patch12 -p1
-%patch13 -p1
-%patch14 -p1
-%patch15 -p1
+%autosetup -p1
 
 %build
 # We don't want to rebuild the docs, but we want to install the included ones.
@@ -89,8 +82,6 @@ autoreconf
 %configure	--with-add-fonts=/usr/share/X11/fonts/Type1,/usr/share/X11/fonts/TTF,/usr/local/share/fonts \
 		--disable-static --with-cache-dir=/usr/lib/fontconfig/cache
 
-# regenerate hash functions
-rm src/fcobjshash.h
 make %{?_smp_mflags}
 
 %install
@@ -110,6 +101,10 @@ rmdir $RPM_BUILD_ROOT%{_docdir}/fontconfig/
 mv $RPM_BUILD_ROOT%{_bindir}/fc-cache $RPM_BUILD_ROOT%{_bindir}/fc-cache-%{__isa_bits}
 
 install -p -m 0755 %{SOURCE2} $RPM_BUILD_ROOT%{_bindir}/fc-cache
+
+%find_lang %{name}
+%find_lang %{name}-conf
+cat %{name}-conf.lang >> %{name}.lang
 
 %check
 make check
@@ -139,7 +134,7 @@ HOME=/root /usr/bin/fc-cache -s
 %transfiletriggerpostun -- /usr/share/fonts /usr/share/X11/fonts/Type1 /usr/share/X11/fonts/TTF /usr/local/share/fonts
 HOME=/root /usr/bin/fc-cache -s
 
-%files
+%files -f %{name}.lang
 %doc README AUTHORS
 %doc fontconfig-user.txt fontconfig-user.html
 %doc %{_fontconfig_confdir}/README
@@ -147,6 +142,7 @@ HOME=/root /usr/bin/fc-cache -s
 %{_libdir}/libfontconfig.so.*
 %{_bindir}/fc-cache*
 %{_bindir}/fc-cat
+%{_bindir}/fc-conflist
 %{_bindir}/fc-list
 %{_bindir}/fc-match
 %{_bindir}/fc-pattern
@@ -168,11 +164,16 @@ HOME=/root /usr/bin/fc-cache -s
 %{_libdir}/pkgconfig/*
 %{_includedir}/fontconfig
 %{_mandir}/man3/*
+%{_datadir}/gettext/its/fontconfig.its
+%{_datadir}/gettext/its/fontconfig.loc
 
 %files devel-doc
 %doc fontconfig-devel.txt fontconfig-devel
 
 %changelog
+* Mon Mar 26 2018 Arkady L. Shane <ashejn@russianfedora.pro> - 2.13.0-3.R
+- update to 2.13.0
+
 * Wed Nov  8 2017 Akira TAGOH <tagoh@redhat.com> - 2.12.6-4.R
 - Remove the debug print in fc-query. (#1509790)
 
