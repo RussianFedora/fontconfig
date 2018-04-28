@@ -3,7 +3,7 @@
 Summary:	Font configuration and customization library
 Name:		fontconfig
 Version:	2.13.0
-Release:	3%{?dist}.R
+Release:	3.1%{?dist}.R
 # src/ftglue.[ch] is in Public Domain
 # src/fccache.c contains Public Domain code
 # fc-case/CaseFolding.txt is in the UCD
@@ -171,6 +171,9 @@ HOME=/root /usr/bin/fc-cache -s
 %doc fontconfig-devel.txt fontconfig-devel
 
 %changelog
+* Sat Apr 28 2018 Arkady L. Shane <ashejn@russianfedora.pro> - 2.13.0-3.1.R
+- fix warnings about multiple values in <test>
+
 * Mon Mar 26 2018 Arkady L. Shane <ashejn@russianfedora.pro> - 2.13.0-3.R
 - update to 2.13.0
 
