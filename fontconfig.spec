@@ -3,7 +3,7 @@
 Summary:	Font configuration and customization library
 Name:		fontconfig
 Version:	2.13.0
-Release:	4%{?dist}.R
+Release:	8%{?dist}.R
 # src/ftglue.[ch] is in Public Domain
 # src/fccache.c contains Public Domain code
 # fc-case/CaseFolding.txt is in the UCD
@@ -38,9 +38,11 @@ BuildRequires:	autoconf automake libtool gettext itstool
 BuildRequires:	gperf
 
 Requires:	fontpackages-filesystem freetype
-Requires(pre):	freetype >= 2.8-7
-Requires(post):	grep coreutils
+Requires(pre):	freetype >= 2.9.1
+Requires(post):	grep coreutils sbin/ldconfig
+Requires(postun):	/sbin/ldconfig
 Requires:	font(:lang=en)
+Suggests:	dejavu-sans-fonts
 
 %description
 Fontconfig is designed to locate fonts within the
@@ -111,7 +113,7 @@ cat %{name}-conf.lang >> %{name}.lang
 make check
 
 %post
-/sbin/ldconfig
+{?ldconfig: %ldconfig}
 
 umask 0022
 
@@ -127,7 +129,7 @@ if [ -x /usr/bin/fc-cache ] && /usr/bin/fc-cache --version 2>&1 | grep -q %{vers
   HOME=/root /usr/bin/fc-cache -f
 fi
 
-%postun -p /sbin/ldconfig
+%ldconfig_postun
 
 %transfiletriggerin -- /usr/share/fonts /usr/share/X11/fonts/Type1 /usr/share/X11/fonts/TTF /usr/local/share/fonts
 HOME=/root /usr/bin/fc-cache -s
@@ -172,6 +174,19 @@ HOME=/root /usr/bin/fc-cache -s
 %doc fontconfig-devel.txt fontconfig-devel
 
 %changelog
+* Wed Aug 22 2018 Arkady L. Shane <ashejn@russianfedora.pro> - 2.13.0-8.R
+- bump release to rebuild
+
+* Fri Jun 29 2018 Akira TAGOH <tagoh@redhat.com> - 2.13.0-7.R
+- Use ldconfig rpm macro.
+
+* Thu Jun 07 2018 Akira TAGOH <tagoh@redhat.com> - 2.13.0-6.R
+- Add Suggests: dejavu-sans-fonts to address pulling the unpredicted
+  font package as dependency. (#1321551)
+
+* Wed Jun 06 2018 Akira TAGOH <tagoh@redhat.com> - 2.13.0-5.R
+- Update the version deps of freetype to resolve FT_Done_MM_Var symbol. (#1579464)
+
 * Fri May 11 2018 Akira TAGOH <tagoh@redhat.com> - 2.13.0-4.R
 - Fix the emboldening logic. (#1575649)
 
