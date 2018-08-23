@@ -3,7 +3,7 @@
 Summary:	Font configuration and customization library
 Name:		fontconfig
 Version:	2.13.0
-Release:	8%{?dist}.R
+Release:	8.1%{?dist}.R
 # src/ftglue.[ch] is in Public Domain
 # src/fccache.c contains Public Domain code
 # fc-case/CaseFolding.txt is in the UCD
@@ -39,7 +39,7 @@ BuildRequires:	gperf
 
 Requires:	fontpackages-filesystem freetype
 Requires(pre):	freetype >= 2.9.1
-Requires(post):	grep coreutils sbin/ldconfig
+Requires(post):	grep coreutils /sbin/ldconfig
 Requires(postun):	/sbin/ldconfig
 Requires:	font(:lang=en)
 Suggests:	dejavu-sans-fonts
@@ -174,6 +174,9 @@ HOME=/root /usr/bin/fc-cache -s
 %doc fontconfig-devel.txt fontconfig-devel
 
 %changelog
+* Fri Aug 24 2018 Arkady L. Shane <ashejn@russianfedora.pro> - 2.13.0-8.1.R
+- fix typo
+
 * Wed Aug 22 2018 Arkady L. Shane <ashejn@russianfedora.pro> - 2.13.0-8.R
 - bump release to rebuild
 
