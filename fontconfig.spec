@@ -2,8 +2,8 @@
 
 Summary:	Font configuration and customization library
 Name:		fontconfig
-Version:	2.13.0
-Release:	8.1%{?dist}.R
+Version:	2.13.1
+Release:	1%{?dist}.R
 # src/ftglue.[ch] is in Public Domain
 # src/fccache.c contains Public Domain code
 # fc-case/CaseFolding.txt is in the UCD
@@ -17,10 +17,6 @@ Source2:	fc-cache
 # https://bugzilla.redhat.com/show_bug.cgi?id=140335
 Patch0:         %{name}-sleep-less.patch
 Patch1:         %{name}-required-freetype-version.patch
-Patch2:         %{name}-const-name-in-range.patch
-Patch3:         %{name}-implicit-object-for-const-name.patch
-Patch4:         %{name}-locale.patch
-Patch5:		%{name}-fix-embolden-logic.patch
 
 # Ubuntu patches
 Patch10:        00_old_diff_gz.patch
@@ -174,6 +170,9 @@ HOME=/root /usr/bin/fc-cache -s
 %doc fontconfig-devel.txt fontconfig-devel
 
 %changelog
+* Thu Aug 30 2018 Akira TAGOH <tagoh@redhat.com> - 2.13.1-1.R
+- New upstream release.
+
 * Fri Aug 24 2018 Arkady L. Shane <ashejn@russianfedora.pro> - 2.13.0-8.1.R
 - fix typo
 
