@@ -109,7 +109,7 @@ cat %{name}-conf.lang >> %{name}.lang
 make check
 
 %post
-{?ldconfig: %ldconfig}
+%{?ldconfig: %ldconfig}
 
 umask 0022
 
