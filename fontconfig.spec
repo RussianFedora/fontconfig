@@ -2,8 +2,8 @@
 
 Summary:	Font configuration and customization library
 Name:		fontconfig
-Version:	2.12.6
-Release:	4%{?dist}.R
+Version:	2.13.1
+Release:	1%{?dist}.R
 # src/ftglue.[ch] is in Public Domain
 # src/fccache.c contains Public Domain code
 # fc-case/CaseFolding.txt is in the UCD
@@ -15,11 +15,9 @@ Source1:	25-no-bitmap-fedora.conf
 Source2:	fc-cache
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=140335
-Patch0:		%{name}-sleep-less.patch
-# https://bugzilla.redhat.com/show_bug.cgi?id=1496761
-Patch1:		%{name}-emoji.patch
-# https://bugzilla.redhat.com/show_bug.cgi?id=1509790
-Patch2:		%{name}-remove-debug-print-in-fc-query.patch
+Patch0:         %{name}-sleep-less.patch
+Patch1:         %{name}-required-freetype-version.patch
+
 # Ubuntu patches
 Patch10:        00_old_diff_gz.patch
 Patch11:        01_fonts_nanum.patch
@@ -31,13 +29,16 @@ Patch15:        06_ubuntu_lcddefault.patch
 BuildRequires:	expat-devel
 BuildRequires:	freetype-devel >= %{freetype_version}
 BuildRequires:	fontpackages-devel
-BuildRequires:	autoconf automake libtool
+BuildRequires:	libuuid-devel
+BuildRequires:	autoconf automake libtool gettext itstool
 BuildRequires:	gperf
 
 Requires:	fontpackages-filesystem freetype
-Requires(pre):	freetype
-Requires(post):	grep coreutils
+Requires(pre):	freetype >= 2.9.1
+Requires(post):	grep coreutils /sbin/ldconfig
+Requires(postun):	/sbin/ldconfig
 Requires:	font(:lang=en)
+Suggests:	dejavu-sans-fonts
 
 %description
 Fontconfig is designed to locate fonts within the
@@ -50,6 +51,7 @@ Group:		Development/Libraries
 Requires:	%{name}%{?_isa} = %{version}-%{release}
 Requires:	freetype-devel >= %{freetype_version}
 Requires:	pkgconfig
+Requires:	gettext
 
 %description	devel
 The fontconfig-devel package includes the header files,
@@ -69,17 +71,7 @@ The fontconfig-devel-doc package contains the documentation files
 which is useful for developing applications that uses fontconfig.
 
 %prep
-%setup -q
-%patch0 -p1 -b .sleep-less
-%patch1 -p1 -b .emoji
-%patch2 -p1 -b .fc-query
-
-%patch10 -p1
-%patch11 -p1
-%patch12 -p1
-%patch13 -p1
-%patch14 -p1
-%patch15 -p1
+%autosetup -p1
 
 %build
 # We don't want to rebuild the docs, but we want to install the included ones.
@@ -89,8 +81,6 @@ autoreconf
 %configure	--with-add-fonts=/usr/share/X11/fonts/Type1,/usr/share/X11/fonts/TTF,/usr/local/share/fonts \
 		--disable-static --with-cache-dir=/usr/lib/fontconfig/cache
 
-# regenerate hash functions
-rm src/fcobjshash.h
 make %{?_smp_mflags}
 
 %install
@@ -111,11 +101,15 @@ mv $RPM_BUILD_ROOT%{_bindir}/fc-cache $RPM_BUILD_ROOT%{_bindir}/fc-cache-%{__isa
 
 install -p -m 0755 %{SOURCE2} $RPM_BUILD_ROOT%{_bindir}/fc-cache
 
+%find_lang %{name}
+%find_lang %{name}-conf
+cat %{name}-conf.lang >> %{name}.lang
+
 %check
 make check
 
 %post
-/sbin/ldconfig
+%{?ldconfig: %ldconfig}
 
 umask 0022
 
@@ -131,7 +125,7 @@ if [ -x /usr/bin/fc-cache ] && /usr/bin/fc-cache --version 2>&1 | grep -q %{vers
   HOME=/root /usr/bin/fc-cache -f
 fi
 
-%postun -p /sbin/ldconfig
+%ldconfig_postun
 
 %transfiletriggerin -- /usr/share/fonts /usr/share/X11/fonts/Type1 /usr/share/X11/fonts/TTF /usr/local/share/fonts
 HOME=/root /usr/bin/fc-cache -s
@@ -139,7 +133,7 @@ HOME=/root /usr/bin/fc-cache -s
 %transfiletriggerpostun -- /usr/share/fonts /usr/share/X11/fonts/Type1 /usr/share/X11/fonts/TTF /usr/local/share/fonts
 HOME=/root /usr/bin/fc-cache -s
 
-%files
+%files -f %{name}.lang
 %doc README AUTHORS
 %doc fontconfig-user.txt fontconfig-user.html
 %doc %{_fontconfig_confdir}/README
@@ -147,6 +141,7 @@ HOME=/root /usr/bin/fc-cache -s
 %{_libdir}/libfontconfig.so.*
 %{_bindir}/fc-cache*
 %{_bindir}/fc-cat
+%{_bindir}/fc-conflist
 %{_bindir}/fc-list
 %{_bindir}/fc-match
 %{_bindir}/fc-pattern
@@ -168,11 +163,41 @@ HOME=/root /usr/bin/fc-cache -s
 %{_libdir}/pkgconfig/*
 %{_includedir}/fontconfig
 %{_mandir}/man3/*
+%{_datadir}/gettext/its/fontconfig.its
+%{_datadir}/gettext/its/fontconfig.loc
 
 %files devel-doc
 %doc fontconfig-devel.txt fontconfig-devel
 
 %changelog
+* Thu Aug 30 2018 Akira TAGOH <tagoh@redhat.com> - 2.13.1-1.R
+- New upstream release.
+
+* Fri Aug 24 2018 Arkady L. Shane <ashejn@russianfedora.pro> - 2.13.0-8.1.R
+- fix typo
+
+* Wed Aug 22 2018 Arkady L. Shane <ashejn@russianfedora.pro> - 2.13.0-8.R
+- bump release to rebuild
+
+* Fri Jun 29 2018 Akira TAGOH <tagoh@redhat.com> - 2.13.0-7.R
+- Use ldconfig rpm macro.
+
+* Thu Jun 07 2018 Akira TAGOH <tagoh@redhat.com> - 2.13.0-6.R
+- Add Suggests: dejavu-sans-fonts to address pulling the unpredicted
+  font package as dependency. (#1321551)
+
+* Wed Jun 06 2018 Akira TAGOH <tagoh@redhat.com> - 2.13.0-5.R
+- Update the version deps of freetype to resolve FT_Done_MM_Var symbol. (#1579464)
+
+* Fri May 11 2018 Akira TAGOH <tagoh@redhat.com> - 2.13.0-4.R
+- Fix the emboldening logic. (#1575649)
+
+* Sat Apr 28 2018 Arkady L. Shane <ashejn@russianfedora.pro> - 2.13.0-3.1.R
+- fix warnings about multiple values in <test>
+
+* Mon Mar 26 2018 Arkady L. Shane <ashejn@russianfedora.pro> - 2.13.0-3.R
+- update to 2.13.0
+
 * Wed Nov  8 2017 Akira TAGOH <tagoh@redhat.com> - 2.12.6-4.R
 - Remove the debug print in fc-query. (#1509790)
 
