@@ -21,6 +21,7 @@ Patch2:         %{name}-const-name-in-range.patch
 Patch3:         %{name}-implicit-object-for-const-name.patch
 Patch4:         %{name}-locale.patch
 Patch5:		%{name}-fix-embolden-logic.patch
+Patch6:		%{name}-fix-bz1634245.patch
 
 # Ubuntu patches
 Patch10:        00_old_diff_gz.patch
@@ -172,6 +173,9 @@ HOME=/root /usr/bin/fc-cache -s
 %doc fontconfig-devel.txt fontconfig-devel
 
 %changelog
+* Wed Oct 10 2018 Akira TAGOH <tagoh@redhat.com> - 2.13.0-5.R
+- Fix missing localized family names in caches issue. (#1634245)
+
 * Fri May 11 2018 Akira TAGOH <tagoh@redhat.com> - 2.13.0-4.R
 - Fix the emboldening logic. (#1575649)
 
